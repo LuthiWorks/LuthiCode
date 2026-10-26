@@ -95,7 +95,12 @@ function extensionArgs(opts) {
 	return { args, names };
 }
 
-/** Run Pi once, unattended. Resolves with the exit code, or "timeout". */
+/**
+ * Run Pi once, unattended. Resolves with the exit code, or "timeout".
+ * The prompt goes in on stdin, not as an argument: on Windows Pi runs through
+ * a .cmd shim and the shell, where a multi-line argument with quotes, & or |
+ * would be mangled. Stdin arrives byte for byte.
+ */
 function runPi(opts, prompt, cwd, env, transcriptPath, stderrPath) {
 	const { args: extArgs } = extensionArgs(opts);
 	const args = [
@@ -105,7 +110,6 @@ function runPi(opts, prompt, cwd, env, transcriptPath, stderrPath) {
 		"--model", opts.model,
 		"--thinking", opts.thinking,
 		...extArgs,
-		prompt,
 	];
 	const q = (a) => (isWin && /[\s"&|<>^]/.test(a) ? `"${a.replace(/"/g, '""')}"` : a);
 	return new Promise((resolveRun) => {
@@ -113,9 +117,11 @@ function runPi(opts, prompt, cwd, env, transcriptPath, stderrPath) {
 			cwd,
 			env,
 			shell: isWin,
-			stdio: ["ignore", "pipe", "pipe"],
+			stdio: ["pipe", "pipe", "pipe"],
 			windowsHide: true,
 		});
+		child.stdin.on("error", () => {}); // Pi may exit before reading all of it
+		child.stdin.end(prompt);
 		const out = [];
 		const err = [];
 		child.stdout.on("data", (d) => out.push(d));

@@ -188,6 +188,8 @@ export function parseJunit(xml) {
 	const out = {};
 	for (const m of xml.matchAll(/<testcase\b([^>]*?)(?:\/>|>([\s\S]*?)<\/testcase>)/g)) {
 		const attrs = Object.fromEntries([...m[1].matchAll(/(\w+)="([^"]*)"/g)].map((a) => [a[1], unescapeXml(a[2])]));
+		// pytest writes `file` with the OS path separator; task ids use "/" so they match on every OS.
+		if (attrs.file) attrs.file = attrs.file.replace(/\\/g, "/");
 		const id = attrs.file && attrs.name ? `${attrs.file}::${attrs.classname?.split(".").at(-1) ?? ""}::${attrs.name}` : `${attrs.classname ?? ""}::${attrs.name ?? ""}`;
 		const body = m[2] ?? "";
 		const outcome = /<error\b/.test(body) ? "error" : /<failure\b/.test(body) ? "failed" : /<skipped\b/.test(body) ? "skipped" : "passed";

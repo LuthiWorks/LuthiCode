@@ -39,6 +39,24 @@ With experts on the CPU, processing the prompt is the bottleneck, so a broken ca
 
 - Windows PowerShell 5.1 strips quotes from JSON passed to native programs, which would silently break `--chat-template-kwargs`. cmd passes the argument through intact.
 
+## 2026-10-26 - Qwen3.8-27B added as a candidate
+
+- Missed in the first pass. Qwen3.8-27B (August 2026, Apache 2.0) reports SWE-bench Pro 61.7 against Qwen3.6-27B's 53.5, and Terminal-Bench 2.1 73.0 against 63.4 (vendor numbers).
+- It is a 27B dense model, so it faces the same 16 GB wall. It's a Phase 3 comparison in `docs/plan.md`, not a swap.
+- There is no official Qwen3.8 MoE under about 180B total parameters; Qwen3.6-35B-A3B stays the MoE option.
+
+## 2026-10-26 - AGENTS.md for the local model, CLAUDE.md for Claude
+
+- Pi reads one context file per directory, first match in this order: `AGENTS.override.md`, `AGENTS.md`, `CLAUDE.md` (confirmed in Pi 1.4.0's source).
+- Claude Code reads `CLAUDE.md` instead of `AGENTS.md` when both exist, and supports `@AGENTS.md` imports.
+- So `AGENTS.md` holds the short shared rules, which is all the local model pays for each turn. `CLAUDE.md` imports it and adds the fuller guidance for Claude sessions.
+
+## 2026-10-26 - Sanctuary's path protection must be rebuilt for Pi
+
+- Sanctuary's protected-paths rule is enforced for Claude Code by a hook that Pi does not run.
+- Pi also doesn't ask before file edits, which is why that hook only had to check shell commands.
+- So a `protect-paths` Pi extension covering shell, write and edit comes before any agent run in Sanctuary (Phase 0 of `docs/plan.md`).
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/
@@ -53,3 +71,8 @@ With experts on the CPU, processing the prompt is the bottleneck, so a broken ca
 - Vision disables cache reuse: https://huggingface.co/plunderstruck/Qwen3.6-27B-OBLITERATED-MTP-ROCmFP4-GGUF
 - Empty tool arguments issue: https://github.com/earendil-works/pi/issues/3325
 - Qwen sampling presets: https://unsloth.ai/docs/models/qwen3.6
+- Qwen3.8 lineup: https://codersera.com/blog/qwen-3-8-model-lineup-2026/
+- Qwen3.8-27B model card: https://huggingface.co/Qwen/Qwen3.8-27B
+- Pi extension API (tool_call blocking, setActiveTools): https://cdn.jsdelivr.net/npm/@earendil-works/pi-coding-agent@0.80.2/docs/extensions.md
+- Claude Code CLAUDE.md and AGENTS.md handling: https://code.claude.com/docs/en/memory
+- lsp-pi package: https://cdn.jsdelivr.net/npm/lsp-pi@1.0.5/README.md

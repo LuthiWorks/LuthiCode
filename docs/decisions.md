@@ -97,6 +97,22 @@ Brian's concern: the agent deleting the operating system "and things like that".
   - **Never run Pi as administrator.** UAC then lets Windows itself refuse changes to system files.
   - **Run unattended evals in a container** with only the worktree mounted (`docs/plan.md`, Phase 1). Pi's own sandbox extension is macOS and Linux only, so on Windows the container is Docker.
 
+## 2026-10-26 - How the eval works
+
+The process is in `docs/research/2026-10-26_eval-build.md`.
+
+- **Tasks come from real history:** a past commit that changed source together with its tests. The agent starts from the parent commit and gets a plain-language goal (implementation seat) or only the failing test output (debugging seat). It doesn't see the commit's tests. Those are put in place afterwards, overwriting any edits to them, and the attempt is resolved if every fail-to-pass test passes and no pass-to-pass test broke.
+- **Every task is validated before it's kept:** its tests fail on the parent, and pass twice with the real change. A test whose outcome differs between those two runs is dropped.
+- **Instructions name the interface the tests call** (functions, fields, asserted message text), not the implementation. That's easier than SWE-bench-style issues, on purpose: guessing a field name isn't the skill being measured.
+- **Each attempt is isolated:**
+  - a throwaway worktree of a dedicated eval clone, never Brian's working clones
+  - Pi with only the named extensions (`--no-extensions -e ...`), so a run measures exactly its arm
+  - a CPU-only test environment built from the repo's own lockfile
+  - a private compiled-extension cache (`TORCH_EXTENSIONS_DIR`)
+- **Why the private cache:** LuthiModel's C++ ops otherwise build into a cache shared across checkouts. Worktrees at different commits loaded each other's builds, and tests alternated between failing and passing.
+- **Harness setup is committed in the worktree before the agent starts**, so the recorded diff is only the agent's work.
+- **What the test environments can't cover:** tests needing MuJoCo (an optional extra) skip, in validation and in runs alike, so they don't count either way. LuthiModel's lockfile pairs torch 2.10.0 with torchaudio 2.11.0. `eval/setup.mjs` installs the matching torchaudio for the eval; LuthiModel itself is unchanged.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/

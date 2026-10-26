@@ -18,7 +18,7 @@ Target machine: RX 7800 XT (16 GB), 32 GB DDR4, Ryzen 9 5950X, Windows.
 | `docs/decisions.md` | Why things are set up the way they are. |
 | `AGENTS.md` | Short rules for anyone working here, including the local model. |
 | `CLAUDE.md` | Fuller guidance for Claude sessions (imports `AGENTS.md`). |
-| `eval/` | Task set and results used to judge each change. Added in Phase 1. |
+| `eval/` | Tasks from LuthiModel's and Sanctuary's history, the runner that scores the agent on them, and results. See `eval/README.md`. |
 
 ## Setup
 
@@ -49,6 +49,7 @@ Target machine: RX 7800 XT (16 GB), 32 GB DDR4, Ryzen 9 5950X, Windows.
 - [x] Build plan (`docs/plan.md`)
 - [x] Phase 0: `protect-paths` guard, global agent brief (built and tested on Linux)
 - [ ] Phase 0: guard checked on Windows, cross-family review
-- [ ] Phase 1: first run on the target machine, eval runner, baseline
+- [x] Phase 1: eval runner and task set (`eval/`, built and tested on Linux)
+- [ ] Phase 1: first run on the target machine, `eval/setup.mjs`, baseline
 - [ ] Phase 2: extensions, in eval order
 - [ ] Phase 3: model and settings comparisons

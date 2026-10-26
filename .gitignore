@@ -229,3 +229,6 @@ node_modules/
 
 # Raw eval transcripts (summaries go in eval/results/, which is tracked)
 eval/runs/
+
+# Scratch folders the guard's end-to-end test leaves behind when a check fails
+extensions/tests/.e2e-*/

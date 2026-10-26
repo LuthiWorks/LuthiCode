@@ -56,13 +56,21 @@ const win = fakeFs({
 	"c:/Dev/luthicode/README.md": "",
 	"c:/Dev/luthicode/node_modules/x/index.js": "",
 	"c:/Dev/luthicode/build/out.txt": "",
+	"c:/Dev/luthicode/.git/HEAD": "",
+	"c:/Dev/sanctuary/.git/HEAD": "",
+	"c:/Dev/luthimodel/.git/HEAD": "",
+	"e:/luthicode-eval/wt/task-07/.git": "gitdir: e:/luthicode-eval/repos/sanctuary/.git/worktrees/task-07",
+	"e:/luthicode-eval/wt/task-12/.git": "gitdir: e:/luthicode-eval/repos/luthimodel/.git/worktrees/task-12",
+	"c:/Users/Brian/Documents/taxes.xlsx": "",
+	"c:/Windows/System32/kernel32.dll": "",
 	"e:/luthicode-eval/wt/task-07/pyproject.toml": '[project]\nname = "sanctuary"\n',
 	"e:/luthicode-eval/wt/task-12/pyproject.toml": '[project]\nname = "luthi"\n',
 });
 
 const HOME = "C:\\Users\\Brian";
+const ENV = { USERPROFILE: HOME, TEMP: "C:\\Users\\Brian\\AppData\\Local\\Temp" };
 function opts(cwd: string, extra: Partial<Options> = {}): Options {
-	return { cwd, home: HOME, env: { USERPROFILE: HOME }, fs: win, ...extra };
+	return { cwd, home: HOME, env: ENV, fs: win, ...extra };
 }
 
 const SANCTUARY = "C:\\Dev\\sanctuary";
@@ -377,12 +385,12 @@ test("Pi's config and this guard can't be changed by the agent", () => {
 });
 
 test("PI_CODING_AGENT_DIR moves the protected config with it", () => {
-	const o = opts(LUTHICODE, { env: { USERPROFILE: HOME, PI_CODING_AGENT_DIR: "D:\\pi-agent" } });
+	const o = opts(LUTHICODE, { env: { ...ENV, PI_CODING_AGENT_DIR: "D:\\pi-agent" } });
 	expectBlock("write", { path: "D:\\pi-agent\\settings.json", content: "{}" }, o);
 });
 
 test("LUTHI_RUNS_ROOT is protected when set", () => {
-	const o = opts(LUTHIMODEL, { env: { USERPROFILE: HOME, LUTHI_RUNS_ROOT: "F:\\luthi_runs" } });
+	const o = opts(LUTHIMODEL, { env: { ...ENV, LUTHI_RUNS_ROOT: "F:\\luthi_runs" } });
 	expectBlock("write", { path: "F:\\luthi_runs\\jepa\\x.pt", content: "x" }, o);
 });
 
@@ -415,7 +423,7 @@ test("Works against a real directory tree (node fs, POSIX paths)", () => {
 
 test("cmd-style flags like /E aren't mistaken for drive roots", () => {
 	// /E would otherwise read as E:\, which holds the protected runs archive.
-	expectAllow("bash", { command: "robocopy C:\\Dev\\luthicode\\build C:\\backup\\build /E /MIR" }, opts(LUTHICODE));
+	expectAllow("bash", { command: "robocopy C:\\Dev\\luthicode\\build C:\\Dev\\luthicode\\dist /E /MIR" }, opts(LUTHICODE));
 });
 
 test("Huge dependency folders aren't scanned, so deleting them isn't blocked", () => {
@@ -425,4 +433,162 @@ test("Huge dependency folders aren't scanned, so deleting them isn't blocked", (
 	// But a huge ordinary folder fails closed.
 	const bigBuild: Fs = { ...win, list: (p) => (p.toLowerCase().endsWith("/build") ? many : (win.list?.(p) ?? null)) };
 	expectBlock("bash", { command: "rm -rf build" }, opts(LUTHICODE, { fs: bigBuild }));
+});
+
+
+// ---- the workspace: everything outside the task's repo is read-only --------
+
+test("Workspace: the agent can't change the OS, other folders or other repos", () => {
+	const o = opts(SANCTUARY);
+	for (const path of [
+		"C:\\Windows\\System32\\drivers\\etc\\hosts",
+		"/c/Program Files/Git/etc/bash.bashrc",
+		"C:\\Users\\Brian\\Documents\\taxes.xlsx",
+		"~/Desktop/note.txt",
+		"C:\\Dev\\luthicode\\README.md",
+		"../luthicode/README.md",
+		"E:\\other\\x.txt",
+	]) {
+		expectBlock("write", { path, content: "x" }, o);
+	}
+	for (const command of [
+		"rm -rf /",
+		"rm -rf /c/Windows",
+		"rm -rf C:\\Windows\\System32",
+		"del /s /q C:\\Windows\\Temp\\*",
+		"rm -rf ~",
+		"rm -rf ~/Documents",
+		"cd /c/Windows && rm -rf System32",
+		"cp sanctuary/core/a.py C:/Users/Brian/Documents/",
+		"echo x > /c/Users/Brian/Desktop/x.txt",
+		"mv sanctuary/core/a.py ../elsewhere.py",
+		"Remove-Item -Recurse C:\\Users\\Brian\\Documents",
+		"curl -o C:/Windows/x.exe https://example.com/x",
+		"tar -xf a.tar -C /c/Users/Brian",
+		"git clone https://github.com/x/y C:/Users/Brian/y",
+		"python -c \"import shutil; shutil.rmtree('C:/Users/Brian/Documents')\"",
+		'rm "$HOME/x"',
+	]) {
+		expectBlock("bash", { command }, o);
+	}
+});
+
+test("Workspace: ordinary work inside the repo, temp folders and reads elsewhere are fine", () => {
+	const o = opts(SANCTUARY);
+	for (const path of ["sanctuary/core/new.py", "C:\\Users\\Brian\\AppData\\Local\\Temp\\scratch.txt", "/tmp/scratch.txt", "C:\\Users\\Brian\\.pi\\agent\\memory\\notes.md"]) {
+		expectAllow("write", { path, content: "x" }, o);
+	}
+	for (const command of [
+		"cp ~/.gitconfig ./gitconfig.sample",
+		"cp ../luthimodel/luthi/sanctuary_interface.py /tmp/",
+		"cat /c/Windows/System32/drivers/etc/hosts",
+		"echo $PATH > path.txt",
+		"python -m pytest sanctuary/tests -q > /tmp/out.txt",
+		"tar -czf /tmp/core.tgz sanctuary/core",
+		"git clone https://github.com/x/y vendor/y",
+		"kill 12345",
+		"taskkill /PID 12345 /F",
+	]) {
+		expectAllow("bash", { command }, o);
+	}
+	expectAllow("read", { path: "C:\\Windows\\System32\\drivers\\etc\\hosts" }, o);
+});
+
+test("Workspace: eval worktrees are their own workspace", () => {
+	const o = opts(WT_SANCTUARY);
+	expectAllow("write", { path: "sanctuary/core/x.py", content: "x" }, o);
+	expectBlock("write", { path: "C:\\Dev\\sanctuary\\sanctuary\\core\\x.py", content: "x" }, o);
+});
+
+test("Workspace: Pi started in a home folder or drive root can't change anything", () => {
+	for (const cwd of ["C:\\Users\\Brian", "C:\\", "C:\\Windows\\System32", "/"]) {
+		const o = opts(cwd);
+		expectBlock("write", { path: "x.txt", content: "x" }, o);
+		expectBlock("bash", { command: "touch x.txt" }, o);
+		expectAllow("write", { path: "C:\\Users\\Brian\\AppData\\Local\\Temp\\x.txt", content: "x" }, o);
+	}
+});
+
+test("Workspace: extra folders can be granted with LUTHICODE_WORKSPACES", () => {
+	const o = opts(SANCTUARY, { env: { ...ENV, LUTHICODE_WORKSPACES: "C:\\Dev\\luthimodel" } });
+	expectAllow("write", { path: "C:\\Dev\\luthimodel\\luthi\\model.py", content: "x" }, o);
+	expectBlock("write", { path: "C:\\Dev\\luthimodel\\runs\\x.pt", content: "x" }, o); // still protected
+	expectBlock("write", { path: "C:\\Dev\\luthicode\\README.md", content: "x" }, o);
+});
+
+// ---- commands that change the machine itself ---------------------------------
+
+test("Machine-level commands are blocked everywhere", () => {
+	const o = opts(LUTHICODE);
+	for (const command of [
+		"shutdown /s /t 0",
+		"Restart-Computer -Force",
+		"format D: /q",
+		"diskpart /s script.txt",
+		"bcdedit /set {default} safeboot minimal",
+		"reg delete HKLM\\Software\\X /f",
+		"Set-ItemProperty -Path HKCU:\\Software\\X -Name y -Value 1",
+		"setx PATH C:\\x",
+		"sc delete WinDefend",
+		"Stop-Service -Name Spooler",
+		"schtasks /create /tn x /tr calc.exe /sc onlogon",
+		"net user hacker pass /add",
+		"icacls C:\\Dev /grant Everyone:F",
+		"Set-ExecutionPolicy Unrestricted",
+		"Add-MpPreference -ExclusionPath C:\\",
+		"winget install x",
+		"choco uninstall git",
+		"npm install -g some-tool",
+		"pnpm add --global x",
+		"pip install requests",
+		"python -m pip install --user x",
+		"uv tool install ruff",
+		"cargo install ripgrep",
+		"sudo rm -rf build",
+		"runas /user:Administrator cmd",
+		'Start-Process pwsh -Verb RunAs',
+		"pkill python",
+		"taskkill /F /IM llama-server.exe",
+		"Stop-Process -Name llama-server",
+		"kill -9 -1",
+		"docker volume prune -f",
+		"docker system prune -a",
+		"docker compose down -v",
+		"docker volume rm sanctuary_data",
+		"git config --global user.name x",
+		"wsl --unregister Ubuntu",
+		'bash -c "shutdown -h now"',
+	]) {
+		expectBlock("bash", { command }, o);
+	}
+	for (const command of [
+		"uv pip install -e .",
+		"uv add numpy",
+		"uv sync",
+		"npm install",
+		"npm install --save-dev vitest",
+		"git config user.name x",
+		"docker compose up -d",
+		"docker compose down",
+		'git commit -m "shutdown handler: format the reg add output"',
+		"python -c \"print('{}'.format(1))\"",
+	]) {
+		expectAllow("bash", { command }, o);
+	}
+});
+
+test("Workspace: git commands that create folders must create them inside", () => {
+	const o = opts(LUTHICODE);
+	expectBlock("bash", { command: "git worktree add C:/Users/Brian/wt main" }, o);
+	expectBlock("bash", { command: "git init /c/Users/Brian/newrepo" }, o);
+	expectAllow("bash", { command: "git worktree add .worktrees/task-1 main" }, o);
+	expectAllow("bash", { command: "git init scratch-repo" }, o);
+});
+
+test("Workspace: starting Pi in a subfolder still makes the whole repo the workspace", () => {
+	const o = opts("C:\\Dev\\sanctuary\\sanctuary\\core");
+	expectAllow("write", { path: "../../docs/research/x.md", content: "x" }, o);
+	expectAllow("write", { path: "C:\\Dev\\sanctuary\\README.md", content: "x" }, o);
+	expectBlock("write", { path: "../../data/identity/x.md", content: "x" }, o);
+	expectBlock("write", { path: "C:\\Dev\\luthicode\\README.md", content: "x" }, o);
 });

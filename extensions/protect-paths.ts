@@ -28,6 +28,13 @@
  * moves of folders that contain protected files. In the protected repos, a
  * mutating command whose targets can't be seen (variables, xargs) is blocked.
  *
+ * Beyond those files, the agent may only change files inside its task's
+ * workspace: the git repo (or worktree) Pi was started in, plus temp folders
+ * and the harness memory folder. Everything else on the machine is read-only
+ * to it. Commands that change the machine itself (shutdown, disks, registry,
+ * services, global installs, elevation, killing processes by name, Docker
+ * volume pruning) are blocked everywhere.
+ *
  * Reading is never blocked. The rule is "do not modify", not "do not look".
  *
  * This guards against mistakes, not against an adversary. It cannot see what
@@ -37,7 +44,7 @@
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { homedir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { posix } from "node:path";
 
 // ---------------------------------------------------------------- types
@@ -65,6 +72,8 @@ export interface Options {
 	fs?: Fs;
 	/** Tool annotations lookup for custom tools (readOnlyHint). */
 	isReadOnlyTool?: (toolName: string) => boolean;
+	/** Extra folders the agent may change, besides the repo it was started in ($LUTHICODE_WORKSPACES, ;-separated). */
+	workspaces?: string[];
 }
 
 export type Decision = { block: false } | { block: true; reason: string };
@@ -241,9 +250,92 @@ export function pathRule(absPath: string, opts: Required<Pick<Options, "agentDir
 	return null;
 }
 
+// ---------------------------------------------------------------- workspace
+
+/** System folders: never a workspace, nor anything inside them. */
+const SYSTEM_DIRS = /^([a-z]:\/(windows|program files|program files \(x86\)|programdata)|\/(usr|etc|bin|sbin|lib|lib64|boot|sys|proc|dev|opt|var))(\/|$)/;
+/** Folders too broad to be a workspace themselves (but fine to have workspaces inside). */
+const BROAD_DIRS = /^([a-z]:\/?|\/|[a-z]:\/users(\/[^/]+)?|\/home(\/[^/]+)?|\/users(\/[^/]+)?|\/root)$/;
+
+function gitRoot(dir: string, fs: Fs): string | null {
+	for (let d: string | null = dir; d; d = parent(d)) {
+		if (fs.exists(join(d, ".git"))) return d;
+	}
+	return null;
+}
+
+function isBroad(dir: string, home: string): boolean {
+	const k = key(dir);
+	return BROAD_DIRS.test(k) || SYSTEM_DIRS.test(k) || k === key(normalizePath(home, "/", home));
+}
+
+/** The folders this task may change: its repo (or the start folder), plus any extras. */
+export function workspaceRoots(cwd: string, home: string, env: Record<string, string | undefined>, fs: Fs, explicit?: string[]): string[] | null {
+	const base = normalizePath(cwd, "/", home);
+	const extras = explicit ?? (env.LUTHICODE_WORKSPACES ?? "").split(/[;\n]/).map((x) => x.trim()).filter(Boolean);
+	const roots = extras.map((x) => normalizePath(x, base, home)).filter((r) => !isBroad(r, home));
+	const root = gitRoot(base, fs) ?? base;
+	if (!isBroad(root, home)) roots.unshift(root);
+	return roots.length ? roots : null;
+}
+
+function tempRoots(env: Record<string, string | undefined>, home: string): string[] {
+	const raw = [env.TEMP, env.TMP, env.TMPDIR, tmpdir(), "/tmp", "/var/tmp"].filter((x): x is string => !!x);
+	return [...new Set(raw.map((x) => normalizePath(x, "/", home)))].filter((r) => !BROAD_DIRS.test(key(r)));
+}
+
+function within(path: string, root: string): boolean {
+	const k = key(path);
+	const r = key(root);
+	return k === r || k.startsWith(r.endsWith("/") ? r : r + "/");
+}
+
+/** Why a path is outside what this task may change, or null if it's inside. */
+export function workspaceRule(abs: string, ctx: Ctx): string | null {
+	const k = key(abs);
+	if (/^\/dev\/(null|stdout|stderr|tty|fd\/\d+)$/.test(k) || /^(nul|con)$/.test(posix.basename(k))) return null;
+	if (ctx.temps.some((t) => within(abs, t)) || within(abs, ctx.agentDir + "/memory")) return null;
+	if (ctx.workspaces === null) {
+		return "files outside any task workspace (Pi was started in a folder too broad to be one, such as a drive root, a home folder or a system folder; start Pi inside the project)";
+	}
+	if (ctx.workspaces.some((w) => within(abs, w))) return null;
+	return `a path outside this task's workspace (${ctx.workspaces.join(", ")})`;
+}
+
+// ---------------------------------------------------------------- system commands
+
+/** Commands that change the machine rather than files. Blocked everywhere. */
+const SYSTEM_COMMANDS: Array<[RegExp, string]> = [
+	[/\b(sudo|runas|gsudo|doas)\b|-Verb\s+RunAs\b/i, "elevated commands can change anything on the machine"],
+	[/\b(shutdown|reboot|poweroff|halt|logoff)\b|\b(Restart|Stop)-Computer\b/i, "it would shut down or restart the machine"],
+	[/\bformat(\.com)?\s+[a-z]:|\b(diskpart|bcdedit|bcdboot|bootrec|mkfs(\.\w+)?|fdisk|parted|sfdisk)\b|\b(Format-Volume|Clear-Disk|Initialize-Disk|Remove-Partition|Set-Partition)\b|\bcipher\b[^|;&]*\s\/w\b|\b(vssadmin|wbadmin)\b[^|;&]*\bdelete\b/i, "it would change disks, partitions or boot settings"],
+	[/\breg(\.exe)?\s+(add|delete|import|copy|load|unload|restore)\b|\bregedit\b[^|;&]*\s\/s\b|\b(Set|New|Remove|Rename|Clear)-ItemProperty\b|\b(Remove-Item|New-Item|Set-Item|ri|ni)\b[^|;&]*\bHK(LM|CU|CR|U|CC):/i, "it would change the Windows registry"],
+	[/\bsetx\b|SetEnvironmentVariable\s*\([^)]*,\s*['"]?(Machine|User)\b/i, "it would change environment variables for the whole machine or account"],
+	[/\bsc(\.exe)?\s+(create|delete|config|stop|start|failure)\b|\b(Set|Stop|New|Remove|Restart|Start|Suspend)-Service\b|\bschtasks\b[^|;&]*\/(create|delete|change)\b|\b(Register|Unregister|Set|Disable)-ScheduledTask\b|\bsystemctl\s+(stop|disable|mask|enable|restart)\b/i, "it would change system services or scheduled tasks"],
+	[/\bnet(\.exe)?\s+(user|localgroup|share|stop|start|accounts)\b|\bnetsh\b|\b(New|Remove|Set)-Local(User|Group)\b|\bAdd-LocalGroupMember\b|\b(takeown|icacls|cacls)\b|\bSet-Acl\b|\b(Set|Add|Remove)-MpPreference\b|\bSet-ExecutionPolicy\b|\b(New|Set|Remove)-NetFirewallRule\b/i, "it would change accounts, permissions or security settings"],
+	[/\b(winget|choco|scoop)\s+(install|uninstall|upgrade|remove)\b|\bmsiexec\b|\b(Install|Uninstall|Update)-(Module|Package|Script)\b|\b(apt|apt-get|dnf|yum|pacman|brew)\s+(install|remove|purge|upgrade)\b/i, "it would install or remove software on the machine"],
+	[/\b(npm|pnpm)\s+(i|install|add|uninstall|un|rm|remove|link|update|up)\b[^|;&]*\s(-g|--global)\b|\byarn\s+global\b|\b(uv\s+tool|pipx)\s+(install|uninstall)\b|\b(cargo|go|gem)\s+install\b|\bconda\s+(install|remove|create)\b/i, "global installs change the machine outside this task"],
+	// Plain pip installs into whatever Python is first on PATH; uv pip and uv run ... -m pip use the repo's environment.
+	[/(?<!\buv\s+(?:run\s+)?(?:python3?(?:\.exe)?\s+-m\s+)?)\bpip3?(?:\.exe)?\s+(?:install|uninstall)\b/i, "pip outside uv changes a shared Python install; use uv in the repo instead (uv add, uv sync, uv pip install)"],
+	[/\b(pkill|killall)\b|\btaskkill\b[^|;&]*\/IM\b|\bStop-Process\b[^|;&]*-(Name|ProcessName)\b|\bkill\b[^|;&]*\s-(1|0)(\s|$)/i, "killing processes by name could stop the model server or a training run"],
+	[/\bdocker(-compose)?\s+(compose\s+)?(system|volume|container|image|network|builder)\s+(prune|rm)\b|\bdocker\s+volume\s+rm\b|\bdocker(-compose|\s+compose)\b[^|;&]*\bdown\b[^|;&]*\s(-v|--volumes)\b|\bdocker\s+rm\b[^|;&]*\s-[a-z]*v/i, "Docker volumes may hold Sanctuary's entity state"],
+	[/\bgit\s+config\b[^|;&]*\s--(global|system)\b/i, "it would change git settings for the whole account or machine"],
+	[/\bwsl(\.exe)?\b[^|;&]*\s--(unregister|uninstall)\b/i, "it would delete a WSL distribution"],
+];
+
 // ---------------------------------------------------------------- shell commands
 
-type Ctx = Required<Pick<Options, "cwd" | "agentDir" | "env" | "home">> & { fs: Fs };
+interface Ctx {
+	cwd: string;
+	agentDir: string;
+	env: Record<string, string | undefined>;
+	home: string;
+	fs: Fs;
+	/** Folders the agent may change; null when Pi was started somewhere too broad to be a workspace. */
+	workspaces: string[] | null;
+	/** Temp folders, always writable. */
+	temps: string[];
+}
 
 /** Anything that can change files. Matched against each command segment. */
 const MUTATION_VERBS: RegExp[] = [
@@ -255,7 +347,7 @@ const MUTATION_VERBS: RegExp[] = [
 	/\bfind\b[^|;&]*\s-(delete|exec|execdir|ok)\b/,
 	/\bxargs\b/,
 	// git commands that change the working tree
-	/\bgit\b[^|;&]*\s(rm|mv|restore|clean|apply|stash|reset|checkout|switch|am|merge|rebase|pull)\b/,
+	/\bgit\b[^|;&]*\s(rm|mv|restore|clean|apply|stash|reset|checkout|switch|am|merge|rebase|pull|clone|worktree|init|submodule)\b/,
 	// cmd.exe
 	/\b(del|erase|rd|move|copy|xcopy|robocopy|ren|rename|mklink)\b/i,
 	// PowerShell, including its short aliases
@@ -494,6 +586,77 @@ function candidateTargets(w: string[], segment: string): string[] {
 	return [...out, ...redirectTargets(segment)];
 }
 
+/** Commands whose arguments are all files they change. */
+const ALL_ARGS_WRITERS = new Set([
+	"rm", "rmdir", "unlink", "mv", "touch", "mkdir", "chmod", "chown", "truncate", "shred", "tee", "attrib", "patch",
+	"del", "erase", "rd", "move", "ren", "rename", "mklink",
+	"remove-item", "ri", "move-item", "mi", "rename-item", "rni", "new-item", "ni", "set-content", "add-content", "ac", "clear-content", "clc", "out-file",
+]);
+/** Commands that write only their last argument (the destination). */
+const DEST_WRITERS = new Set(["cp", "copy", "xcopy", "copy-item", "cpi", "rsync", "scp", "ln", "install"]);
+const PREFIXES = /^(sudo|time|nice|nohup|env|command|builtin|exec|xargs|do|then|else|elif|if|while|until|!|\{|\()$/;
+
+/** The files a segment writes, for the workspace check. Unknown commands: only their redirects. */
+function writeTargets(w: string[], segment: string): string[] {
+	const out = redirectTargets(segment);
+	const i = w.findIndex((x) => !/^[A-Za-z_][A-Za-z0-9_]*=/.test(x) && !PREFIXES.test(x));
+	if (i < 0) return out;
+	const verb = w[i].toLowerCase().replace(/\.exe$/, "");
+	const rest = w.slice(i + 1);
+	const isFlag = (x: string) => x.startsWith("-") || (CMD_VERB.test(segment) && /^\/[a-z?]{1,6}(:\S*)?$/i.test(x));
+	const positional = rest.filter((x) => x && !isFlag(x));
+	const after = (flag: RegExp) => {
+		const vals: string[] = [];
+		rest.forEach((x, j) => {
+			const eq = x.match(/^(--?[\w-]+)=(.*)$/);
+			if (eq && flag.test(eq[1])) vals.push(eq[2]);
+			else if (flag.test(x) && rest[j + 1]) vals.push(rest[j + 1]);
+		});
+		return vals;
+	};
+	if (ALL_ARGS_WRITERS.has(verb)) return [...out, ...positional];
+	if (DEST_WRITERS.has(verb)) {
+		const t = after(/^(-t|--target-directory|-Destination)$/i);
+		return [...out, ...(t.length ? t : positional.slice(-1))];
+	}
+	switch (verb) {
+		case "sed":
+		case "perl":
+			return /\s(-i|--in-place|-[a-z]*i)\b/.test(segment) ? [...out, ...positional.slice(1)] : out;
+		case "robocopy":
+			return [...out, ...positional.slice(1, 2)];
+		case "tar":
+			return [...out, ...after(/^(-[a-zA-Z]*f|--file|-C|--directory)$/)];
+		case "curl":
+			return [...out, ...after(/^(-[a-zA-Z]*o|--output)$/)];
+		case "wget":
+			return [...out, ...after(/^(-O|--output-document|-P|--directory-prefix)$/)];
+		case "unzip":
+			return [...out, ...after(/^-d$/)];
+		case "7z":
+		case "7za":
+			return [...out, ...rest.filter((x) => /^-o./.test(x)).map((x) => x.slice(2))];
+		case "dd":
+			return [...out, ...rest.filter((x) => x.startsWith("of=")).map((x) => x.slice(3))];
+		case "find": {
+			if (!/\s-(delete|exec|execdir|ok)\b/.test(segment)) return out;
+			const starts = rest.slice(0, Math.max(0, rest.findIndex((x) => /^[-(!]/.test(x))));
+			return [...out, ...(starts.length ? starts : ["."])];
+		}
+		case "git": {
+			const vals = after(/^-C$/);
+			const sub = positional.find((x) => !vals.includes(x));
+			const args = sub ? positional.slice(positional.indexOf(sub) + 1) : [];
+			if (sub === "clone" && args.length >= 2) vals.push(args[args.length - 1]);
+			if (sub === "init" && args.length >= 1) vals.push(args[0]);
+			if (sub === "worktree" && args[0] === "add" && args[1]) vals.push(args[1]);
+			return [...out, ...vals];
+		}
+		default:
+			return out;
+	}
+}
+
 export function checkCommand(command: string, opts: Ctx): Decision {
 	const rule = commandRule(command, opts, 0);
 	return rule ? blocked("bash", command, rule) : ALLOW;
@@ -518,6 +681,11 @@ function commandRule(command: string, opts: Ctx, depth: number, startBase?: stri
 		const inSanctuary = here === "sanctuary" || namesSanctuary;
 		const inLuthiModel = here === "luthimodel" || namesLuthi;
 
+		// Commands that change the machine itself.
+		if (!MESSAGE_ONLY.test(segment)) {
+			for (const [re, why] of SYSTEM_COMMANDS) if (re.test(segment)) return why;
+		}
+
 		// Nested shells: check the command they will run.
 		for (const inner of innerCommands(w)) {
 			const rule = commandRule(inner, opts, depth + 1, base);
@@ -532,6 +700,10 @@ function commandRule(command: string, opts: Ctx, depth: number, startBase?: stri
 				const abs = normalizePath(lit, base, opts.home);
 				const rule = pathRule(abs, opts) ?? (destructive ? folderRule(abs, opts) : null);
 				if (rule) return modifies(rule);
+				if (destructive && /^([a-z]:[\\/]|[\\/]|~[\\/])./i.test(lit)) {
+					const outside = workspaceRule(abs, opts);
+					if (outside) return modifies(outside);
+				}
 			}
 		}
 
@@ -558,10 +730,7 @@ function commandRule(command: string, opts: Ctx, depth: number, startBase?: stri
 
 		const tree = TREE_OPS.some((t) => t.test(segment));
 		for (const raw of candidateTargets(w, segment)) {
-			if (VARIABLE.test(raw)) {
-				if (known) return "files named by a variable or command substitution can't be checked (name the files explicitly instead)";
-				continue;
-			}
+			if (VARIABLE.test(raw)) continue; // judged below, if it's something this segment writes
 			const abs = normalizePath(raw, base, opts.home);
 			const hits = GLOB.test(raw) ? expandGlob(abs, opts) : [abs];
 			if (hits === null) {
@@ -572,6 +741,15 @@ function commandRule(command: string, opts: Ctx, depth: number, startBase?: stri
 				const rule = pathRule(hit, opts) ?? (tree ? folderRule(hit, opts) : null);
 				if (rule) return modifies(rule);
 			}
+		}
+
+		// Workspace: whatever this segment writes must be inside the task's folders.
+		for (const raw of writeTargets(w, segment)) {
+			if (VARIABLE.test(raw)) return "files named by a variable or command substitution can't be checked (name the files explicitly instead)";
+			// A wildcard can only match paths that share its prefix, so checking the
+			// pattern itself is enough; it doesn't need to match anything on disk.
+			const outside = workspaceRule(normalizePath(raw, base, opts.home), opts);
+			if (outside) return modifies(outside);
 		}
 
 		// The token net from Sanctuary's hook, for paths the resolver can't see.
@@ -595,8 +773,8 @@ function blocked(tool: string, target: string, reason: string): Decision {
 		reason:
 			`LuthiCode protect-paths blocked this ${tool} call because ${reason}. ` +
 			`Target: ${target.length > 300 ? target.slice(0, 300) + "..." : target}. ` +
-			"These files are protected and only Brian can approve changes to them. " +
-			"Do not retry, and do not reach them another way (another tool, a script, a copy, git). " +
+			"This is protected, and only Brian can approve it. " +
+			"Do not retry, and do not reach it another way (another tool, a script, a copy, git). " +
 			"Stop and tell Brian what you wanted to change and why.",
 	};
 }
@@ -610,8 +788,13 @@ export function decide(toolName: string, input: Record<string, unknown>, options
 	const fs = options.fs ?? nodeFs;
 	const agentDir = normalizePath(options.agentDir ?? env.PI_CODING_AGENT_DIR ?? `${toSlash(home)}/.pi/agent`, "/", home);
 	const cwd = options.cwd;
-	const ctx = { cwd, agentDir, env, home, fs };
+	const ctx: Ctx = { cwd, agentDir, env, home, fs, workspaces: workspaceRoots(cwd, home, env, fs, options.workspaces), temps: tempRoots(env, home) };
 	const base = normalizePath(cwd, "/", home);
+	const fileRule = (p: string) => {
+		const abs = normalizePath(p, base, home);
+		const rule = pathRule(abs, ctx);
+		return rule ? modifies(rule) : (workspaceRule(abs, ctx) ? modifies(workspaceRule(abs, ctx) as string) : null);
+	};
 
 	switch (toolName) {
 		case "read":
@@ -623,8 +806,8 @@ export function decide(toolName: string, input: Record<string, unknown>, options
 		case "edit": {
 			const p = typeof input.path === "string" ? input.path : "";
 			if (!p) return ALLOW;
-			const rule = pathRule(normalizePath(p, base, home), ctx);
-			return rule ? blocked(toolName, p, modifies(rule)) : ALLOW;
+			const rule = fileRule(p);
+			return rule ? blocked(toolName, p, rule) : ALLOW;
 		}
 		case "bash":
 		case "powershell": {
@@ -638,8 +821,8 @@ export function decide(toolName: string, input: Record<string, unknown>, options
 			if (options.isReadOnlyTool?.(toolName)) return ALLOW;
 			for (const [k, v] of flatten(input)) {
 				if (PATH_KEYS.test(k) && typeof v === "string" && v) {
-					const rule = pathRule(normalizePath(v, base, home), ctx);
-					if (rule) return blocked(toolName, v, modifies(rule));
+					const rule = fileRule(v);
+					if (rule) return blocked(toolName, v, rule);
 				}
 				if (COMMAND_KEYS.test(k) && typeof v === "string" && v) {
 					const d = checkCommand(v, ctx);

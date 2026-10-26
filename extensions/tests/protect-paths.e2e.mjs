@@ -3,7 +3,8 @@
 // A scripted fake model server stands in for llama-server and asks Pi to:
 //   1. write a Sanctuary journal file      -> must be blocked
 //   2. run `rm -rf data`                    -> must be blocked
-//   3. write an ordinary source file        -> must succeed
+//   3. write a file outside the repo       -> must be blocked (workspace)
+//   4. write an ordinary source file        -> must succeed
 // It then checks the files on disk and what Pi reported back to the "model".
 //
 // Needs Pi installed (no real model, no GPU). Run from the repo root:
@@ -12,8 +13,7 @@
 
 import { spawn } from "node:child_process";
 import { createServer } from "node:http";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,12 +23,16 @@ const piBin = process.env.PI_BIN ?? "pi";
 
 // ---- a throwaway Sanctuary checkout and Pi config ----
 
-const root = mkdtempSync(join(tmpdir(), "luthicode-e2e-"));
+// Not under the system temp folder: temp folders are writable by design, so a
+// file "outside the repo" there wouldn't test the workspace rule. The scratch
+// folder sits next to this test (gitignored) and is removed if every check passes.
+const root = mkdtempSync(join(here, ".e2e-"));
 const repo = join(root, "sanctuary-checkout");
 const agentDir = join(root, "pi-agent");
 mkdirSync(join(repo, "sanctuary", "core"), { recursive: true });
 mkdirSync(join(repo, "sanctuary", "data", "journal"), { recursive: true });
 mkdirSync(join(repo, "data", "identity"), { recursive: true });
+mkdirSync(join(repo, ".git")); // its own repo, so the workspace is this checkout, not LuthiCode
 mkdirSync(agentDir, { recursive: true });
 writeFileSync(join(repo, "pyproject.toml"), '[project]\nname = "sanctuary"\n');
 writeFileSync(join(repo, "data", "identity", "charter.md"), "seed\n");
@@ -38,6 +42,7 @@ writeFileSync(join(repo, "data", "identity", "charter.md"), "seed\n");
 const steps = [
 	{ tool: "write", args: { path: "sanctuary/data/journal/day.json", content: "{}" } },
 	{ tool: "bash", args: { command: "rm -rf data" } },
+	{ tool: "write", args: { path: "../outside-workspace.txt", content: "should not exist" } },
 	{ tool: "write", args: { path: "sanctuary/core/ok.py", content: "x = 1\n" } },
 	{ text: "done" },
 ];
@@ -146,8 +151,10 @@ const checks = [
 	["Pi told the model the write was blocked", /protect-paths blocked/.test(toolResultAfter(1))],
 	["data/ survived `rm -rf data`", existsSync(join(repo, "data", "identity", "charter.md"))],
 	["Pi told the model the shell command was blocked", /protect-paths blocked/.test(toolResultAfter(2))],
+	["the file outside the repo was not created", !existsSync(join(root, "outside-workspace.txt"))],
+	["Pi told the model the outside write was blocked", /outside this task's workspace/.test(toolResultAfter(3))],
 	["ordinary source file was written", existsSync(join(repo, "sanctuary", "core", "ok.py")) && readFileSync(join(repo, "sanctuary", "core", "ok.py"), "utf-8") === "x = 1\n"],
-	["the allowed write was not reported as blocked", !/protect-paths blocked/.test(toolResultAfter(3))],
+	["the allowed write was not reported as blocked", !/protect-paths blocked/.test(toolResultAfter(4))],
 ];
 
 let failed = 0;
@@ -159,5 +166,6 @@ if (failed) {
 	console.log(`\nPi exit code: ${code}\nPi output:\n${out.slice(-3000)}`);
 	console.log(`\nRequests seen: ${requests.length}`);
 }
-console.log(`\n${checks.length - failed}/${checks.length} checks passed. Scratch dir: ${root}`);
+console.log(`\n${checks.length - failed}/${checks.length} checks passed.${failed ? ` Scratch dir kept for inspection: ${root}` : ""}`);
+if (!failed) rmSync(root, { recursive: true, force: true });
 process.exit(failed ? 1 : 0);

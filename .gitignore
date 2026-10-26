@@ -232,3 +232,10 @@ eval/runs/
 
 # Scratch folders the guard's end-to-end test leaves behind when a check fails
 extensions/tests/.e2e-*/
+
+# Eval: local config and scratch from tests
+eval/config.local.json
+eval/build/*.local.json
+eval/tests/.e2e-*/
+# The Python template above ignores every build/ folder; the eval's task-building tools live in one.
+!eval/build/

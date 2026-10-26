@@ -62,6 +62,21 @@ One judgment call went beyond the original hook. In Sanctuary, git commands that
 - No LuthiModel tracked files are protected; its `runs/` and checkpoints are untracked and exist only on Brian's machine.
 - Every check took under 5 ms, including whole-repo scans.
 
+### Step 6: confine the agent to its workspace (Brian's ask)
+
+- Brian asked whether everything outside the task's scope should be protected, mainly so the agent can't delete the operating system. Listing dangerous places can't be complete, so the default flipped: the agent may change only the repo it was started in, plus temp folders and the harness memory folder.
+- Machine-level commands are blocked outright: shutdown, disks, registry, services, global installs, elevation, killing processes by name, Docker volume pruning and `git config --global`.
+- First pass:
+  - The pip rule also blocked `uv pip install`, the very command the brief tells the agent to use. Fixed with a lookbehind for `uv`.
+  - A wildcard into a folder with no matches (`del /s C:\Windows\Temp\*`) checked nothing. Fixed by checking the pattern's own location.
+  - The variable rule judged every word (`echo $PATH > x` blocked). It now looks only at what a command writes.
+  - `do rm $f` wasn't seen as an `rm`, because shell keywords weren't skipped.
+  - `git clone`, `git worktree add` and `git init` weren't counted as writes.
+- Disabling each new defense on purpose: 11 of 13 were caught. The two that weren't:
+  - A wildcard "fixed folder" step, which was redundant and was removed.
+  - Git-root detection, which needed a test with Pi started in a subfolder.
+- The end-to-end test first passed its new "outside the repo" step for the wrong reason: its scratch folder sat under the system temp folder, which is writable by design. It now uses a gitignored folder next to the test. With the guard, 10/10; without it, stock Pi wrote outside the repo.
+
 ## Conclusion
 
 The guard blocks direct and indirect changes to protected files from `write`, `edit`, `bash`, `powershell`, and custom or MCP tools. It is tested by a 20-case table, an end-to-end run inside real Pi with a no-guard control, and the real repos.
@@ -76,7 +91,7 @@ It does not see what a script does when the agent runs it, paths assembled at ru
 ## Artifacts
 
 - `extensions/protect-paths.ts`
-- `extensions/tests/protect-paths.test.ts` (unit, 20 tests)
+- `extensions/tests/protect-paths.test.ts` (unit, 28 tests)
 - `extensions/tests/protect-paths.e2e.mjs` (real Pi plus fake model; `E2E_NO_GUARD=1` control)
 - `docs/reviews/2026-10-26_protect-paths.md` (cross-family review request)
 - Tested against Pi 1.4.0 (`@earendil-works/pi-coding-agent`), Node 22.23, TypeScript 5.9 strict

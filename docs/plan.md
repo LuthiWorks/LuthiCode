@@ -53,7 +53,7 @@ So the guard comes first, before the agent ever runs in Sanctuary.
    - run the check
    - record pass/fail, time, tokens, tool calls and the failure type.
 
-   The agent never pushes, and worktrees are thrown away afterward.
+   The agent never pushes, and worktrees are thrown away afterward. Unattended runs happen in a Docker container with only the worktree mounted: the guard can't see inside scripts the agent runs, and a container can. The model server stays on the host.
 3. **Task set v1:** about 20 tasks per repo. The local agent is tried in every seat, but implementation is the main job, so the mix leans that way:
    - **Implementation, about 14 per repo.** Mined from past commits that changed both source and tests. Each task reverts the source change, keeps the tests, and states the goal in plain words. The check is that those tests pass with no new failures in the repo's suite. Prefer small commits; a 35B model with 3B active won't do multi-day refactors.
    - **Debugging, about 3 per repo.** The same kind of commit, but the agent gets only the failing test output, with no description of the fix.

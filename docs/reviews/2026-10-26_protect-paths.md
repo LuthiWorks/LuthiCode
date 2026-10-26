@@ -60,6 +60,15 @@ Deliberate differences from the .ps1 hook:
   see: variables, command substitution, and xargs
 - exempts git commit messages and redirects to /dev/null from the verb check
 
+Workspace confinement (added at Brian's request, so the agent can't damage
+the machine): outside protected files, the agent may change files only inside
+the git repo or worktree Pi was started in, plus temp folders and the harness
+memory folder. Pi started in a drive root, home folder or system folder gets
+no workspace at all. Commands that change the machine (shutdown, disks,
+registry, services, accounts and permissions, global installs, plain pip,
+elevation, killing processes by name, Docker volume pruning,
+git config --global) are blocked everywhere.
+
 Known false positives the author accepts (the agent is told to stop and ask):
 - copying or archiving FROM a protected folder (cp, tar) is blocked
 - inline code that merely reads a protected file is blocked
@@ -79,7 +88,8 @@ sanctuary/identity/charter.py and sanctuary/tests/identity/test_charter.py.
 
 WHAT I'D LIKE YOU TO CHECK
 1. Bypasses: any write, edit or shell command (Git Bash or PowerShell on
-   Windows) that modifies a protected Sanctuary or LuthiModel path and is NOT
+   Windows) that modifies a protected Sanctuary or LuthiModel path, changes
+   anything outside the workspace, or changes the machine, and is NOT
    blocked. Give the exact input. This matters most.
 2. False positives: ordinary development commands that ARE blocked and
    shouldn't be, beyond the accepted ones listed above. Tell me which you

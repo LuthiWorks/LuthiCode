@@ -27,8 +27,8 @@ Target machine: RX 7800 XT (16 GB), 32 GB DDR4, Ryzen 9 5950X, Windows.
 3. Run `server\start-qwen-server.bat`. The first run downloads about 22 GB. It's ready when the log says the server is listening.
 4. Install Pi: `powershell -c "irm https://pi.dev/install.ps1 | iex"` (or, with Node 22.19+, `npm install -g --ignore-scripts @earendil-works/pi-coding-agent`).
 5. Run `pi\install-config.bat`.
-6. Check the guard: `node extensions\tests\protect-paths.e2e.mjs` should print 8/8 checks passed. It runs real Pi against a scripted fake model and needs no GPU. **Don't point the agent at Sanctuary until this passes on your machine.**
-7. Check with `pi --list-models qwen`, then run `pi` in a throwaway repo.
+6. Check the guard: `node extensions\tests\protect-paths.e2e.mjs` should end with every check passed (10/10). It runs real Pi against a scripted fake model and needs no GPU. **Don't point the agent at Sanctuary until this passes on your machine.**
+7. Check with `pi --list-models qwen`, then run `pi` in a throwaway repo. Start Pi inside the project folder (the agent can only change files in that repo), and never as administrator.
 8. Tune `CPU_MOE` in the server script using its comments.
 
 ## First-run checks
@@ -40,6 +40,7 @@ Target machine: RX 7800 XT (16 GB), 32 GB DDR4, Ryzen 9 5950X, Windows.
 ## Tests
 
 - Unit: `node --test extensions/tests/protect-paths.test.ts` (Node 22.18+).
+- To let one session change a second repo too, set `LUTHICODE_WORKSPACES` (`;`-separated folders) before starting Pi.
 - End to end: `node extensions/tests/protect-paths.e2e.mjs` (needs Pi; set `PI_BIN` if `pi` isn't on your PATH). `E2E_NO_GUARD=1` runs the same scenario without the guard as a control: the protection checks should then fail.
 
 ## Status

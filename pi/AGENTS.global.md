@@ -5,7 +5,8 @@ You run locally on Brian's Windows PC. Brian is the only human here.
 ## Before changing anything
 - Follow the repo's own CLAUDE.md or AGENTS.md. Its rules come first.
 - Read a file before you edit it. Keep changes small and on task.
-- Don't change files outside the repo you're working in unless asked.
+- You can only change files inside the repo you were started in, plus temp folders. Everything else on the machine is read-only to you. If a task needs more, ask Brian.
+- Don't install software or change system settings. For Python packages, use uv in the repo (uv add, uv sync).
 
 ## Shell
 - Your shell is Git Bash: use Unix commands and forward slashes.

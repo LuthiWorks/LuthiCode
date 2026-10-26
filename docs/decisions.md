@@ -75,6 +75,28 @@ The full story is in `docs/research/2026-10-26_protect-paths-guard.md`.
 - **Known gaps:** scripts the agent runs, paths built at runtime, symlinks, junctions, 8.3 short names, UNC paths, and deliberate obfuscation.
 - **Installed by copying** into Pi's global extensions folder, so the guard applies in every repo. `install-config.bat` must be re-run after updates.
 
+## 2026-10-26 - Everything outside the task's workspace is read-only
+
+Brian's concern: the agent deleting the operating system "and things like that". A list of dangerous paths can never be complete, so the guard now works the other way round.
+
+- **The workspace** is the git repo or worktree Pi was started in (found by walking up to `.git`), plus temp folders and the harness memory folder. The agent can't change anything else: not the OS, not other folders, not other repos, not the E: drive.
+- **Too broad to count:** a drive root, a home folder, `C:\Users` or a system folder. If Pi is started in one of these, the agent can change nothing.
+- **Extra folders** can be granted per session with `LUTHICODE_WORKSPACES` (`;`-separated). Protected files inside them stay protected.
+- **Writes, not reads, are judged.** For copy-like commands only the destination counts, so `cp ~/.gitconfig ./sample` still works. For unknown commands only their redirects count.
+- **Machine-level commands are blocked everywhere:**
+  - shutdown and restart
+  - disks, partitions and boot settings
+  - the registry and machine-wide environment variables
+  - services, scheduled tasks, accounts, permissions and Defender
+  - global installs (winget, choco, `npm -g`, plain `pip`; `uv` stays allowed)
+  - elevation (sudo, runas)
+  - killing processes by name, which could hit the model server or a training run
+  - Docker volume pruning, since volumes may hold Sanctuary's entity state
+  - `git config --global` and removing WSL distributions
+- **What this can't do:** see inside a script the agent runs. Two layers cover that gap:
+  - **Never run Pi as administrator.** UAC then lets Windows itself refuse changes to system files.
+  - **Run unattended evals in a container** with only the worktree mounted (`docs/plan.md`, Phase 1). Pi's own sandbox extension is macOS and Linux only, so on Windows the container is Docker.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/

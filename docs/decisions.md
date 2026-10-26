@@ -62,6 +62,19 @@ With experts on the CPU, processing the prompt is the bottleneck, so a broken ca
 - Brian's call: see what the local model can do in every seat, with implementation and coding as the main job.
 - So the eval task set is about 70% implementation, with smaller debugging and review sets (`docs/plan.md`, Phase 1). Planning and research are scored by hand, later.
 
+## 2026-10-26 - How the protect-paths guard decides
+
+The full story is in `docs/research/2026-10-26_protect-paths-guard.md`.
+
+- **Paths are resolved, not just pattern-matched.** Write/edit/shell targets are resolved the way Pi resolves them (Windows forms, `~`, `@`, `cd` within a command), then checked against the repo they land in. Sanctuary's token patterns stay as a second net.
+- **Repos are recognized by their `pyproject.toml` name** (`sanctuary`, `luthi`), so eval worktrees under any folder name are protected too.
+- **Deleting or moving a folder counts as touching everything in it.** The folder is scanned, failing closed past 20,000 entries; dependency folders like `node_modules` and `.venv` aren't scanned.
+- **When the guard can't see a mutating command's targets, it blocks** (variables, xargs, wildcards it can't expand), but only in the protected repos.
+- **Beyond Sanctuary's hook:** git commands that switch to or bring in other commits are blocked in Sanctuary, because they rewrite tracked entity data without naming it. Sanctuary's own `.claude/` guard and Pi's config folder are protected, so the agent can't disable either.
+- **Accepted false positives:** copying or archiving from a protected folder, inline code that reads one, `find -delete` at a repo root, and plain branch switches in Sanctuary. In each case the agent is told to stop and ask.
+- **Known gaps:** scripts the agent runs, paths built at runtime, symlinks, junctions, 8.3 short names, UNC paths, and deliberate obfuscation.
+- **Installed by copying** into Pi's global extensions folder, so the guard applies in every repo. `install-config.bat` must be re-run after updates.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/

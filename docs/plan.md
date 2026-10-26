@@ -36,6 +36,8 @@ So the guard comes first, before the agent ever runs in Sanctuary.
 
 ### Phase 0: safety, before the agent touches Sanctuary
 
+**Status (2026-10-26):** items 1-3 built and tested on Linux. Still needed: a run of `extensions/tests/protect-paths.e2e.mjs` on Windows, and the cross-family review in `docs/reviews/2026-10-26_protect-paths.md`.
+
 1. **`protect-paths` extension.** Port Sanctuary's rules to a Pi `tool_call` handler that returns `{ block: true, reason }`. Cover `bash`, `write` and `edit`, not just the shell.
    - Scope the Sanctuary rules to the Sanctuary repo. LuthiModel also has a `data/` folder, and the rules shouldn't misfire there.
    - Add LuthiModel's own rules: never delete checkpoints (`*.luthi`) or anything under `runs/`. Those checkpoints are irreproducible.

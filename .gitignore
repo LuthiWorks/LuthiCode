@@ -218,3 +218,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- LuthiCode additions ---
+# Node packages for Pi extensions
+node_modules/
+.pi/npm/
+
+# Model weights: never commit (the model alone is ~22 GB)
+*.gguf
+
+# Raw eval transcripts (summaries go in eval/results/, which is tracked)
+eval/runs/

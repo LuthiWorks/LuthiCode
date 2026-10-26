@@ -17,15 +17,20 @@ if (goldFile && existsSync(goldFile)) {
 }
 
 const repos = [...new Set(Object.keys(log).map((id) => id.split("-")[0]))].sort();
+// A log entry carries its tier; tasks validated before tiers existed are standard.
+const tierOf = (id) => log[id].tier ?? tasks.get(id)?.tier ?? "standard";
+const tiers = [...new Set(Object.keys(log).map(tierOf))].sort((a, b) => (a === "standard" ? -1 : b === "standard" ? 1 : a.localeCompare(b)));
 const out = ["# Task validation", "", `Generated ${new Date().toISOString().slice(0, 10)} by \`eval/build/report.mjs\`.`, ""];
 out.push("A candidate becomes a task only if its tests fail on the parent commit and pass twice with the real change (`eval/build/validate.mjs`). Instructions are written by hand afterwards; a task without one is used only in the debugging seat, which needs no instruction.", "");
+out.push("**Tiers:** standard tasks are within each repo's size limit (LuthiModel 150 source lines in 3 files, Sanctuary 300 in 4). Large tasks are above that, up to 600 lines in 8 files, and are scored separately (`run.mjs --tier large`).", "");
 out.push("**Gold replay:** the commit's own fix written through Pi and the guard by a scripted model (`eval/tests/gold-replay.mjs`). It must resolve; anything else means the task or the environment is wrong.", "");
 
-for (const repo of repos) {
-	const ids = Object.keys(log).filter((id) => id.startsWith(`${repo}-`)).sort();
+for (const tier of tiers) for (const repo of repos) {
+	const ids = Object.keys(log).filter((id) => id.startsWith(`${repo}-`) && tierOf(id) === tier).sort();
+	if (!ids.length) continue;
 	const valid = ids.filter((id) => log[id].valid);
 	const withInstr = valid.filter((id) => tasks.get(id)?.instruction?.trim());
-	out.push(`## ${repo}`, "");
+	out.push(`## ${repo}${tier === "standard" ? "" : ` (${tier} tier)`}`, "");
 	out.push(`${ids.length} candidates checked: ${valid.length} valid, ${withInstr.length} with an instruction (implementation seat).`, "");
 	out.push("| Task | Fail-to-pass | Pass-to-pass | Source lines | Instruction | Gold replay | Subject |", "|---|---|---|---|---|---|---|");
 	for (const id of valid) {

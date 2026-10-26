@@ -2,7 +2,7 @@
  "id": "luthimodel-71ea9675",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Surface the consolidation fire count as a metric. `PredictiveCodingLayer` (`luthi/v2/living_layer_pc.py`) already counts consolidation events in `_consolidation_fire_count`, and the count already survives checkpoints. It just isn't reported anywhere.\n\n- `PredictiveCodingLayer.aliveness()` should include `\"consolidation_fires\"`: the count as a float.\n- In `luthi/v2/jepa_runner.py`:\n  - `_substrate_health_metrics(aliveness)` should report `\"consolidation_fires\"` as the **sum** across blocks, since these are event counts rather than levels like the other metrics, which are averaged.\n  - When no block reports the field (for example, a dead-FFN arm whose blocks report only `{\"dead_ffn\": 1.0}`), the value is `nan`, not 0 and not an exception.\n  - Add `consolidation_fires` to the per-block substrate entries the trainer logs.",
  "commit": "71ea9675f30ad0bba7a95e70858ae13807ec269f",
  "base": "29aa03ae03486998736ba3caf042f2ac33c65c99",
  "test_files": [

@@ -2,7 +2,7 @@
  "id": "luthimodel-3940aa39",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "With `adaptive_episodes=True`, `PredictiveCodingLayer` (`luthi/v2/living_layer_pc.py`) admits nothing into its episode store during warmup. Warmup lasts until the salience window has filled and `episode_warmup_steps` has passed. That makes the store completely inert in short runs: the step lockout is a small fraction of a long run but all of a 200-step experiment.\n\nMake warmup statistical, so the store is never inert:\n- **Admission (`_store_episode`).** While the salience window isn't full yet, or the step is below `episode_warmup_steps`, fall back to the legacy absolute rule instead of returning early:\n  - Skip the episode if its salience is below `salience_threshold`.\n  - Otherwise write it to the next free slot.\n  - If the store is full, write it to the slot chosen by the existing eviction rule (`_choose_eviction_slot`), so episodes admitted during warmup can be evicted later as they age.\n  - After warmup, the existing relative (percentile) admission applies unchanged.\n- **Default.** Change the default `episode_warmup_steps` from 5000 to 0, so by default warmup is just the window filling.\n- **Adaptive recall.** During cold start (fewer than 64 similarity samples), fall back to the fixed `episode_recall_threshold` gate instead of always returning no recall.\n\nThe legacy path (`adaptive_episodes=False`) must not change.",
  "commit": "3940aa39e5c7e9dedd89c2fa3f29055e290219f6",
  "base": "99d5e5a3f65446085135fa4271af63ebcc4a20ba",
  "test_files": [

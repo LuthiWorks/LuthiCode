@@ -1,0 +1,43 @@
+{
+ "id": "luthimodel-ffb5db13",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "ffb5db13c7c00711cdb737968a95eb46751ee4a4",
+ "base": "4e703ae661bddf65099654290d896207714f9d1f",
+ "test_files": [
+  "tests/test_run3_builds.py"
+ ],
+ "run_files": [
+  "tests/test_run3_builds.py"
+ ],
+ "gold_files": [
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/multimodal_model_pc.py",
+  "scripts/jepa_pilot_driver.py",
+  "scripts/pilot_verdict.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_run3_builds.py::TestTaperSchedule::test_formative_phase_is_unity",
+  "tests/test_run3_builds.py::TestTaperSchedule::test_linear_to_floor",
+  "tests/test_run3_builds.py::TestTaperSchedule::test_progress_clamped",
+  "tests/test_run3_builds.py::TestTaperSchedule::test_zero_floor_is_impossible",
+  "tests/test_run3_builds.py::TestTaperSchedule::test_bad_start_fraction_raises",
+  "tests/test_run3_builds.py::TestRateScaleShrinksUpdates::test_taper_reduces_living_update_magnitude",
+  "tests/test_run3_builds.py::TestRateScaleShrinksUpdates::test_default_scale_is_legacy_identical",
+  "tests/test_run3_builds.py::TestPlumbThrough::test_gain_flag_reaches_every_living_layer",
+  "tests/test_run3_builds.py::TestPlumbThrough::test_defaults_stay_inert",
+  "tests/test_run3_builds.py::TestRecallGate::test_tighter_gate_blocks_weak_matches",
+  "tests/test_run3_builds.py::TestArmConfigsContract::test_every_arm_constructs",
+  "tests/test_run3_builds.py::TestArmConfigsContract::test_living_v3_arm_shape"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "feat: run-3 builds — plasticity taper, gain plumb-through, recall tightening; living_v3@512 registered blind",
+  "date": "2026-07-17",
+  "src_lines": 112
+ }
+}

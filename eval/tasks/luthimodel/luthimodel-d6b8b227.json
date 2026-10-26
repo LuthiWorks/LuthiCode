@@ -2,7 +2,7 @@
  "id": "luthimodel-d6b8b227",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "`get_introspection(model)` reports per-block living-layer state to Sanctuary. It is implemented in `luthi/generate.py` and re-exported by `luthi/sanctuary_interface.py`. Today it reads only v1-style fields (plasticity, set point, excitability, membrane, spikes, episodes), so on a v2 predictive-coding model (`PredictiveCodingLayer` FFNs) the v2-native signals are missing.\n\nFor each block, when the FFN has the corresponding attribute, also report:\n- `error_acc_mean` and `error_acc_max`: the mean and max of `ffn.error_acc`, as Python floats.\n- `pred_frob`: the Frobenius norm of `ffn.prediction`.\n- `precision_mean`: the mean of `ffn.precision`.\n\nGate each on the attribute's presence, so v1 models (`LivingLayerV6`) don't get these keys and v2 models don't gain v1-only keys. Update the docstrings in both files to describe which fields appear for v1 and v2.",
  "commit": "d6b8b227c484a2278957b321620fc8935f0e7c92",
  "base": "a78eed0d6e0173d01a7854abdbb1169560fe29a5",
  "test_files": [

@@ -1,0 +1,57 @@
+{
+ "id": "luthimodel-087f5970",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "087f5970fc44aa112e3df6e4d4d7a37270b3ca5c",
+ "base": "d2a634715410873c85233db225d39a9050597846",
+ "test_files": [
+  "tests/test_m9_external_actor.py"
+ ],
+ "run_files": [
+  "tests/test_m9_external_actor.py"
+ ],
+ "gold_files": [
+  "luthi/v2/m8_multimodal_smoke.py",
+  "luthi/v2/m9/efe.py",
+  "luthi/v2/m9/runner.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_m9_external_actor.py::TestObserveTransition::test_returns_metrics_dict",
+  "tests/test_m9_external_actor.py::TestF4PlanSnapshot::test_observe_with_snapshot_threads_planned_through",
+  "tests/test_m9_external_actor.py::TestF4PlanSnapshot::test_observe_without_snapshot_still_produces_realized_reward",
+  "tests/test_m9_external_actor.py::TestF4PlanSnapshot::test_corruption_probe_interleaved_select_does_not_leak",
+  "tests/test_m9_external_actor.py::TestF4PlanSnapshot::test_degenerate_plan_snapshot_falls_back_cleanly",
+  "tests/test_m9_external_actor.py::TestPhase4bRealizedReward::test_different_s_next_yields_different_realized_reward",
+  "tests/test_m9_external_actor.py::TestPhase4bRealizedReward::test_realized_reward_independent_of_snapshot",
+  "tests/test_m9_external_actor.py::TestPhase4bRealizedReward::test_k_m9_3_observes_seam_path_v"
+ ],
+ "pass_to_pass": [
+  "tests/test_m9_external_actor.py::TestProtocolConformance::test_satisfies_m9_actor",
+  "tests/test_m9_external_actor.py::TestProtocolConformance::test_satisfies_transition_sink",
+  "tests/test_m9_external_actor.py::TestSelectAction::test_returns_action_selection_with_breakdown",
+  "tests/test_m9_external_actor.py::TestSelectAction::test_summary_mentions_top_share",
+  "tests/test_m9_external_actor.py::TestSelectAction::test_zero_budget_falls_back_to_habit",
+  "tests/test_m9_external_actor.py::TestSelectAction::test_cycle_ctx_does_not_leak_after_call",
+  "tests/test_m9_external_actor.py::TestSelectAction::test_callable_via_sanctuary_interface_helper",
+  "tests/test_m9_external_actor.py::TestObserveTransition::test_updates_v_head_weights",
+  "tests/test_m9_external_actor.py::TestObserveTransition::test_no_residual_grad_on_m8_params",
+  "tests/test_m9_external_actor.py::TestObserveTransition::test_does_not_tick_substrate_drift",
+  "tests/test_m9_external_actor.py::TestObserveTransition::test_cycle_ctx_does_not_leak_after_call",
+  "tests/test_m9_external_actor.py::TestObserveTransition::test_callable_via_sanctuary_interface_helper",
+  "tests/test_m9_external_actor.py::TestF4PlanSnapshot::test_select_action_populates_plan_snapshot",
+  "tests/test_m9_external_actor.py::TestF4PlanSnapshot::test_no_snapshot_with_live_plan_warns_once",
+  "tests/test_m9_external_actor.py::TestPhase4bRealizedReward::test_compute_g_realized_leaves_no_grad_on_efe_modules",
+  "tests/test_m9_external_actor.py::TestCycleObservationKwargs::test_returns_empty_when_no_ctx",
+  "tests/test_m9_external_actor.py::TestCycleObservationKwargs::test_promotes_scalar_counterpart_to_tensor",
+  "tests/test_m9_external_actor.py::TestCycleObservationKwargs::test_promotes_scalar_time_since_emission_to_tensor",
+  "tests/test_m9_external_actor.py::TestCycleObservationKwargs::test_passes_tensor_inputs_through",
+  "tests/test_m9_external_actor.py::TestCycleObservationKwargs::test_ignores_extra_keys"
+ ],
+ "source": {
+  "subject": "m9(seam): Phase 4b realized-reward grounding + tests",
+  "date": "2026-06-25",
+  "src_lines": 314
+ }
+}

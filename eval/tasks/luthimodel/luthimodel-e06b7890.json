@@ -1,0 +1,57 @@
+{
+ "id": "luthimodel-e06b7890",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "e06b78907b7bec2e70b6b4da6af2a295a4691507",
+ "base": "16d686eb4abd070fd4de99caab210beb091f234d",
+ "test_files": [
+  "tests/test_lived_jepa_updates_world_model.py",
+  "tests/test_lived_retention_gate.py",
+  "tests/test_lived_stopgrad_isolation.py",
+  "tests/test_no_inline_s_t_pool.py"
+ ],
+ "run_files": [
+  "tests/test_lived_jepa_updates_world_model.py",
+  "tests/test_lived_retention_gate.py",
+  "tests/test_lived_stopgrad_isolation.py",
+  "tests/test_no_inline_s_t_pool.py"
+ ],
+ "gold_files": [
+  "luthi/episode_store.py",
+  "luthi/v2/jepa_loss.py",
+  "luthi/v2/m9/runner.py",
+  "luthi/v2/m9/s_t.py",
+  "luthi/v2/plasticity.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_lived_jepa_updates_world_model.py::test_lived_jepa_updates_world_model::test_lived_update_moves_encoder_and_predictor",
+  "tests/test_lived_jepa_updates_world_model.py::test_lived_jepa_updates_world_model::test_lived_update_advances_theta_version",
+  "tests/test_lived_jepa_updates_world_model.py::test_lived_jepa_updates_world_model::test_no_context_obs_leaves_core_untouched",
+  "tests/test_lived_jepa_updates_world_model.py::test_lived_jepa_updates_world_model::test_empty_context_obs_fails_loud",
+  "tests/test_lived_jepa_updates_world_model.py::test_lived_jepa_updates_world_model::test_gradient_checkpointing_encoder_is_refused",
+  "tests/test_lived_jepa_updates_world_model.py::test_lived_jepa_updates_world_model::test_lived_loss_is_target_sensitive",
+  "tests/test_lived_retention_gate.py::test_lived_retention_gate::test_retention_baseline_and_probe_are_passive",
+  "tests/test_lived_retention_gate.py::test_lived_retention_gate::test_retention_gate_fires_and_rolls_back",
+  "tests/test_lived_retention_gate.py::test_lived_retention_gate::test_retention_holds_with_replay_and_low_lr",
+  "tests/test_lived_retention_gate.py::test_lived_retention_gate::test_lived_l_pred_trends_down_on_fixed_transition",
+  "tests/test_lived_stopgrad_isolation.py::test_lived_stopgrad_isolation::test_lived_backward_does_not_leak_onto_heads_or_output_proj",
+  "tests/test_lived_stopgrad_isolation.py::test_lived_stopgrad_isolation::test_lived_optimizer_param_set_excludes_output_proj_and_living_weight",
+  "tests/test_lived_stopgrad_isolation.py::test_lived_stopgrad_isolation::test_v_head_still_updates_with_lived_path_active"
+ ],
+ "pass_to_pass": [
+  "tests/test_no_inline_s_t_pool.py::TestNoInlineSTPool::test_helper_owns_the_canonical_pool",
+  "tests/test_no_inline_s_t_pool.py::TestNoInlineSTPool::test_no_inline_pool_in_seam_file[sanctuary_interface.py]",
+  "tests/test_no_inline_s_t_pool.py::TestNoInlineSTPool::test_no_inline_pool_in_seam_file[generate.py]",
+  "tests/test_no_inline_s_t_pool.py::TestNoInlineSTPool::test_no_inline_pool_in_seam_file[seam_types.py]",
+  "tests/test_no_inline_s_t_pool.py::TestNoInlineSTPool::test_no_inline_pool_in_seam_file[runner.py]",
+  "tests/test_no_inline_s_t_pool.py::TestNoInlineSTPool::test_no_inline_pool_in_seam_file[efe.py]",
+  "tests/test_no_inline_s_t_pool.py::TestNoInlineSTPool::test_no_inline_pool_in_seam_file[jepa_loss.py]"
+ ],
+ "source": {
+  "subject": "further integration of JEPA goals",
+  "date": "2026-06-29",
+  "src_lines": 476
+ }
+}

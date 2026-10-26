@@ -1,0 +1,48 @@
+{
+ "id": "luthimodel-f7de6e0e",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "f7de6e0efebd55fe7931796fe54b6e3b3343f9c0",
+ "base": "bf0871f543830e0ad75191689a94ca7b94df0c6f",
+ "test_files": [
+  "tests/test_pc_block.py"
+ ],
+ "run_files": [
+  "tests/test_pc_block.py"
+ ],
+ "gold_files": [
+  "luthi/living_layer.py",
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/m5_runner.py",
+  "luthi/v2/model_pc.py",
+  "run_m6_followup_256d_12blocks_60ep_mild_mupc.bat",
+  "run_m6_followup_4gb_1ep.bat",
+  "run_m6_followup_long_training.bat",
+  "run_m6_followup_mild_mu_pc.bat"
+ ],
+ "fail_to_pass": [
+  "tests/test_pc_block.py::test_pc_block::test_mu_pc_exponent_default_matches_original_spec",
+  "tests/test_pc_block.py::test_pc_block::test_mu_pc_exponent_milder_gives_larger_residual",
+  "tests/test_pc_block.py::test_pc_block::test_mu_pc_exponent_zero_disables_residual_attenuation"
+ ],
+ "pass_to_pass": [
+  "tests/test_pc_block.py::test_pc_block::test_forward_backward_decreasing_error",
+  "tests/test_pc_block.py::test_pc_block::test_prediction_only_sweep",
+  "tests/test_pc_block.py::test_pc_block::test_modulation_only_sweep",
+  "tests/test_pc_block.py::test_pc_block::test_block_with_ffn_expansion_forward_shape",
+  "tests/test_pc_block.py::test_pc_block::test_block_with_ffn_expansion_has_more_capacity",
+  "tests/test_pc_block.py::test_pc_block::test_mu_pc_init_scaling_matches_spec",
+  "tests/test_pc_block.py::test_pc_block::test_mu_pc_residual_scale_is_inv_sqrt_L",
+  "tests/test_pc_block.py::test_pc_block::test_mu_pc_off_preserves_default_behavior",
+  "tests/test_pc_block.py::test_pc_block::test_block_top_down_with_expansion_runs",
+  "tests/test_pc_block.py::test_pc_block::test_joint_non_interference"
+ ],
+ "source": {
+  "subject": "μPC attenuation and plasticity experiments and Glossary update",
+  "date": "2026-05-18",
+  "src_lines": 197
+ }
+}

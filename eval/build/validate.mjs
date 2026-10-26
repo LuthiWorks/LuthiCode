@@ -61,6 +61,7 @@ for (const c of candidates) {
 		const p2p = ids.filter((t) => passedB(t) && a.outcomes[t] === "passed");
 		const flaky = ids.filter((t) => b1.outcomes[t] !== b2.outcomes[t]);
 		const entry = {
+			...(c.tier ? { tier: c.tier } : {}),
 			valid: f2p.length > 0,
 			reason: f2p.length ? "ok" : b1.timedOut || a.timedOut ? "timed out" : ids.length === 0 ? "no tests ran" : "no test changes from failing to passing",
 			fail_to_pass: f2p,
@@ -77,6 +78,7 @@ for (const c of candidates) {
 			const spec = {
 				id,
 				repo: c.repo,
+				...(c.tier ? { tier: c.tier } : {}),
 				seat: "implementation",
 				instruction: "",
 				commit: c.commit,
@@ -95,7 +97,7 @@ for (const c of candidates) {
 		}
 		process.stderr.write(`   ${entry.valid ? "VALID" : "reject"}  f2p=${f2p.length} p2p=${p2p.length} flaky=${flaky.length}  ${entry.seconds}s  ${entry.reason}\n`);
 	} catch (e) {
-		log[id] = { valid: false, reason: `error: ${String(e.message ?? e).slice(0, 500)}`, seconds: Math.round((Date.now() - t0) / 1000) };
+		log[id] = { ...(c.tier ? { tier: c.tier } : {}), valid: false, reason: `error: ${String(e.message ?? e).slice(0, 500)}`, seconds: Math.round((Date.now() - t0) / 1000) };
 		process.stderr.write(`   error: ${String(e.message ?? e).slice(0, 200)}\n`);
 	} finally {
 		removeWorktree(task, cfg, dir);

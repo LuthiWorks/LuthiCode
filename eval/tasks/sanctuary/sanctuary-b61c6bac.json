@@ -2,7 +2,7 @@
  "id": "sanctuary-b61c6bac",
  "repo": "sanctuary",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Add a repo-hygiene rule: no tracked source file may contain a user-specific home path. A developer's local path embedded as a default works on their machine and silently breaks every other checkout, Linux, Docker and CI.\n\nA test will scan every tracked `.py`, `.pyi`, `.toml`, `.yaml`, `.yml`, `.json`, `.cfg` and `.ini` file. It skips:\n- anything under `docs/`, `.docs/`, `reference_material/`, `.claude/` or `.memories/`;\n- the usual tool and cache folders (`.git`, virtualenvs, `__pycache__`, `build`, `dist` and so on).\n\nIt fails on any Windows user-home path (`C:/Users/<name>` or `C:\\Users\\<name>`), Linux `/home/<name>` or macOS `/Users/<name>`, including ones in comments and docstrings.\n\nFind every such path in the tracked source and fix it properly:\n- Scripts that hard-code a data or schema folder from an old checkout should take it as a command-line argument, with a default relative to the repository (via `Path(__file__)`).\n- Stale example paths should be removed or replaced with generic ones.\n\nIf a literal really must stay, the line can end with `# pragma: allow-hardcoded-path`, but don't use that to avoid fixing real defaults.",
  "commit": "b61c6bacaae0052dc4a904b7d2845a118c51a479",
  "base": "97e8b243806c4f11eb00683d2be7b4381f7c316e",
  "test_files": [

@@ -2,7 +2,7 @@
  "id": "luthimodel-bb60a03f",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Add a \"wake-freeze\" regime for the living layers: during the day, the substrate (weights, prediction matrix, set point) is held completely still, but everything that decides what the day meant keeps running. Precision, `error_acc`, salience and, above all, the episode write stay live, so the day is recorded for the rest phase to integrate.\n\nThe existing `freeze_plasticity` is not suitable and must stay as it is, because it also suppresses the episode write.\n\n- **`PredictiveCodingLayer` (`luthi/v2/living_layer_pc.py`):**\n  - Add a plain attribute `_wake_frozen: bool = False`. It is not a buffer and must not appear in `state_dict()`.\n  - While it is set, the layer's forward self-modification must leave `weight`, `prediction` and `set_point` bit-identical, on both the C++ and Python paths.\n  - Precision and `error_acc` must keep updating and episodes must still be written.\n  - The layer's output must stay finite.\n- **`luthi/v2/plasticity.py`:**\n  - `wake_freeze(root)` is a context manager. It sets `_wake_frozen` on every `PredictiveCodingLayer` under `root` and restores each layer's previous value on exit, so nested uses work.\n  - `set_wake_frozen(root, frozen) -> int` sets the flag on every `PredictiveCodingLayer` under `root` and returns how many layers it touched.\n  - Export both in `__all__`.",
  "commit": "bb60a03f77f7cf064625d748e6ffc14e53390a5e",
  "base": "46473ec98f8fd21b8376ff246b5c92dd7b34a3a1",
  "test_files": [

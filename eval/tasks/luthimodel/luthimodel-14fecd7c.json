@@ -1,0 +1,46 @@
+{
+ "id": "luthimodel-14fecd7c",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "14fecd7cd23b43b31e51b6ea58db9cd690109720",
+ "base": "d1b0cc30216cc095afc86d801f35585739c49a74",
+ "test_files": [
+  "tests/v2/test_visreg.py"
+ ],
+ "run_files": [
+  "tests/v2/test_visreg.py"
+ ],
+ "gold_files": [
+  "luthi/v2/eval_heldout.py",
+  "luthi/v2/jepa_loss.py",
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/visreg.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_visreg.py::test_visreg::test_quantiles_hand_computed",
+  "tests/v2/test_visreg.py::test_visreg::test_gaussian_input_terms_near_zero",
+  "tests/v2/test_visreg.py::test_visreg::test_scale_term_fires_on_shrink",
+  "tests/v2/test_visreg.py::test_visreg::test_center_term_fires_on_offset",
+  "tests/v2/test_visreg.py::test_visreg::test_shape_term_fires_on_rank_collapse",
+  "tests/v2/test_visreg.py::test_visreg::test_collapse_gradient_nonvanishing",
+  "tests/v2/test_visreg.py::test_visreg::test_global_rng_stream_untouched",
+  "tests/v2/test_visreg.py::test_visreg::test_eval_does_not_advance_step_train_does",
+  "tests/v2/test_visreg.py::test_visreg::test_bad_input_fails_loud",
+  "tests/v2/test_visreg.py::test_visreg::test_defaults_off_no_visreg_module_and_no_terms",
+  "tests/v2/test_visreg.py::test_visreg::test_defaults_off_total_is_additive_sigreg_form",
+  "tests/v2/test_visreg.py::test_visreg::test_visreg_replaces_sigreg_and_convex_mix_holds",
+  "tests/v2/test_visreg.py::test_visreg::test_visreg_component_sum_matches_l_reg",
+  "tests/v2/test_visreg.py::test_visreg::test_visreg_gradient_reaches_trunk_and_predictor",
+  "tests/v2/test_visreg.py::test_visreg::test_visreg_through_projection_head_fails_loud",
+  "tests/v2/test_visreg.py::test_visreg::test_visreg_lambda_outside_convex_range_fails_loud"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "VISReg (arXiv 2606.02572) built as SIGReg's replacement; stage 54 registered",
+  "date": "2026-08-11",
+  "src_lines": 341
+ }
+}

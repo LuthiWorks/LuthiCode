@@ -1,0 +1,42 @@
+{
+ "id": "luthimodel-bb44fc8a",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "bb44fc8a79158aaee221255421a1124f1e834dd1",
+ "base": "04cea2c4e18e504b8c8a93ea08cb4d3977ee6f52",
+ "test_files": [
+  "tests/test_vbg.py"
+ ],
+ "run_files": [
+  "tests/test_vbg.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_loss.py",
+  "luthi/v2/jepa_runner.py",
+  "scripts/calibrate_vbg.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_vbg.py::test_vbg::test_cap_is_zero_below_budget",
+  "tests/test_vbg.py::test_vbg::test_cap_is_positive_above_budget_and_grows_quadratically",
+  "tests/test_vbg.py::test_vbg::test_cap_is_differentiable_above_budget",
+  "tests/test_vbg.py::test_vbg::test_share_term_is_scale_invariant",
+  "tests/test_vbg.py::test_vbg::test_raw_share_term_is_NOT_scale_invariant",
+  "tests/test_vbg.py::test_vbg::test_power_iteration_matches_svd_on_random_latents",
+  "tests/test_vbg.py::test_vbg::test_power_iteration_matches_svd_on_rank_one_latents",
+  "tests/test_vbg.py::test_vbg::test_power_iteration_warm_start_converges_in_three_steps",
+  "tests/test_vbg.py::test_vbg::test_power_iteration_gradient_flows_to_latents",
+  "tests/test_vbg.py::test_vbg::test_governor_raises_when_no_interior_latents_are_produced",
+  "tests/test_vbg.py::test_vbg::test_defaults_are_off_and_register_no_governor_state",
+  "tests/test_vbg.py::test_vbg::test_power_vec_buffer_is_non_persistent",
+  "tests/test_vbg.py::test_vbg::test_identity_creation_survives_the_directml_eye_landmine"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Build the variance-budget governor to spec; two doses measured, not assumed",
+  "date": "2026-08-07",
+  "src_lines": 247
+ }
+}

@@ -2,7 +2,7 @@
  "id": "luthimodel-d2a63471",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Harden the run registry in `luthi/v2/run_registry.py` against three sharp edges:\n\n1. **`_pid_alive(pid)` must accept only a real `int`.** Today it coerces with `int(pid)`, so `3.7` silently becomes pid 3 (an unrelated process) and `True` becomes pid 1. Return `False` for any float (even one equal to a live pid) and for `True`/`False`. Other behavior is unchanged.\n   - While there, declare `argtypes` and `restype` for `OpenProcess`, `GetExitCodeProcess` and `CloseHandle` in the Windows branch, so 64-bit handles aren't truncated.\n2. **`_rewrite` must never leave a temp file behind.** It currently cleans up the `.tmp` file only on `OSError`. Any failure, such as `json.dump` raising `TypeError` on unserializable data, must remove the temp file before the exception propagates. `register_run` must still never raise.\n3. **`register_run(run_dir, started_at)` must not write a non-finite `started_at`.** NaN or infinity would produce non-standard JSON. Store a finite value instead (0.0).",
  "commit": "d2a634715410873c85233db225d39a9050597846",
  "base": "9340f18533439dfa9b9e946edebc1e8fd540b634",
  "test_files": [

@@ -1,0 +1,36 @@
+{
+ "id": "luthimodel-9340f185",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "9340f18533439dfa9b9e946edebc1e8fd540b634",
+ "base": "08d576975bb71f03def05b2dddd8d7b05011bcc7",
+ "test_files": [
+  "tests/test_run_registry.py"
+ ],
+ "run_files": [
+  "tests/test_run_registry.py"
+ ],
+ "gold_files": [
+  "luthi/v2/m8_multimodal_smoke.py",
+  "luthi/v2/run_registry.py",
+  "run_m8.bat"
+ ],
+ "fail_to_pass": [
+  "tests/test_run_registry.py::test_run_registry::test_register_then_unregister_roundtrip",
+  "tests/test_run_registry.py::test_run_registry::test_register_creates_parent_dir",
+  "tests/test_run_registry.py::test_run_registry::test_dead_pid_entries_are_pruned",
+  "tests/test_run_registry.py::test_run_registry::test_unregister_missing_key_is_noop",
+  "tests/test_run_registry.py::test_run_registry::test_malformed_registry_is_tolerated",
+  "tests/test_run_registry.py::test_run_registry::test_non_object_registry_is_tolerated",
+  "tests/test_run_registry.py::test_run_registry::test_calls_never_raise_even_when_path_is_unwritable",
+  "tests/test_run_registry.py::test_run_registry::test_pid_alive_is_readonly_and_correct"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "LuthiScope handshake and integration",
+  "date": "2026-06-22",
+  "src_lines": 181
+ }
+}

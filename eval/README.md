@@ -14,11 +14,18 @@ Each task is a real past commit that changed some code together with the tests t
 
 Task files are in `tasks/<repo>/<id>.json`. Every task was validated before it was added: its tests fail on the parent commit and pass, twice, with the real change. A task's check that passes before the agent starts would measure nothing.
 
+**Tiers.** Standard tasks fit each repo's size limit (LuthiModel: 150 changed source lines in 3 files; Sanctuary: 300 in 4). Large tasks (`"tier": "large"`) go up to 600 lines in 8 files. The two tiers are run and reported separately, so the large tier never drags down the standard number. See `docs/decisions.md`.
+
 ## Setup (once, on Brian's PC)
 
 1. Copy `config.example.json` to `config.local.json` and set `work` to a folder with ~30 GB free. The eval keeps its own clones of both repos, their test environments, and its scratch space there. Don't use `E:\runs` or the experiment archive; the guard protects those.
 2. `node eval/setup.mjs`. This clones both repos, builds a CPU-only test environment for each from its `uv.lock`, and runs one quick test in each. The environments are several GB each, so the first run takes a while.
 3. `node eval/tests/gold-replay.mjs`. A scripted model writes the real fix for one task per repo through Pi and the guard, and each must come out resolved. This checks the whole pipeline without the model or GPU.
+4. **Before the first baseline, replay every task:** `node eval/tests/gold-replay.mjs luthimodel- sanctuary-` (one to two hours on CPU).
+   - The tasks were validated on Linux, and a few may behave differently on Windows:
+     - Tests that skip there, such as symlink tests or paths that need `/proc`, count as not passed.
+     - LuthiModel's C++ ops need a compiler. Without one, the C++ parity tests skip.
+   - A task whose real fix doesn't resolve on your machine can never be resolved by the agent either. List those failures and leave them out of runs on that machine; don't change the tasks.
 
 The model server must be running (`server\start-qwen-server.bat`) for real runs.
 
@@ -33,10 +40,11 @@ node eval\run.mjs --label baseline
 | `--label` | (required) | Name for this run |
 | `--repeat` | 3 | Attempts per task |
 | `--seat` | implementation | Or `debugging` |
+| `--tier` | standard | Or `large` (bigger tasks, scored separately) |
 | `--repo`, `--only` | all | Narrow the task set |
 | `--model`, `--provider`, `--thinking` | qwen3.6-35b-a3b, llama-cpp, off | What to run |
 | `--extension <name>` | | Extra extension from `extensions/`, repeatable |
-| `--timeout-min` | 30 | Per attempt |
+| `--timeout-min` | 30 (60 for large) | Per attempt |
 | `--keep` | | Keep worktrees for inspection |
 
 An interrupted run resumes where it stopped if you re-run the same command.
@@ -57,7 +65,7 @@ Follow the rigor rules in `CLAUDE.md`:
 
 ## Building tasks (Claude sessions)
 
-- `build/mine.mjs` lists candidate commits: a small source change with test changes, touching no protected files.
+- `build/mine.mjs` lists candidate commits: a small source change with test changes, touching no protected files. `--tier large` lists the large tier instead.
 - `build/validate.mjs` checks each candidate in a worktree and writes the valid ones to `tasks/`, with no instruction yet.
 - Instructions are written by hand from the commit message and diff, as an issue would describe the change. They include the names and signatures the tests call (so a task measures implementation, not name guessing), but not the implementation.
 - `build/validation.md` records which candidates were rejected and why.

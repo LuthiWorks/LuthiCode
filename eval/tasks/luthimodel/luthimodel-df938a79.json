@@ -1,0 +1,34 @@
+{
+ "id": "luthimodel-df938a79",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "df938a79ce7a537e31a9704053784892ecb802ab",
+ "base": "ed062714ceaaa8f8ae6b38e58e98f32fd714224a",
+ "test_files": [
+  "tests/test_consolidation_effect_counters.py"
+ ],
+ "run_files": [
+  "tests/test_consolidation_effect_counters.py"
+ ],
+ "gold_files": [
+  "luthi/living_extra_state.py",
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/living_layer_pc.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_consolidation_effect_counters.py::test_consolidation_effect_counters::test_fires_without_episodes_are_counted_as_noops",
+  "tests/test_consolidation_effect_counters.py::test_consolidation_effect_counters::test_fires_with_episodes_replay_something",
+  "tests/test_consolidation_effect_counters.py::test_consolidation_effect_counters::test_effect_counters_survive_resume",
+  "tests/test_consolidation_effect_counters.py::test_consolidation_effect_counters::test_pre_change_checkpoints_restore_without_the_new_keys"
+ ],
+ "pass_to_pass": [
+  "tests/test_consolidation_effect_counters.py::test_consolidation_effect_counters::test_replay_pathways_return_zero_on_empty_store"
+ ],
+ "source": {
+  "subject": "Audit: consolidation counted triggers not effect; chorus rank into the live tape",
+  "date": "2026-08-14",
+  "src_lines": 182
+ }
+}

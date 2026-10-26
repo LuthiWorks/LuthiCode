@@ -1,0 +1,38 @@
+{
+ "id": "luthimodel-bae295d1",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "bae295d1e08c25a78ee8b86fbd41adde53f51e1c",
+ "base": "ebe956df0662ed70648151e917c9dd15e64ea016",
+ "test_files": [
+  "tests/test_living_extra_state.py"
+ ],
+ "run_files": [
+  "tests/test_living_extra_state.py"
+ ],
+ "gold_files": [
+  "luthi/checkpoint.py",
+  "luthi/generate.py",
+  "luthi/living_extra_state.py",
+  "luthi/v2/jepa_runner.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_living_extra_state.py::TestCollectApply::test_tracker_state_round_trips",
+  "tests/test_living_extra_state.py::TestCollectApply::test_missing_state_warns_never_crashes",
+  "tests/test_living_extra_state.py::TestCollectApply::test_unknown_module_path_skipped_with_warning",
+  "tests/test_living_extra_state.py::TestCollectApply::test_tracker_disabled_layer_ignores_history",
+  "tests/test_living_extra_state.py::TestCollectApply::test_non_living_model_collects_empty",
+  "tests/test_living_extra_state.py::TestSpikingDelayCursor::test_delay_pos_round_trips",
+  "tests/test_living_extra_state.py::TestEncryptedCheckpointFormat::test_build_checkpoint_carries_and_restores",
+  "tests/test_living_extra_state.py::TestEncryptedCheckpointFormat::test_old_checkpoint_without_key_loads_strict",
+  "tests/test_living_extra_state.py::TestIntrospectionExposure::test_update_ema_and_momentum_visible"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "feat: rich-parameters completion 1/2 — continuity patches + metaplasticity introspection",
+  "date": "2026-07-05",
+  "src_lines": 232
+ }
+}

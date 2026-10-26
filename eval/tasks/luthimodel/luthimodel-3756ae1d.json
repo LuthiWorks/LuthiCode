@@ -1,0 +1,57 @@
+{
+ "id": "luthimodel-3756ae1d",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "3756ae1da765019d2fe91a211d4b4237d5ee3a52",
+ "base": "0e55791b461af73045b32c09443c4d6c71801ba0",
+ "test_files": [
+  "tests/test_living_write_rule.py"
+ ],
+ "run_files": [
+  "tests/test_living_write_rule.py"
+ ],
+ "gold_files": [
+  "luthi/episode_store.py",
+  "luthi/living_extra_state.py",
+  "luthi/v2/consolidation.py",
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/multimodal_model_pc.py",
+  "luthi/v2/pc_ops.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_living_write_rule.py::test_living_write_rule::test_default_is_bit_identical_to_explicit_mean_field",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_unknown_write_rule_raises",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_CHARACTERIZATION_mean_field_write_sees_only_batch_means",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_covariance_change_is_not_rank1",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_covariance_bounded_growth_at_production_rates[1.0]",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_covariance_bounded_growth_at_production_rates[20.0]",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_covariance_write_budget_never_exceeds_mean_field",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_covariance_composes_with_relative_trust_and_surprise_drive",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_covariance_precision_tracks_per_token_error_energy",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_covariance_never_runs_on_the_cpp_path",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_layer_default_bit_identical_to_explicit_legacy_options",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_deviation_context_differs_across_batches_after_warmup",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_deviation_context_warmup_falls_back_to_legacy_context",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_deviation_reference_untouched_by_frozen_forward",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_deviation_reference_persists_through_living_extra_state",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_CHARACTERIZATION_legacy_block_store_blends_into_nearly_every_forward",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_block_store_off_removes_the_store_and_says_so",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_block_store_off_changes_only_the_store",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_attractor_replay_preserves_relative_trust_ledger",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_model_plumbs_options_to_every_block",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_dead_arm_unaffected_by_living_options"
+ ],
+ "pass_to_pass": [
+  "tests/test_living_write_rule.py::test_living_write_rule::test_CHARACTERIZATION_mean_field_change_is_rank1_along_mean_output",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_CHARACTERIZATION_mean_context_is_near_identical_across_batches",
+  "tests/test_living_write_rule.py::test_living_write_rule::test_legacy_layer_adds_no_extra_state_keys"
+ ],
+ "source": {
+  "subject": "Living write: opt-in covariance rule, deviation context, store counters",
+  "date": "2026-10-19",
+  "src_lines": 367
+ }
+}

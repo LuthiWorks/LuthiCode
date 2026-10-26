@@ -7,13 +7,14 @@
 //   --only <text>         only tasks whose id contains this text (repeatable)
 //   --repo <name>         only tasks from this repo
 //   --seat <seat>         implementation (default) or debugging
+//   --tier <tier>         standard (default) or large; each tier is scored on its own
 //   --repeat <n>          attempts per task (default 3)
 //   --provider <name>     Pi provider (default llama-cpp)
 //   --model <id>          Pi model id (default qwen3.6-35b-a3b)
 //   --thinking <level>    Pi thinking level (default off)
 //   --extension <name>    LuthiCode extension to load, from extensions/<name>.ts (repeatable;
 //                         protect-paths is always loaded)
-//   --timeout-min <n>     minutes per attempt before it is stopped (default 30)
+//   --timeout-min <n>     minutes per attempt before it is stopped (default 30; 60 for the large tier)
 //   --keep                keep worktrees afterwards, for inspection
 //
 // Each attempt runs in a throwaway git worktree of the task's repo at the
@@ -35,7 +36,7 @@ const isWin = process.platform === "win32";
 // ---------------------------------------------------------------- options
 
 export function parseArgs(argv) {
-	const o = { only: [], extension: [], repeat: 3, seat: "implementation", provider: "llama-cpp", model: "qwen3.6-35b-a3b", thinking: "off", timeoutMin: 30, keep: false };
+	const o = { only: [], extension: [], repeat: 3, seat: "implementation", tier: "standard", provider: "llama-cpp", model: "qwen3.6-35b-a3b", thinking: "off", keep: false };
 	for (let i = 0; i < argv.length; i++) {
 		const a = argv[i];
 		const next = () => argv[++i];
@@ -43,6 +44,7 @@ export function parseArgs(argv) {
 		else if (a === "--only") o.only.push(next());
 		else if (a === "--repo") o.repo = next();
 		else if (a === "--seat") o.seat = next();
+		else if (a === "--tier") o.tier = next();
 		else if (a === "--repeat") o.repeat = Number(next());
 		else if (a === "--provider") o.provider = next();
 		else if (a === "--model") o.model = next();
@@ -58,6 +60,8 @@ export function parseArgs(argv) {
 	}
 	if (!o.label || !/^[\w.-]+$/.test(o.label)) throw new Error("--label <name> is required (letters, digits, . _ -)");
 	if (!["implementation", "debugging"].includes(o.seat)) throw new Error("--seat must be implementation or debugging");
+	if (!["standard", "large"].includes(o.tier)) throw new Error("--tier must be standard or large");
+	o.timeoutMin ??= o.tier === "large" ? 60 : 30;
 	return o;
 }
 
@@ -186,7 +190,7 @@ async function attempt(task, k, opts, cfg, outDir) {
 	const name = `${task.id}.${opts.seat}.r${k}`;
 	const dir = join(cfg.work, "wt", opts.label, name);
 	const t0 = Date.now();
-	const record = { task: task.id, repo: task.repo, seat: opts.seat, attempt: k, label: opts.label, model: opts.model, thinking: opts.thinking, extensions: extensionArgs(opts).names, started: new Date().toISOString() };
+	const record = { task: task.id, repo: task.repo, seat: opts.seat, tier: tierOf(task), attempt: k, label: opts.label, model: opts.model, thinking: opts.thinking, extensions: extensionArgs(opts).names, started: new Date().toISOString() };
 	try {
 		createWorktree(task, cfg, dir);
 		let failingOutput = "";
@@ -245,7 +249,7 @@ export function summarize(records, opts) {
 	lines.push(`- Date: ${new Date().toISOString().slice(0, 10)}`);
 	lines.push(`- Model: ${opts.provider}/${opts.model}, thinking ${opts.thinking}`);
 	lines.push(`- Extensions: ${extensionArgs(opts).names.join(", ")}`);
-	lines.push(`- Seat: ${opts.seat}; ${byTask.size} tasks x ${opts.repeat} attempts`);
+	lines.push(`- Seat: ${opts.seat}, ${opts.tier} tier; ${byTask.size} tasks x ${opts.repeat} attempts, ${opts.timeoutMin} min limit each`);
 	lines.push("");
 	lines.push(`**Resolved: ${resolvedAttempts}/${records.length} attempts (${pct(resolvedAttempts / Math.max(1, records.length))}).** Mean per-task rate ${pct(mean(perTaskRates))}. By repeat: ${byRepeat.map(pct).join(", ")}.`);
 	lines.push("");
@@ -269,11 +273,15 @@ export function summarize(records, opts) {
 
 // ---------------------------------------------------------------- main
 
+/** Tasks without a tier field are standard. */
+export const tierOf = (task) => task.tier ?? "standard";
+
 async function main() {
 	const opts = parseArgs(process.argv.slice(2));
 	const cfg = loadConfig(opts.config);
 	const tasks = loadTasks(
 		(t) =>
+			tierOf(t) === opts.tier &&
 			(!opts.repo || t.repo === opts.repo) &&
 			(opts.only.length === 0 || opts.only.some((o) => t.id.includes(o))) &&
 			(opts.seat === "debugging" || t.instruction?.trim()),
@@ -297,10 +305,11 @@ async function main() {
 			process.stderr.write(`${r.resolved ? "RESOLVED" : "not resolved"} (${r.tool_calls ?? 0} tool calls, ${r.seconds_total}s${r.harness_error ? ", harness error: " + r.harness_error.slice(0, 120) : ""})\n`);
 		}
 	}
-	const summary = summarize(records.filter((r) => r.seat === opts.seat), opts);
+	const summary = summarize(records.filter((r) => r.seat === opts.seat && (r.tier ?? "standard") === opts.tier), opts);
 	const resultsDir = opts.resultsDir ?? join(EVAL_DIR, "results");
 	mkdirSync(resultsDir, { recursive: true });
-	const summaryPath = join(resultsDir, `${new Date().toISOString().slice(0, 10)}_${opts.label}_${opts.seat}.md`);
+	const tierSuffix = opts.tier === "standard" ? "" : `_${opts.tier}`;
+	const summaryPath = join(resultsDir, `${new Date().toISOString().slice(0, 10)}_${opts.label}_${opts.seat}${tierSuffix}.md`);
 	writeFileSync(summaryPath, summary);
 	console.error(`\nSummary: ${summaryPath}`);
 	process.stdout.write(summary);

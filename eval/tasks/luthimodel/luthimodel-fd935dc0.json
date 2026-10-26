@@ -1,0 +1,27 @@
+{
+ "id": "luthimodel-fd935dc0",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "fd935dc034cae15493ad57f22f6bb1550daa17a7",
+ "base": "c0f0a7f730d6d529f768ab147f94e50d2012002b",
+ "test_files": [
+  "tests/test_pc_ops_triton.py"
+ ],
+ "run_files": [
+  "tests/test_pc_ops_triton.py"
+ ],
+ "gold_files": [
+  "luthi/v2/pc_ops_triton.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_pc_ops_triton.py::test_pc_ops_triton::test_triton_not_implemented_raises_loud"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "updates",
+  "date": "2026-05-14",
+  "src_lines": 218
+ }
+}

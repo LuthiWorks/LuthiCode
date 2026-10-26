@@ -1,0 +1,54 @@
+{
+ "id": "luthimodel-1db10135",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "1db1013539c55dfe5f516d7d6511b0526a873237",
+ "base": "7f97f20de0496e2cc61ff474d305314da3eaa680",
+ "test_files": [
+  "tests/test_checkpoint_plaintext.py",
+  "tests/test_no_committed_secrets.py"
+ ],
+ "run_files": [
+  "tests/test_checkpoint_plaintext.py",
+  "tests/test_no_committed_secrets.py"
+ ],
+ "gold_files": [
+  "generate.bat",
+  "luthi/checkpoint.py",
+  "run_m8.bat",
+  "scripts/decrypt_checkpoints.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_checkpoint_plaintext.py::test_checkpoint_plaintext::test_plaintext_file_loads_without_a_password",
+  "tests/test_checkpoint_plaintext.py::test_checkpoint_plaintext::test_encrypted_file_still_needs_its_password",
+  "tests/test_checkpoint_plaintext.py::test_checkpoint_plaintext::test_plaintext_copy_round_trip_leaves_the_original_alone",
+  "tests/test_checkpoint_plaintext.py::test_checkpoint_plaintext::test_second_run_skips_and_touches_nothing",
+  "tests/test_checkpoint_plaintext.py::test_checkpoint_plaintext::test_no_matching_password_writes_nothing",
+  "tests/test_checkpoint_plaintext.py::test_checkpoint_plaintext::test_plaintext_named_luthi_is_left_alone",
+  "tests/test_checkpoint_plaintext.py::test_checkpoint_plaintext::test_structural_damage_is_not_mistaken_for_a_wrong_password",
+  "tests/test_checkpoint_plaintext.py::test_checkpoint_plaintext::test_script_end_to_end",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_there_are_launchers_to_check",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_no_literal_checkpoint_password[a literal --checkpoint_password value---checkpoint[_-]password(?:\\\\s+|=)(?![\\\\\"']?(?:%\\\\w+%|\\\\$\\\\{?\\\\w+\\\\}?|\\\\$\\\\(|\\\\$env:\\\\w+))\\\\S+]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_no_literal_checkpoint_password[a literal LUTHI_CHECKPOINT_KEY assignment-LUTHI_CHECKPOINT_KEY\\\\s*=\\\\s*(?![\\\\\"']?(?:%\\\\w+%|\\\\$\\\\{?\\\\w+\\\\}?|\\\\$\\\\(|\\\\$env:\\\\w+)|[\\\\\"']?\\\\s*$)\\\\S]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_no_user_home_path_in_launchers",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_password_pattern_itself[python -m luthi.generate --checkpoint_password \"hunter2\"-True]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_password_pattern_itself[python x.py --checkpoint_password=hunter2-True]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_password_pattern_itself[python x.py --checkpoint_password \"%LUTHI_CHECKPOINT_KEY%\"-False]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_password_pattern_itself[python x.py --checkpoint_password $LUTHI_CHECKPOINT_KEY-False]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_password_pattern_itself[python x.py --checkpoint_password ${LUTHI_CHECKPOINT_KEY}-False]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_key_pattern_itself[set \"LUTHI_CHECKPOINT_KEY=hunter2\"-True]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_key_pattern_itself[export LUTHI_CHECKPOINT_KEY=hunter2-True]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_key_pattern_itself[$env:LUTHI_CHECKPOINT_KEY = \"hunter2\"-True]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_key_pattern_itself[if \"%LUTHI_CHECKPOINT_KEY%\"==\"\" echo unset-False]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_key_pattern_itself[export LUTHI_CHECKPOINT_KEY=$(pass show luthi)-False]",
+  "tests/test_no_committed_secrets.py::test_no_committed_secrets::test_key_pattern_itself[set \"LUTHI_CHECKPOINT_KEY=\"-False]"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Checkpoints: encryption optional; no password in launchers",
+  "date": "2026-10-19",
+  "src_lines": 162
+ }
+}

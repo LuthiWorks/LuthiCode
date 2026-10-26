@@ -1,0 +1,37 @@
+{
+ "id": "luthimodel-16d686eb",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "16d686eb4abd070fd4de99caab210beb091f234d",
+ "base": "1f7ea39b4ab689b29f7f8ccfe511efa776d2034f",
+ "test_files": [
+  "tests/test_frozen_plasticity_reencode.py"
+ ],
+ "run_files": [
+  "tests/test_frozen_plasticity_reencode.py"
+ ],
+ "gold_files": [
+  "luthi/episode_store.py",
+  "luthi/generate.py",
+  "luthi/sanctuary_interface.py",
+  "luthi/seam_types.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/plasticity.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_frozen_plasticity_reencode.py::test_frozen_plasticity_reencode::test_freeze_covers_every_living_module_in_trunk",
+  "tests/test_frozen_plasticity_reencode.py::test_frozen_plasticity_reencode::test_frozen_reencode_is_grad_capable_and_trains_encoder_params",
+  "tests/test_frozen_plasticity_reencode.py::test_frozen_plasticity_reencode::test_frozen_reencode_mutates_no_living_buffer",
+  "tests/test_frozen_plasticity_reencode.py::test_frozen_plasticity_reencode::test_normal_forward_does_mutate_living_layer",
+  "tests/test_frozen_plasticity_reencode.py::test_frozen_plasticity_reencode::test_episode_store_write_gated_by_freeze_recall_preserved",
+  "tests/test_frozen_plasticity_reencode.py::test_frozen_plasticity_reencode::test_freeze_restores_prior_flag_state"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "seams and JEPA updates",
+  "date": "2026-06-28",
+  "src_lines": 197
+ }
+}

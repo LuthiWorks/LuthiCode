@@ -2,7 +2,7 @@
  "id": "luthimodel-77bdde3b",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Bug: `SIGReg` (`luthi/v2/sigreg.py`) draws its random projection matrix with a bare `torch.randn`. Every forward pass therefore advances the global RNG stream, which also feeds data sampling and everything else stochastic. Worse, how much it consumes depends on `num_proj`, so changing `num_proj` silently changes the data order too.\n\nDraw the projections from a dedicated generator instead:\n- `SIGReg(knots=17, num_proj=1024, use_generator=True)`. The new default is on.\n- **Generator mode:**\n  - Seed a CPU `torch.Generator` from a persistent long buffer `global_step` (a scalar starting at 0, saved in `state_dict`) and draw the `(D, num_proj)` matrix from it.\n  - Move the result to the input's device and dtype.\n  - The global RNG must be left untouched, whatever `num_proj` is.\n  - Two fresh instances at the same step give the same result regardless of the global seed.\n- **Advancing:** increment `global_step` after each draw only while the module is in training mode. In eval mode it stays fixed, so evaluation doesn't change model state and every eval batch sees the same projections.\n- **Legacy mode:** `use_generator=False` keeps the old behavior exactly, drawing from the global stream.\n\nThe statistic SIGReg computes must not otherwise change.",
  "commit": "77bdde3bc194584d2fe2e986f74a9bc82db624cd",
  "base": "d575ba21358b32fcf115d98aa949a48a334645d8",
  "test_files": [

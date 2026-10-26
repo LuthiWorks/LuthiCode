@@ -1,0 +1,43 @@
+{
+ "id": "luthimodel-5fb90d5f",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "5fb90d5f0c045f57b1cc24723da7d6dc223b2a72",
+ "base": "7ce5932bd36818025df0722184de74704cabfabe",
+ "test_files": [
+  "tests/v2/test_divergence_guards.py"
+ ],
+ "run_files": [
+  "tests/v2/test_divergence_guards.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_healthy_nmse_passes",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_diverged_nmse_trips",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_nmse_at_one_still_passes",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_nonfinite_nmse_trips",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_missing_nmse_is_not_a_trip",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_disabled_by_zero",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_baseline_is_frozen_not_rolling",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_single_spike_does_not_trip",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_two_of_three_sustained_does_not_trip",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_three_sustained_trips",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_not_armed_before_baseline_points",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_nonpositive_baseline_disarms_rather_than_misfires",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_nonfinite_loss_trips_immediately",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_disabled_by_zero",
+  "tests/v2/test_divergence_guards.py::TestAgainstRealSeries::test_healthy_shapes_do_not_trip",
+  "tests/v2/test_divergence_guards.py::TestAgainstRealSeries::test_the_diverged_shape_trips"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Add gradient clipping and two absolute divergence guards",
+  "date": "2026-07-29",
+  "src_lines": 162
+ }
+}

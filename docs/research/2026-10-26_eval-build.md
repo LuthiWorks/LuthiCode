@@ -48,6 +48,44 @@ Build the Phase 1 eval: tasks drawn from LuthiModel's and Sanctuary's real histo
 - They name the interface the hidden tests call: functions, config fields, and substrings the tests assert on. They don't give the implementation.
 - This makes the tasks easier than SWE-bench-style issues, deliberately: a small model failing to guess a field name says nothing about whether it can implement.
 
+### Step 7: how many tasks the history holds
+
+Brian asked why a few hundred commits per repo gave so few candidates. Counted:
+
+| | LuthiModel | Sanctuary |
+|---|---|---|
+| Commits, no merges | 433 | 528 |
+| Change source code | 161 | 116 |
+| ...and their tests | 81 | 96 |
+| Touch a protected file | -2 | -8 |
+| Over the size limit | -35 | -55 |
+| Candidates | 44 | 33 |
+
+- Most commits change docs, research logs, experiment configs or results. Those are real work, but nothing tests them.
+- The size limit, not quality, cut 90 commits. Those became the **large tier** (up to 600 lines in 8 files), scored separately (`docs/decisions.md`).
+- About 100 commits changed source without tests. Making tasks of them would mean writing the check myself, so the test would be my reading of the change rather than the repo's. Not done.
+
+### Step 8: renames broke two candidates
+
+- `git log --numstat` writes a moved file as `{old => new}/file`, which isn't a path.
+  - Validation silently skipped those files, so `sanctuary-ed01b3e8` (a 4-line change plus three moves) validated while ignoring the moves.
+  - `sanctuary-3bcbed07` was rejected as "no tests ran".
+- Fixed with `--no-renames`. Counted honestly, `ed01b3e8` exceeds the size limit and was dropped. `3bcbed07` was re-validated.
+
+### Step 9: an instruction for every task
+
+- Every standard task now has an instruction, so the implementation seat uses all of them instead of 23.
+- For bug fixes, the instruction describes the symptom, the way an issue would. For features, it gives the interface and behavior the hidden tests check.
+- Some instructions are close to specs (exact thresholds, formulas) because the tests pin exact values. Those tasks measure careful implementation more than design.
+- **Collection errors make many tests fail-to-pass.** When a new test file fails to import on the parent commit, pytest collects nothing, so every test in the task's files is "failing before". On those tasks pass-to-pass is empty, but breaking an existing test still fails the check, because fail-to-pass then includes it.
+
+### Step 10: what might differ on Windows
+
+- Validation ran on Linux, so a few tasks may not resolve on Windows even with the real fix:
+  - Tests that skip there (symlinks, `/proc`) count as not passed.
+  - LuthiModel's C++ parity tests skip without a compiler.
+- The gold replay of every task on Brian's PC is the check. A task whose real fix doesn't resolve there is left out of runs on that machine.
+
 ## Conclusion
 
 The eval exists and its parts are tested:
@@ -59,6 +97,7 @@ The final task count and the gold-replay results are in `eval/build/validation.m
 
 **Open:**
 - Nothing has run on Windows yet.
+- Whether the full task set resolves on Windows (Step 10).
 - Whether instructions written by Claude bias the eval toward Claude's way of describing work is untested. A cross-check would be a handful of tasks with instructions written by Brian or another model family.
 - The torch/torchaudio mismatch in LuthiModel's lockfile.
 

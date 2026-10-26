@@ -113,6 +113,16 @@ The process is in `docs/research/2026-10-26_eval-build.md`.
 - **Harness setup is committed in the worktree before the agent starts**, so the recorded diff is only the agent's work.
 - **What the test environments can't cover:** tests needing MuJoCo (an optional extra) skip, in validation and in runs alike, so they don't count either way. LuthiModel's lockfile pairs torch 2.10.0 with torchaudio 2.11.0. `eval/setup.mjs` installs the matching torchaudio for the eval; LuthiModel itself is unchanged.
 
+## 2026-10-26 - Two task tiers
+
+- **Standard tier:** each repo's own size limit. LuthiModel is at most 150 changed source lines in 3 files. Sanctuary is at most 300 lines in 4 files, because its commits run larger for the same amount of logic (async plumbing, wiring).
+- **Large tier:** above that, up to 600 lines in 8 files.
+  - It is scored on its own line (`run.mjs --tier large`, 60-minute default limit) and never averaged into the standard number.
+  - Why: the size limit, not task quality, excluded 90 of the candidate commits. Bigger tasks show where the local model's ceiling is, which the standard tier can't.
+- **Above 600 lines:** whole features, too big to state as one task. Not used.
+- **Why ~60 standard tasks isn't the end:** at 3 repeats, that set can show differences of roughly 10 points or more between two arms, not small ones. More tasks narrow that. New commits add candidates over time, so re-mining periodically grows the set.
+- **Renames:** mining uses `--no-renames`, so a moved file counts as a deletion plus an addition. Git's rename notation (`{old => new}/file`) isn't a path and broke two candidates. One of them, `sanctuary-ed01b3e8`, was 4 changed lines plus three file moves; counted honestly it no longer qualifies, and it was dropped.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/

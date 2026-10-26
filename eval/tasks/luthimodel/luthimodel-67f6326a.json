@@ -2,7 +2,7 @@
  "id": "luthimodel-67f6326a",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Let `LivingLayerV6` (`luthi/living_layer.py`) store its episode weight snapshots as INT8, for a memory ablation. The layer already accepts per-buffer dtype overrides through `buffer_dtypes`; `buffer_dtypes={\"episode_values\": torch.int8}` should now work end to end.\n\n- Always register a new buffer `episode_scales`: one value per episode, initialized to ones, with dtype from the same override mechanism, so it is float32 by default. This keeps checkpoints uniform; it is unused unless episodes are INT8.\n- **Storing (`_store_episode`), when `episode_values` is INT8:**\n  - Quantize the weight snapshot symmetrically with one scale per episode: `scale = max(|w|) / 127`, clamped away from zero.\n  - Store `round(w / scale)`, clamped to [-128, 127], as int8, and save `scale` in `episode_scales[idx]`.\n  - Float storage keeps the current direct copy.\n- **Recall (`_recall_episode`), when INT8:** dequantize as `episode_values[idx]` cast to the weight's dtype times `episode_scales[idx]` before computing the delta. The returned delta stays float32 and finite.\n- The round trip must be accurate to within about 1% mean relative error.\n- Moving the layer with `.to(dtype=torch.float32)` must not convert the INT8 buffer.\n- The default float32 path must not change.",
  "commit": "67f6326a483c0af77b577028177270a1755cc852",
  "base": "d2326c8d9911801c1824cc11e69b81501ac69aa5",
  "test_files": [

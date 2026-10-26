@@ -2,7 +2,7 @@
  "id": "luthimodel-77c4ae5a",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Add a way to delay every kill path in the JEPA trainer (`luthi/v2/jepa_runner.py`), so a run that fails early can be watched failing for a while instead of being cut off at the first check.\n\n- Add `RunnerConfig.guard_min_step: int = 0`. 0 means no delay.\n- Add `JEPATrainer._kill_suppressed(reason: str) -> bool`:\n  - It returns `True` only when `guard_min_step > 0` and `self.global_step < guard_min_step`. At or after that step it returns `False`.\n  - Whenever it suppresses, log at ERROR level on the module's logger a message containing `KILL SUPPRESSED`, the configured step, the current step and the `reason` that would have fired. A silent suppression is not acceptable.\n- Route all four kill paths through it: the fast loss-divergence guard, the periodic NMSE check, the kill criteria and the epoch-end divergence check.\n  - When suppressed, the run continues: no kill checkpoint and no `killed:` return.\n  - Otherwise each path behaves exactly as now.\n- In `scripts/jepa_pilot_driver.py`:\n  - Add an `ARM_GUARD_MIN_STEP: dict[str, int]` table, pass `guard_min_step=ARM_GUARD_MIN_STEP.get(arm, 0)` into the runner config, and record it in the saved run config.\n  - Register a new arm `probe_v5_d8_dk1000` as stage 29. Its model config is a copy of `probe_v5_d8`, with the same deep cadence (100) and the same taper, file list, SIGReg and cosine settings as `living_v5_4x_d4`, and a guard delay of 1000.",
  "commit": "77c4ae5a20e556673cb14c9a85dd2f87892bb67f",
  "base": "29eff75279a8806b2889270ae4c3371eabccce1e",
  "test_files": [

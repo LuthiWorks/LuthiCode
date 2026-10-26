@@ -1,0 +1,39 @@
+{
+ "id": "luthimodel-18efa8c1",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "18efa8c122deee316fd37c8fbeca58f72dfc1b92",
+ "base": "cf8651d3daf34b01f239b338f790132668c6b3d7",
+ "test_files": [
+  "tests/test_applied_change_signal.py"
+ ],
+ "run_files": [
+  "tests/test_applied_change_signal.py"
+ ],
+ "gold_files": [
+  "luthi/living_extra_state.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/m9/runner.py",
+  "luthi/v2/pc_ops.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_applied_change_returned_when_requested",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_applied_change_equals_gain_off_when_gain_is_one",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_applied_change_exceeds_gain_off_when_gain_above_one",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_layer_gain_on_feeds_sinks",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_eye_reading_prefers_applied_change_else_momentum",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_traces_and_accumulator_round_trip"
+ ],
+ "pass_to_pass": [
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_default_return_is_two_tuple_unchanged",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_layer_gain_off_sinks_inert",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_accumulator_read_and_reset_zeros_the_day"
+ ],
+ "source": {
+  "subject": "feat: momentum foundations step 5 — the applied-change signal to the sinks",
+  "date": "2026-07-06",
+  "src_lines": 148
+ }
+}

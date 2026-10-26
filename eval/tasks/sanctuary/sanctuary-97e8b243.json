@@ -2,7 +2,7 @@
  "id": "sanctuary-97e8b243",
  "repo": "sanctuary",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Two fixes from an architectural review of Sanctuary's core:\n\n1. **Remove the premature crash boundary.** `CognitiveCycle.run()` (`sanctuary/core/cognitive_cycle.py`) wraps each `await self._cycle()` in a try/except that logs the error and keeps looping. The project's rules say that boundary must not exist until Phase 9 (First Awakening): during development, failures must surface. Remove it, so an exception from a cycle propagates out of `run()` and no further cycles run.\n2. **No hardcoded developer path.** `LuthiModelConfig.luthi_path` in `sanctuary/core/luthi_model.py` defaults to a path inside one developer's home folder, which breaks every other checkout.\n   - Default it to `\"\"`.\n   - When loading, use the explicit `luthi_path` if set, otherwise the `LUTHI_PATH` environment variable, otherwise assume the `luthi` package is already importable.\n   - If a path was given but doesn't exist, raise `FileNotFoundError`.\n   - If `luthi` still can't be imported, raise an `ImportError` explaining how to set `LUTHI_PATH`.",
  "commit": "97e8b243806c4f11eb00683d2be7b4381f7c316e",
  "base": "1428553fd2d961d50ceef227f03e1a051a139e41",
  "test_files": [

@@ -8,6 +8,9 @@
 // That proves, without a model or GPU: the clones and test environments
 // work, the guard doesn't block legitimate work in that repo, and the check
 // scores a correct fix as correct.
+//
+// Tasks with an instruction replay in the implementation seat; tasks without
+// one in the debugging seat (the only seat they're used in).
 
 import { spawn } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
@@ -21,11 +24,11 @@ const here = dirname(fileURLToPath(import.meta.url));
 const runner = resolve(here, "..", "run.mjs");
 const cfg = loadConfig();
 const wanted = process.argv.slice(2);
-const all = loadTasks((t) => t.instruction?.trim());
+const all = loadTasks();
 const picks = wanted.length
 	? all.filter((t) => wanted.some((w) => t.id.includes(w)))
 	: Object.values(Object.fromEntries(all.map((t) => [t.repo, t]))); // one per repo
-if (!picks.length) throw new Error("no matching tasks with instructions");
+if (!picks.length) throw new Error("no matching tasks");
 
 const scratch = mkdtempSync(join(tmpdir(), "luthicode-gold-"));
 let failed = 0;
@@ -45,7 +48,7 @@ for (const task of picks) {
 	const r = await new Promise((done) => {
 		const child = spawn(
 			process.execPath,
-			[runner, "--label", label, "--only", task.id, "--repeat", "1", "--provider", "fake", "--model", "fake", "--results-dir", join(scratch, "results"), "--timeout-min", "20"],
+			[runner, "--label", label, "--only", task.id, "--tier", task.tier ?? "standard", "--seat", task.instruction?.trim() ? "implementation" : "debugging", "--repeat", "1", "--provider", "fake", "--model", "fake", "--results-dir", join(scratch, "results"), "--timeout-min", "20"],
 			{ env: { ...process.env, PI_CODING_AGENT_DIR: agentDir }, stdio: ["ignore", "pipe", "pipe"] },
 		);
 		let out = "";

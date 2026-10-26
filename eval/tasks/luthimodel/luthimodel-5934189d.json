@@ -1,0 +1,51 @@
+{
+ "id": "luthimodel-5934189d",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "5934189df4e4ec1c9a4f37a61a2438d15f95b300",
+ "base": "9e7643eae34483b35362e2ce1e8740905522d37b",
+ "test_files": [
+  "tests/test_heldout_eval.py",
+  "tests/test_kill7_plateau.py"
+ ],
+ "run_files": [
+  "tests/test_heldout_eval.py",
+  "tests/test_kill7_plateau.py"
+ ],
+ "gold_files": [
+  "luthi/v2/eval_heldout.py",
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/multimodal_data.py",
+  "run_jepa_pilot.bat",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_heldout_eval.py::TestComputeTextSplit::test_no_training_window_touches_any_holdout_window[10000-128-64-0.05]",
+  "tests/test_heldout_eval.py::TestComputeTextSplit::test_no_training_window_touches_any_holdout_window[10000-128-128-0.1]",
+  "tests/test_heldout_eval.py::TestComputeTextSplit::test_no_training_window_touches_any_holdout_window[5000-64-32-0.02]",
+  "tests/test_heldout_eval.py::TestComputeTextSplit::test_no_training_window_touches_any_holdout_window[100000-128-64-0.01]",
+  "tests/test_heldout_eval.py::TestComputeTextSplit::test_no_training_window_touches_any_holdout_window[1000-100-10-0.3]",
+  "tests/test_heldout_eval.py::TestComputeTextSplit::test_gap_is_at_least_seq_len",
+  "tests/test_heldout_eval.py::TestComputeTextSplit::test_zero_fraction_is_legacy_identical",
+  "tests/test_heldout_eval.py::TestComputeTextSplit::test_degenerate_fractions_fail_loud",
+  "tests/test_heldout_eval.py::TestEvalMutatesNothing::test_evaluate_heldout_leaves_model_bitwise_identical",
+  "tests/test_heldout_eval.py::TestEvalMutatesNothing::test_eval_restores_train_mode",
+  "tests/test_heldout_eval.py::TestEvalMutatesNothing::test_eval_is_deterministic_across_calls",
+  "tests/test_heldout_eval.py::TestEvalMutatesNothing::test_legacy_loader_without_holdout_skips_cleanly",
+  "tests/test_heldout_eval.py::TestEvalMutatesNothing::test_disabled_by_config",
+  "tests/test_heldout_eval.py::TestProbe::test_probe_clears_chance_on_learnable_signal_and_floor_does_not",
+  "tests/test_heldout_eval.py::TestProbe::test_heldout_latent_prediction_direct",
+  "tests/test_kill7_plateau.py::test_kill7_plateau::test_flat_from_start_kills",
+  "tests/test_kill7_plateau.py::test_kill7_plateau::test_descend_then_plateau_does_not_kill",
+  "tests/test_kill7_plateau.py::test_kill7_plateau::test_ambiguous_shallow_window_neither_kills_nor_disarms",
+  "tests/test_kill7_plateau.py::test_kill7_plateau::test_latch_survives_checkpoint_roundtrip"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "feat: the two-arm JEPA pilot is launch-ready — held-out eval, probe, kill-7 fix, driver",
+  "date": "2026-07-15",
+  "src_lines": 430
+ }
+}

@@ -1,0 +1,48 @@
+{
+ "id": "luthimodel-5b68ccbf",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "5b68ccbf9f4890d741685f0488641f840be70b5c",
+ "base": "6777c1018da6b8f01be6bd59757b0c00c21e3e7a",
+ "test_files": [
+  "tests/test_pc_consolidation.py"
+ ],
+ "run_files": [
+  "tests/test_pc_consolidation.py"
+ ],
+ "gold_files": [
+  "luthi/v2/__init__.py",
+  "luthi/v2/consolidation.py",
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/model_pc.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_tracker_does_not_fire_during_warmup",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_tracker_does_not_fire_under_high_variance",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_tracker_fires_after_sub_threshold_window",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_tracker_resets_after_firing",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_consolidate_layer_noop_on_empty_store",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_consolidate_layer_pulls_weight_toward_snapshot",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_consolidate_layer_does_not_touch_prediction_matrix",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_layer_with_consolidation_enabled_fires",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_consolidation_shapes_prediction_post_drift",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_consolidation_with_compressed_episodes",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_episode_inputs_captured_on_store",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_attractor_consolidation_empty_store_is_noop",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_attractor_consolidation_reduces_prediction_error_on_stored_pattern",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_attractor_consolidation_does_not_corrupt_weights",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_attractor_default_off_preserves_gradient_replay",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_consolidation_style_invalid_raises_loud",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_consolidation_style_both_runs_both_pathways",
+  "tests/test_pc_consolidation.py::test_pc_consolidation::test_attractor_consolidation_missing_buffer_raises"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Salvatori style attractor memory research added, mechanism implemented, README update",
+  "date": "2026-05-14",
+  "src_lines": 247
+ }
+}

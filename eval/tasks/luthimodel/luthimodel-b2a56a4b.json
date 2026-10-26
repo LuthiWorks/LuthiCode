@@ -2,7 +2,7 @@
  "id": "luthimodel-b2a56a4b",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "The living layer's weight update (`delta_w`) is driven by the raw prediction error. Any layer that is learning drives that error toward zero, so the living channel goes quiet as the model improves. Add opt-in **drive normalization**: divide the error by its running RMS before it enters `delta_w`, so the drive responds to relative surprise.\n\n**`PredictiveCodingLayer` (`luthi/v2/living_layer_pc.py`):**\n- New arguments `drive_normalize: bool = False` and `drive_rms_decay: float = 0.01`, stored as attributes of the same name.\n- New buffer `error_rms`, a float scalar starting at 0.0.\n- Pass all three into `pc_self_modify`.\n\n**`luthi/v2/pc_ops.py`:**\n- `pc_self_modify` and `_pc_self_modify_python` accept `drive_normalize=False`, `error_rms=None` and `drive_rms_decay=0.01`.\n- When enabled:\n  - Update `error_rms` in place as an EMA, with rate `drive_rms_decay`, of the current error's RMS (`sqrt(mean(pred_error**2))`).\n  - Use `pred_error / error_rms` (clamped away from zero) in place of the raw error **only** in the precision- or trust-weighted error that feeds `delta_w`.\n- Unchanged by normalization:\n  - Precision keeps tracking the raw error.\n  - The prediction matrix keeps learning from the raw error.\n  - The returned `pred_error` stays raw.\n- The C++ fast path doesn't implement normalization, so when `drive_normalize` is requested, use the Python implementation instead of silently running unnormalized.\n- With the flag off, results must be bit-identical to before, and `error_rms` stays 0.",
  "commit": "b2a56a4bbf0c23ba9e4f371ec7387d434664ef44",
  "base": "460cd42cf0c6be9afa47bac74e8c797beaf8c3df",
  "test_files": [

@@ -2,7 +2,7 @@
  "id": "luthimodel-1634e1a9",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Two of the living layer's per-weight buffers are rank-1 by construction: every output row of `plasticity` is identical, and every input column of `excitability_acc` is identical. Store them compactly instead of as `[out, in]` matrices:\n\n- In `LivingLayerV6` (`luthi/living_layer.py`):\n  - `excitability_acc` becomes `torch.zeros(out_features)` (one value per output neuron).\n  - `plasticity` becomes `torch.ones(in_features)` (one value per input feature).\n  - `apply_top_down` updates `plasticity` directly with the `[in_features]` salience vector, with no broadcast across outputs.\n- The fused self-modify op `living_self_modify` must accept the new shapes: `excitability_acc` is `[out]` and `plasticity` is `[in]`.\n  - In the Hebbian update, broadcast them at use time: excitability across the input axis, plasticity across the output axis.\n  - The excitability update becomes element-wise against the per-output salience.\n  - Change both implementations: the C++ kernel in `luthi/csrc/living_ops.cpp` and the Python fallback `_living_self_modify_python` in `luthi/fused_ops.py`.\n\nThe layer's behavior must otherwise be unchanged.",
  "commit": "1634e1a923f5348352eb4c0aa6a4c6f458cd6197",
  "base": "ebbf7602bc22ff190d55175a3a61ab540cd18c91",
  "test_files": [

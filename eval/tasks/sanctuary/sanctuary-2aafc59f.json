@@ -2,7 +2,7 @@
  "id": "sanctuary-2aafc59f",
  "repo": "sanctuary",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Turbo mode (`sanctuary/core/turbo.py`) decides when to speed up the cognitive cycle from \"intensity sources\". The only source today, `MechanicalIntensitySource`, reads a v1-substrate signal that is weak on the v2 predictive-coding substrate. Add a v2-native source and surface the signals it needs.\n\n**`PCIntensitySource(signal_key=\"luthi_error_acc\", aggregator=\"max\")`** in `sanctuary/core/turbo.py`:\n- `name` property returns `\"pc\"`.\n- `aggregator` must be `\"max\"` or `\"mean\"`; anything else raises `ValueError` with the message `aggregator must be 'max' or 'mean', got ...`.\n- `intensity(signals)` reads the list `signals.knowledge_signals[signal_key]`, one value per block, and returns the max (or mean) of the absolute values. It returns 0.0 when the key is missing or the list is empty, so it can sit alongside `MechanicalIntensitySource` under the manager's max-of-sources rule.\n\n**`LuthiModel.get_augmented_experiential_signals`** (`sanctuary/core/luthi_model.py`):\n- From the per-block introspection fields `error_acc_mean`, `pred_frob` and `precision_mean`, publish the knowledge-signal lists `luthi_error_acc`, `luthi_pred_frob` and `luthi_precision`.\n- Only publish a list when it is non-empty. The existing v1 keys stay as they are.\n\n**`SanctuaryRunner`** (`sanctuary/api/runner.py`): when turbo is enabled, build the `TurboManager` with `sources=[MechanicalIntensitySource(), PCIntensitySource()]`.",
  "commit": "2aafc59f1146f256f3cb13b3f0d5be041c20c232",
  "base": "355a6421a44ffd09a6ff2b8e9d65c40b9af34071",
  "test_files": [

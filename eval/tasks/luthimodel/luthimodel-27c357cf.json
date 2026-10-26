@@ -2,7 +2,7 @@
  "id": "luthimodel-27c357cf",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "The `TopDownSignal` that a higher block sends to a lower one (`luthi/backward_pass.py`) carries `salience` and `prediction_error` vectors in the receiving layer's **input-dimension** space: their length is the layer's `in_features`. `LivingLayerV6.apply_top_down` (`luthi/living_layer.py`) broadcasts them across the output axis. Nothing enforces this, so a signal along the wrong axis would silently push the layer's homeostatic state the wrong way instead of failing.\n\nMake the contract explicit and enforced:\n- At the top of `LivingLayerV6.apply_top_down`, raise `ValueError` if `signal.salience.shape[-1]` or `signal.prediction_error.shape[-1]` differs from `self.in_features`.\n  - Each message must name the offending field (`salience` or `prediction_error`) and the expected size.\n  - `SpikingLivingLayer` must get the same check.\n- Document the input-dimension convention in the `TopDownSignal` docstring and in `apply_top_down`.\n\nCorrectly shaped signals must behave exactly as before.",
  "commit": "27c357cf6ba448a6140ce424d2bc8e19588a52f2",
  "base": "9cbac9c406da4ca5311d544f1c4b7c0f05188f82",
  "test_files": [

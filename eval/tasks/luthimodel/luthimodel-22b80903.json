@@ -2,7 +2,7 @@
  "id": "luthimodel-22b80903",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Add a new module `luthi/v2/slow_trace.py` with slow-timescale trace primitives. They will later be used by an inverted-U learning gain and by NREM consolidation. All state must be plain Python (float/int) so it can be checkpointed.\n\n`SlowEMA(decay: float, warmup: int = 8)`:\n- Raise `ValueError` unless `0 <= decay < 1`.\n- `update(x)` folds `x` in as `value = decay * value + (1 - decay) * x` and returns the new value. The first sample seeds the EMA exactly, with no bias toward 0.\n- `value` property.\n- `is_warm()` is true once at least `warmup` samples have been seen.\n- `state_dict()` returns `decay`, `warmup`, `value` and `count`.\n- `load_state_dict(state)` restores only `value` and `count`. It keeps the constructed `decay` and `warmup`.\n- Keep the sample count in `_count`.\n\n`ReadResetAccumulator()`:\n- A running sum: `add(x)`, plus `total` and `count` properties.\n- `read_and_reset()` returns the total and zeroes both the total and the count.\n- `state_dict()` / `load_state_dict()` round-trip the total and count.\n\n`resolution_progress(short_ema, long_ema, eps=1e-8) -> float`:\n- Returns the ratio of the short EMA to the long EMA: below 1 while error is falling, about 1 when it's flat, above 1 when it's getting worse.\n- Returns `0.0` if either EMA is not warm yet, or if the long EMA's absolute value is at most `eps`. No division by zero.",
  "commit": "22b809032f8fb1a478d4c51ec4cd452785590e8c",
  "base": "269db40829b8323a395ec1ebd5db055c8a85aaae",
  "test_files": [

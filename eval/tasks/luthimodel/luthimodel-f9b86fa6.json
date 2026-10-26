@@ -2,7 +2,7 @@
  "id": "luthimodel-f9b86fa6",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Add a trust-differentiation instrument: `precision_spread`, the ratio of the 95th to the 5th percentile of a living layer's `precision` vector. It reads about 1.0 when trust is uniform or saturated, and larger when there is real differentiation.\n\n- `PredictiveCodingLayer.aliveness()` (`luthi/v2/living_layer_pc.py`) reports `\"precision_spread\"` as a float, computed as `quantile(p, 0.95) / quantile(p, 0.05)` with the denominator clamped away from zero.\n  - Compute the quantiles on a detached float32 CPU copy, because some backends lack the quantile op.\n  - A fresh layer (all ones) reads exactly 1.0.\n- In `luthi/v2/jepa_runner.py`:\n  - `_substrate_health_metrics` reports `precision_spread` as the mean across blocks, like the other level metrics.\n  - Include it in the per-block substrate entries the trainer logs.",
  "commit": "f9b86fa6a60eaff1334c921958e37d6889140ad8",
  "base": "b400e298cf39ac370a4b14d640109ecd33e89dc6",
  "test_files": [

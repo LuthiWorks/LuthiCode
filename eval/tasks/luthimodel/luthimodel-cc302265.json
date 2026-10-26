@@ -2,7 +2,7 @@
  "id": "luthimodel-cc302265",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Bug: resuming a `JEPATrainer` (`luthi/v2/jepa_runner.py`) from a checkpoint in the middle of an epoch makes that epoch run a full extra pass. `resume()` restores the epoch's token baseline, but `run()` then calls `_start_new_epoch()`, which resets it. A run interrupted 10 steps into a 32-step epoch takes 42 steps instead of 32.\n\nFix it:\n- Add a flag `self._resumed_mid_epoch`. It is `False` after construction and set to `True` by `resume()`.\n- At the start of each epoch, `run()` checks the flag. When it is set, clear it and continue the restored epoch (log \"Continuing resumed epoch N\") instead of calling `_start_new_epoch()`. Later epochs start normally.\n\nAlso make the pilot driver (`scripts/jepa_pilot_driver.py`) resilient to an interrupted seed: in `_run_one`, if the run's `checkpoints/` folder already has `ckpt_*.pt` files, call `trainer.resume_from_latest()` before `trainer.run()` and print which checkpoint and step it resumed from.",
  "commit": "cc302265261256f794e87e9235dd67355cf64173",
  "base": "292f7c8e23be82212bff8165cb22b7e3e4785f47",
  "test_files": [

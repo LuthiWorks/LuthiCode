@@ -1,0 +1,52 @@
+{
+ "id": "luthimodel-7be80b97",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "7be80b97d54c4ecc05d7b5eda145f421518663f7",
+ "base": "2fd4240f4c821e96f73e90403f6c63462ccad820",
+ "test_files": [
+  "tests/v2/test_surprise_drive.py"
+ ],
+ "run_files": [
+  "tests/v2/test_surprise_drive.py"
+ ],
+ "gold_files": [
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/multimodal_model_pc.py",
+  "luthi/v2/pc_ops.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_surprise_drive.py::TestConfigContract::test_default_is_raw",
+  "tests/v2/test_surprise_drive.py::TestConfigContract::test_rejects_unknown_mode",
+  "tests/v2/test_surprise_drive.py::TestConfigContract::test_surprise_requires_relative_trust",
+  "tests/v2/test_surprise_drive.py::TestConfigContract::test_surprise_with_relative_trust_constructs",
+  "tests/v2/test_surprise_drive.py::TestOffByDefault::test_raw_mode_leaves_drive_buffers_untouched",
+  "tests/v2/test_surprise_drive.py::TestWarmup::test_warmup_behaves_exactly_like_raw",
+  "tests/v2/test_surprise_drive.py::TestWarmup::test_statistics_accumulate_during_warmup",
+  "tests/v2/test_surprise_drive.py::TestScaleFreedom::test_gain_survives_a_collapsing_error_scale",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_quiet_on_stationary_input",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_retains_range_while_quiet",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_duty_is_zero_on_a_predictable_error_scale",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_duty_rises_after_a_distribution_shift",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_duty_metric_survives_a_gain_floor",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_gain_is_bounded",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_dev_floor_prevents_infinite_surprise",
+  "tests/v2/test_surprise_drive.py::TestFrozenPathUntouched::test_frozen_reencode_mutates_no_drive_state",
+  "tests/v2/test_surprise_drive.py::TestInstrumentation::test_duty_and_state_are_reported"
+ ],
+ "pass_to_pass": [
+  "tests/v2/test_surprise_drive.py::TestOffByDefault::test_raw_mode_bit_identical_to_pre_change",
+  "tests/v2/test_surprise_drive.py::TestSaturationRegressionGuard::test_absolute_precision_saturates_the_clamp",
+  "tests/v2/test_surprise_drive.py::TestSaturationRegressionGuard::test_relative_trust_does_not_saturate"
+ ],
+ "source": {
+  "subject": "Fix the drive: normalized excess surprise, and a correction to 07-28",
+  "date": "2026-07-29",
+  "src_lines": 288
+ }
+}

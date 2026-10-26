@@ -1,0 +1,81 @@
+{
+ "id": "luthimodel-bc3e768c",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "bc3e768cec7b42d113d4c1316ac66a71d20f25cf",
+ "base": "7f40c389433ce5dd61b3226073445521d6a92f90",
+ "test_files": [
+  "tests/test_kill6_corroboration.py",
+  "tests/v2/test_divergence_guards.py",
+  "tests/v2/test_visreg_shape_normalize.py"
+ ],
+ "run_files": [
+  "tests/test_kill6_corroboration.py",
+  "tests/v2/test_divergence_guards.py",
+  "tests/v2/test_visreg_shape_normalize.py"
+ ],
+ "gold_files": [
+  "luthi/v2/eval_heldout.py",
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/visreg.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_visreg_shape_normalize.py::test_visreg_shape_normalize::test_normalized_shape_is_stable_across_sample_count",
+  "tests/v2/test_visreg_shape_normalize.py::test_visreg_shape_normalize::test_normalized_shape_is_the_unnormalized_one_divided_by_n",
+  "tests/v2/test_visreg_shape_normalize.py::test_visreg_shape_normalize::test_default_is_unnormalized",
+  "tests/v2/test_visreg_shape_normalize.py::test_visreg_shape_normalize::test_normalization_does_not_change_the_other_terms",
+  "tests/v2/test_visreg_shape_normalize.py::test_visreg_shape_normalize::test_gradient_still_flows_when_normalized"
+ ],
+ "pass_to_pass": [
+  "tests/test_kill6_corroboration.py::test_kill6_corroboration::test_err_acc_breach_with_healthy_geometry_does_not_kill",
+  "tests/test_kill6_corroboration.py::test_kill6_corroboration::test_err_acc_breach_with_degrading_rank_kills",
+  "tests/test_kill6_corroboration.py::test_kill6_corroboration::test_pred_frob_breach_with_healthy_geometry_does_not_kill",
+  "tests/test_kill6_corroboration.py::test_kill6_corroboration::test_pred_frob_breach_with_degrading_rank_kills",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_healthy_nmse_passes",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_diverged_nmse_trips",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_nmse_at_one_still_passes",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_nonfinite_nmse_trips",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_missing_nmse_is_not_a_trip",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_disabled_by_zero",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_baseline_is_frozen_not_rolling",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_single_spike_does_not_trip",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_two_of_three_sustained_does_not_trip",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_three_sustained_trips",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_not_armed_before_baseline_points",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_nonpositive_baseline_disarms_rather_than_misfires",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_nonfinite_loss_trips_immediately",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_disabled_by_zero",
+  "tests/v2/test_divergence_guards.py::TestAgainstRealSeries::test_healthy_shapes_do_not_trip",
+  "tests/v2/test_divergence_guards.py::TestAgainstRealSeries::test_the_diverged_shape_trips",
+  "tests/v2/test_divergence_guards.py::TestBaselineDuringDivergenceIsTheHole::test_loss_guard_misses_a_run_that_was_already_diverging",
+  "tests/v2/test_divergence_guards.py::TestBaselineDuringDivergenceIsTheHole::test_absolute_nmse_guard_catches_it_regardless_of_baseline",
+  "tests/v2/test_divergence_guards.py::TestBaselineDuringDivergenceIsTheHole::test_absolute_guard_needs_no_history",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_first_reading_does_not_kill",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_sustained_500_kills",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_recovery_resets_the_clock",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_hard_ceiling_kills_immediately_even_with_healthy_rank",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_rank_veto_blocks_kill_and_clock_keeps_running",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_nonfinite_still_kills_instantly",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_toggles_disable_each_rule",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_seed_97_would_have_lived",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_default_zero_never_suppresses",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_suppresses_before_min_step",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_fires_at_min_step",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_fires_after_min_step",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_suppression_is_loud",
+  "tests/v2/test_divergence_guards.py::TestPplVeto::test_veto_off_preserves_old_rule",
+  "tests/v2/test_divergence_guards.py::TestPplVeto::test_healthy_ppl_vetoes_marginal_trip",
+  "tests/v2/test_divergence_guards.py::TestPplVeto::test_broken_ppl_does_not_veto",
+  "tests/v2/test_divergence_guards.py::TestPplVeto::test_missing_ppl_does_not_veto",
+  "tests/v2/test_divergence_guards.py::TestPplVeto::test_nonfinite_nmse_never_vetoed",
+  "tests/v2/test_visreg_shape_normalize.py::test_visreg_shape_normalize::test_unnormalized_shape_scales_with_sample_count"
+ ],
+ "source": {
+  "subject": "Close audit B1-B6: probe standardization, veto instrumentation, VISReg dose flag, clip sizing",
+  "date": "2026-08-14",
+  "src_lines": 185
+ }
+}

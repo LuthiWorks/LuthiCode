@@ -2,7 +2,7 @@
  "id": "luthimodel-15bb0858",
  "repo": "luthimodel",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Add a repo-hygiene rule: no tracked source file may contain a user-specific home path. A test will scan every tracked `.py`, `.pyi`, `.toml`, `.yaml`, `.yml`, `.json`, `.cfg` and `.ini` file (skipping anything under `docs/`, `.docs/` or `.claude/`, and `uv.lock`) for Windows user-home paths (`C:/Users/<name>` or `C:\\Users\\<name>`), Linux `/home/<name>` and macOS `/Users/<name>`, and fail on any match, including matches in comments and docstrings.\n\nFind every such path in the tracked source and replace it with a generic placeholder: an environment-variable placeholder such as `${LUTHI_PATH}` for a local checkout, or a `/path/to/...` style example in usage text. If a literal really must stay, the line can end with `# pragma: allow-hardcoded-path`, but don't use that to avoid fixing ordinary examples.",
  "commit": "15bb08588523235598537a3cbc7c3a0f92da325f",
  "base": "27c357cf6ba448a6140ce424d2bc8e19588a52f2",
  "test_files": [

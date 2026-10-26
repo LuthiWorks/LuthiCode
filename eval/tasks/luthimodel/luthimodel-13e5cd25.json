@@ -1,0 +1,38 @@
+{
+ "id": "luthimodel-13e5cd25",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "13e5cd253b7d990191b651339df0763caceb19a2",
+ "base": "5ea5d33f66f3c44a1a8643e7a9b4fc0d3d9a15f5",
+ "test_files": [
+  "tests/test_relative_trust.py"
+ ],
+ "run_files": [
+  "tests/test_relative_trust.py"
+ ],
+ "gold_files": [
+  "luthi/csrc/pc_ops.cpp",
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/multimodal_model_pc.py",
+  "luthi/v2/pc_ops.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_relative_trust.py::TestRelativeMode::test_ledger_spreads_and_never_pins_at_legacy_cap",
+  "tests/test_relative_trust.py::TestRelativeMode::test_legacy_mode_still_flattens_and_pins",
+  "tests/test_relative_trust.py::TestRelativeMode::test_ratio_semantics_cap_and_median",
+  "tests/test_relative_trust.py::TestRelativeMode::test_modes_differ",
+  "tests/test_relative_trust.py::TestCppParity::test_relative_mode_buffers_match",
+  "tests/test_relative_trust.py::TestPlumbing::test_model_kwarg_reaches_layers",
+  "tests/test_relative_trust.py::TestPlumbing::test_driver_tables_complete"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "v5 precision awakening: relative trust behind a flag, both kernels, parity-verified",
+  "date": "2026-07-21",
+  "src_lines": 58
+ }
+}

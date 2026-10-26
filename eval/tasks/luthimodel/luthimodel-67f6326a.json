@@ -1,0 +1,54 @@
+{
+ "id": "luthimodel-67f6326a",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "67f6326a483c0af77b577028177270a1755cc852",
+ "base": "d2326c8d9911801c1824cc11e69b81501ac69aa5",
+ "test_files": [
+  "tests/test_buffer_dtypes.py"
+ ],
+ "run_files": [
+  "tests/test_buffer_dtypes.py"
+ ],
+ "gold_files": [
+  "luthi/living_layer.py",
+  "luthi/train.py",
+  "run_ablation_A.bat",
+  "run_ablation_B.bat",
+  "run_ablation_C.bat",
+  "run_ablation_D.bat",
+  "run_train_tokenizer.bat"
+ ],
+ "fail_to_pass": [
+  "tests/test_buffer_dtypes.py::TestInt8EpisodeStorage::test_default_episode_storage_is_fp32",
+  "tests/test_buffer_dtypes.py::TestInt8EpisodeStorage::test_int8_episode_values_register_correctly",
+  "tests/test_buffer_dtypes.py::TestInt8EpisodeStorage::test_int8_storage_roundtrip_within_tolerance"
+ ],
+ "pass_to_pass": [
+  "tests/test_buffer_dtypes.py::TestBufferDtypeRegistration::test_no_override_defaults_to_fp32",
+  "tests/test_buffer_dtypes.py::TestBufferDtypeRegistration::test_single_buffer_override",
+  "tests/test_buffer_dtypes.py::TestBufferDtypeRegistration::test_multiple_buffer_overrides",
+  "tests/test_buffer_dtypes.py::TestBufferDtypeSurvivesTo::test_to_dtype_does_not_clobber_override",
+  "tests/test_buffer_dtypes.py::TestBufferDtypeSurvivesTo::test_to_bfloat16_keeps_fp32_buffers_fp32",
+  "tests/test_buffer_dtypes.py::TestBufferDtypeSurvivesTo::test_to_device_only_preserves_dtypes",
+  "tests/test_buffer_dtypes.py::TestMixedPrecisionTraining::test_bf16_momentum_forward_no_nan",
+  "tests/test_buffer_dtypes.py::TestMixedPrecisionTraining::test_bf16_set_point_forward_no_nan",
+  "tests/test_buffer_dtypes.py::TestMixedPrecisionTraining::test_combined_bf16_momentum_set_point_no_nan",
+  "tests/test_buffer_dtypes.py::TestMixedPrecisionTraining::test_top_down_with_bf16_momentum",
+  "tests/test_buffer_dtypes.py::TestSpikingInheritsOverrides::test_spiking_layer_accepts_buffer_dtypes",
+  "tests/test_buffer_dtypes.py::TestSpikingInheritsOverrides::test_spiking_forward_with_bf16_momentum_no_nan",
+  "tests/test_buffer_dtypes.py::TestModelPlumbing::test_luthi_lm_forwards_buffer_dtypes_to_blocks",
+  "tests/test_buffer_dtypes.py::TestModelPlumbing::test_luthi_lm_training_step_no_nan",
+  "tests/test_buffer_dtypes.py::TestInt8EpisodeStorage::test_int8_episode_to_dtype_does_not_clobber",
+  "tests/test_buffer_dtypes.py::TestInt8EpisodeStorage::test_int8_recall_returns_finite_delta",
+  "tests/test_buffer_dtypes.py::TestInt8EpisodeStorage::test_int8_episode_full_forward_no_nan",
+  "tests/test_buffer_dtypes.py::TestInt8EpisodeStorage::test_int8_episode_in_full_model",
+  "tests/test_buffer_dtypes.py::TestInt8EpisodeStorage::test_combined_ablation_d_preview"
+ ],
+ "source": {
+  "subject": "LuthiModel_v2 plan, and Ablation test building.",
+  "date": "2026-05-08",
+  "src_lines": 108
+ }
+}

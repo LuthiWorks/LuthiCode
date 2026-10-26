@@ -1,0 +1,56 @@
+{
+ "id": "luthimodel-fae772dc",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "fae772dc936adf10ff501356ca90af3ecff50e5d",
+ "base": "22b809032f8fb1a478d4c51ec4cd452785590e8c",
+ "test_files": [
+  "tests/test_learning_gain.py",
+  "tests/test_learning_gain_integration.py",
+  "tests/test_slow_trace.py"
+ ],
+ "run_files": [
+  "tests/test_learning_gain.py",
+  "tests/test_learning_gain_integration.py",
+  "tests/test_slow_trace.py"
+ ],
+ "gold_files": [
+  "luthi/v2/pc_ops.py",
+  "luthi/v2/slow_trace.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_learning_gain.py::test_learning_gain::test_gain_is_bounded_one_to_cap_for_all_inputs",
+  "tests/test_learning_gain.py::test_learning_gain::test_gain_rises_on_coherent_resolving_novelty",
+  "tests/test_learning_gain.py::test_learning_gain::test_gain_decays_to_one_as_momentum_settles",
+  "tests/test_learning_gain.py::test_learning_gain::test_nonresolution_returns_to_one_never_below",
+  "tests/test_learning_gain.py::test_learning_gain::test_worsening_does_not_amplify",
+  "tests/test_learning_gain.py::test_learning_gain::test_thrash_stays_near_one",
+  "tests/test_learning_gain.py::test_learning_gain::test_cold_start_is_one_no_nan",
+  "tests/test_learning_gain.py::test_learning_gain::test_cap_binds_on_coherence_overshoot",
+  "tests/test_learning_gain.py::test_learning_gain::test_nan_progress_fails_safe_to_legacy",
+  "tests/test_learning_gain.py::test_learning_gain::test_gain_monotonic_nondecreasing_in_coherence",
+  "tests/test_learning_gain_integration.py::test_learning_gain_integration::test_f_flag_off_is_the_default_path",
+  "tests/test_learning_gain_integration.py::test_learning_gain_integration::test_f_gain_on_at_rest_is_numerically_legacy",
+  "tests/test_learning_gain_integration.py::test_learning_gain_integration::test_d_spike_guard_inputs_bit_identical_gain_on_vs_rest",
+  "tests/test_learning_gain_integration.py::test_learning_gain_integration::test_gain_amplifies_the_applied_change",
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_seeds_exactly_then_converges",
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_decay_sets_timescale",
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_warmup_seeds_from_mean_not_outlier",
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_warmup_gate",
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_roundtrips_lived_state",
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_rejects_bad_decay",
+  "tests/test_slow_trace.py::test_slow_trace::test_accumulator_sums_and_read_reset_clears",
+  "tests/test_slow_trace.py::test_slow_trace::test_accumulator_roundtrips_lived_state",
+  "tests/test_slow_trace.py::test_slow_trace::test_resolution_progress_resolving_is_below_one",
+  "tests/test_slow_trace.py::test_slow_trace::test_resolution_progress_nonresolving_is_near_one",
+  "tests/test_slow_trace.py::test_slow_trace::test_resolution_progress_worsening_is_above_one",
+  "tests/test_slow_trace.py::test_slow_trace::test_resolution_progress_cold_start_returns_zero"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "feat: momentum foundations 2/2 — inverted-U gain wired into pc_self_modify (opt-in, pre-gain histories)",
+  "date": "2026-07-06",
+  "src_lines": 104
+ }
+}

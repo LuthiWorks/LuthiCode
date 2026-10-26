@@ -1,0 +1,60 @@
+{
+ "id": "luthimodel-27c357cf",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "27c357cf6ba448a6140ce424d2bc8e19588a52f2",
+ "base": "9cbac9c406da4ca5311d544f1c4b7c0f05188f82",
+ "test_files": [
+  "tests/test_backward_pass.py"
+ ],
+ "run_files": [
+  "tests/test_backward_pass.py"
+ ],
+ "gold_files": [
+  "luthi/backward_pass.py",
+  "luthi/living_layer.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_backward_pass.py::TestTopDownSignalShapeContract::test_wrong_salience_size_raises",
+  "tests/test_backward_pass.py::TestTopDownSignalShapeContract::test_wrong_prediction_error_size_raises",
+  "tests/test_backward_pass.py::TestTopDownSignalShapeContract::test_spiking_layer_inherits_shape_contract"
+ ],
+ "pass_to_pass": [
+  "tests/test_backward_pass.py::test_backward_pass::test_top_down_signal_creation",
+  "tests/test_backward_pass.py::test_backward_pass::test_initial_signal_shape",
+  "tests/test_backward_pass.py::test_backward_pass::test_initial_signal_salience_normalized",
+  "tests/test_backward_pass.py::test_backward_pass::test_initial_signal_prediction_error_zero",
+  "tests/test_backward_pass.py::test_backward_pass::test_initial_signal_custom_strength",
+  "tests/test_backward_pass.py::test_backward_pass::test_block_top_down_decays_strength",
+  "tests/test_backward_pass.py::test_backward_pass::test_block_top_down_two_levels",
+  "tests/test_backward_pass.py::test_backward_pass::test_block_top_down_produces_prediction_error",
+  "tests/test_backward_pass.py::test_backward_pass::test_living_layer_plasticity_modulation",
+  "tests/test_backward_pass.py::test_backward_pass::test_living_layer_set_point_modulation",
+  "tests/test_backward_pass.py::test_backward_pass::test_living_layer_zero_strength_no_change",
+  "tests/test_backward_pass.py::test_backward_pass::test_living_layer_plasticity_clamped",
+  "tests/test_backward_pass.py::test_backward_pass::test_spiking_layer_membrane_priming",
+  "tests/test_backward_pass.py::test_backward_pass::test_spiking_layer_inherits_base_modulation",
+  "tests/test_backward_pass.py::test_backward_pass::test_hybrid_block_top_down_returns_signal",
+  "tests/test_backward_pass.py::test_backward_pass::test_model_forward_with_backward_pass",
+  "tests/test_backward_pass.py::test_backward_pass::test_model_eval_skips_backward_pass",
+  "tests/test_backward_pass.py::test_backward_pass::test_model_backward_pass_modulates_for_next_forward",
+  "tests/test_backward_pass.py::test_backward_pass::test_training_loop_with_backward_pass",
+  "tests/test_backward_pass.py::test_backward_pass::test_spiking_model_forward_with_backward_pass",
+  "tests/test_backward_pass.py::test_backward_pass::test_spiking_model_backward_spike_propagation",
+  "tests/test_backward_pass.py::test_backward_pass::test_model_backward_pass_disabled",
+  "tests/test_backward_pass.py::test_backward_pass::test_model_backward_pass_enabled_modifies_plasticity",
+  "tests/test_backward_pass.py::test_backward_pass::test_model_backward_pass_toggle_runtime",
+  "tests/test_backward_pass.py::test_backward_pass::test_spiking_model_backward_pass_toggle",
+  "tests/test_backward_pass.py::test_backward_pass::test_collect_extended_metrics",
+  "tests/test_backward_pass.py::test_backward_pass::test_measure_backward_pass_effect",
+  "tests/test_backward_pass.py::test_backward_pass::test_measure_backward_pass_effect_zero_when_disabled",
+  "tests/test_backward_pass.py::TestTopDownSignalShapeContract::test_correct_shape_signal_is_accepted",
+  "tests/test_backward_pass.py::TestTopDownSignalShapeContract::test_set_point_drift_is_uniform_across_output_axis"
+ ],
+ "source": {
+  "subject": "clarify top-down signal axis convention, assert shape contract",
+  "date": "2026-04-26",
+  "src_lines": 82
+ }
+}

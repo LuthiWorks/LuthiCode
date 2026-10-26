@@ -1,0 +1,37 @@
+{
+ "id": "luthimodel-d6b8b227",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "d6b8b227c484a2278957b321620fc8935f0e7c92",
+ "base": "a78eed0d6e0173d01a7854abdbb1169560fe29a5",
+ "test_files": [
+  "tests/test_introspection_v1_v2.py"
+ ],
+ "run_files": [
+  "tests/test_introspection_v1_v2.py"
+ ],
+ "gold_files": [
+  "luthi/generate.py",
+  "luthi/sanctuary_interface.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_introspection_v1_v2.py::TestV2SpecificSignals::test_v2_exposes_error_acc",
+  "tests/test_introspection_v1_v2.py::TestV2SpecificSignals::test_v2_exposes_pred_frob",
+  "tests/test_introspection_v1_v2.py::TestV2SpecificSignals::test_v2_exposes_precision_mean"
+ ],
+ "pass_to_pass": [
+  "tests/test_introspection_v1_v2.py::TestSharedFields::test_v1_populates_plasticity_and_drift",
+  "tests/test_introspection_v1_v2.py::TestSharedFields::test_v2_populates_plasticity_and_drift",
+  "tests/test_introspection_v1_v2.py::TestV2LacksV1OnlyFields::test_v2_no_membrane_or_spike",
+  "tests/test_introspection_v1_v2.py::TestV2LacksV1OnlyFields::test_v2_no_excitability",
+  "tests/test_introspection_v1_v2.py::TestV1LacksV2OnlyFields::test_v1_no_error_acc",
+  "tests/test_introspection_v1_v2.py::TestV1LacksV2OnlyFields::test_v1_no_pred_frob",
+  "tests/test_introspection_v1_v2.py::TestV1LacksV2OnlyFields::test_v1_no_precision_mean"
+ ],
+ "source": {
+  "subject": "get_introspection: expose v2 PC signals (error_acc, pred_frob, precision)",
+  "date": "2026-05-25",
+  "src_lines": 69
+ }
+}

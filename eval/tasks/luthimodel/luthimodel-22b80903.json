@@ -1,0 +1,36 @@
+{
+ "id": "luthimodel-22b80903",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "22b809032f8fb1a478d4c51ec4cd452785590e8c",
+ "base": "269db40829b8323a395ec1ebd5db055c8a85aaae",
+ "test_files": [
+  "tests/test_slow_trace.py"
+ ],
+ "run_files": [
+  "tests/test_slow_trace.py"
+ ],
+ "gold_files": [
+  "luthi/v2/slow_trace.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_seeds_exactly_then_converges",
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_decay_sets_timescale",
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_warmup_gate",
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_roundtrips_lived_state",
+  "tests/test_slow_trace.py::test_slow_trace::test_slow_ema_rejects_bad_decay",
+  "tests/test_slow_trace.py::test_slow_trace::test_accumulator_sums_and_read_reset_clears",
+  "tests/test_slow_trace.py::test_slow_trace::test_accumulator_roundtrips_lived_state",
+  "tests/test_slow_trace.py::test_slow_trace::test_resolution_progress_resolving_is_below_one",
+  "tests/test_slow_trace.py::test_slow_trace::test_resolution_progress_nonresolving_is_near_one",
+  "tests/test_slow_trace.py::test_slow_trace::test_resolution_progress_worsening_is_above_one",
+  "tests/test_slow_trace.py::test_slow_trace::test_resolution_progress_cold_start_returns_zero"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "feat: momentum foundations 1/2 — locked inverted-U gain spec + slow-trace primitive",
+  "date": "2026-07-05",
+  "src_lines": 132
+ }
+}

@@ -1,0 +1,27 @@
+{
+ "id": "luthimodel-15bb0858",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "15bb08588523235598537a3cbc7c3a0f92da325f",
+ "base": "27c357cf6ba448a6140ce424d2bc8e19588a52f2",
+ "test_files": [
+  "tests/test_no_hardcoded_paths.py"
+ ],
+ "run_files": [
+  "tests/test_no_hardcoded_paths.py"
+ ],
+ "gold_files": [
+  "corpus_build/download_code.py",
+  "luthi/train_vision.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_no_hardcoded_paths.py::test_no_hardcoded_paths::test_no_hardcoded_user_paths_in_source"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "add path-hygiene test, genericize machine-specific path examples",
+  "date": "2026-04-26",
+  "src_lines": 14
+ }
+}

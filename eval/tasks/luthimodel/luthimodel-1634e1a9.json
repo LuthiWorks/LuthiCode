@@ -1,0 +1,54 @@
+{
+ "id": "luthimodel-1634e1a9",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "1634e1a923f5348352eb4c0aa6a4c6f458cd6197",
+ "base": "ebbf7602bc22ff190d55175a3a61ab540cd18c91",
+ "test_files": [
+  "tests/test_buffer_rank_invariants.py",
+  "tests/test_cpp_ops.py"
+ ],
+ "run_files": [
+  "tests/test_buffer_rank_invariants.py",
+  "tests/test_cpp_ops.py"
+ ],
+ "gold_files": [
+  "luthi/csrc/living_ops.cpp",
+  "luthi/fused_ops.py",
+  "luthi/living_layer.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_cpp_ops.py::test_cpp_ops::test_fused_op_ungated",
+  "tests/test_cpp_ops.py::test_cpp_ops::test_fused_op_gated",
+  "tests/test_cpp_ops.py::test_cpp_ops::test_fused_op_eval_mode",
+  "tests/test_cpp_ops.py::test_cpp_ops::test_fused_op_no_nan_after_many_calls"
+ ],
+ "pass_to_pass": [
+  "tests/test_buffer_rank_invariants.py::TestPlasticityRank1AlongInput::test_initial_state_is_rank1",
+  "tests/test_buffer_rank_invariants.py::TestPlasticityRank1AlongInput::test_one_top_down_preserves_rank1",
+  "tests/test_buffer_rank_invariants.py::TestPlasticityRank1AlongInput::test_many_top_downs_preserve_rank1",
+  "tests/test_buffer_rank_invariants.py::TestPlasticityRank1AlongInput::test_clamp_preserves_rank1",
+  "tests/test_buffer_rank_invariants.py::TestPlasticityRank1AlongInput::test_forward_pass_does_not_modify_plasticity",
+  "tests/test_buffer_rank_invariants.py::TestExcitabilityRank1AlongOutput::test_initial_state_is_rank1",
+  "tests/test_buffer_rank_invariants.py::TestExcitabilityRank1AlongOutput::test_one_forward_preserves_rank1",
+  "tests/test_buffer_rank_invariants.py::TestExcitabilityRank1AlongOutput::test_many_forwards_preserve_rank1",
+  "tests/test_buffer_rank_invariants.py::TestExcitabilityRank1AlongOutput::test_sanctuary_scalar_bias_preserves_rank1",
+  "tests/test_buffer_rank_invariants.py::TestExcitabilityRank1AlongOutput::test_modulated_context_preserves_rank1",
+  "tests/test_buffer_rank_invariants.py::TestRankInvariantsUnderTraining::test_invariants_hold_in_full_model",
+  "tests/test_buffer_rank_invariants.py::TestSpikingRankInvariants::test_initial_state",
+  "tests/test_buffer_rank_invariants.py::TestSpikingRankInvariants::test_forward_passes",
+  "tests/test_buffer_rank_invariants.py::TestSpikingRankInvariants::test_top_down_with_spikes",
+  "tests/test_cpp_ops.py::test_cpp_ops::test_living_layer_uses_fused_ops",
+  "tests/test_cpp_ops.py::test_cpp_ops::test_spiking_layer_uses_fused_ops",
+  "tests/test_cpp_ops.py::test_cpp_ops::test_full_model_with_fused_ops",
+  "tests/test_cpp_ops.py::test_cpp_ops::test_spiking_model_with_fused_ops",
+  "tests/test_cpp_ops.py::test_cpp_ops::test_training_loop_with_fused_ops",
+  "tests/test_cpp_ops.py::test_cpp_ops::test_cpp_availability_reported"
+ ],
+ "source": {
+  "subject": "Refactor",
+  "date": "2026-05-07",
+  "src_lines": 62
+ }
+}

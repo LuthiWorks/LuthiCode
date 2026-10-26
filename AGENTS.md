@@ -7,6 +7,7 @@ Local agentic coding setup: Qwen3.6-35B-A3B on llama.cpp (Vulkan, Windows), driv
 - `pi/` - Pi config and installer
 - `extensions/` - Pi extensions, one TypeScript file each
 - `eval/` - task set, runner, results
+- `docs/plan.md` - what gets built, in what order
 - `docs/decisions.md` - read before changing server flags or tool behavior
 
 ## Rules
@@ -14,6 +15,8 @@ Local agentic coding setup: Qwen3.6-35B-A3B on llama.cpp (Vulkan, Windows), driv
 - The context window is set in two places: `CTX` in `server/start-qwen-server.bat` and `contextWindow` in `pi/models.json`. Change both together.
 - `.bat` files must stay CRLF (enforced by `.gitattributes`).
 - Keep tool descriptions short. Every token in them is paid on every turn.
+- Never weaken or bypass the `protect-paths` extension, even to make a task pass.
+- Extension tests must run without the model server.
 - Judge changes against `eval/`; record results in `eval/results/`.
 - Record any decision that changes behavior in `docs/decisions.md`.
 - Commit messages: plain language, what changed and why.

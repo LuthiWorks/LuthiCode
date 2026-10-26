@@ -1,0 +1,32 @@
+{
+ "id": "luthimodel-b70dec4f",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "b70dec4fad2759a899541ab0ad6e5b5f00a9e179",
+ "base": "1ef9f834caa00981a0001c820b0c19c04a883e4b",
+ "test_files": [
+  "tests/test_pc_ops_gain_parity.py"
+ ],
+ "run_files": [
+  "tests/test_pc_ops_gain_parity.py"
+ ],
+ "gold_files": [
+  "luthi/csrc/pc_ops.cpp",
+  "luthi/v2/pc_ops.py",
+  "luthi/v2/pc_ops_triton.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_pc_ops_gain_parity.py::test_pc_ops_gain_parity::test_cpp_python_buffers_bit_identical_gain_on",
+  "tests/test_pc_ops_gain_parity.py::test_pc_ops_gain_parity::test_cpp_python_applied_change_matches",
+  "tests/test_pc_ops_gain_parity.py::test_pc_ops_gain_parity::test_cpp_pregain_histories_bit_identical_gain_on_vs_rest"
+ ],
+ "pass_to_pass": [
+  "tests/test_pc_ops_gain_parity.py::test_pc_ops_gain_parity::test_cpp_gain_off_still_bit_identical_to_python"
+ ],
+ "source": {
+  "subject": "feat: momentum foundations step 7 — C++ parity for the inverted-U gain",
+  "date": "2026-07-06",
+  "src_lines": 30
+ }
+}

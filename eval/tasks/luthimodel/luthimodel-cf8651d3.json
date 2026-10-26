@@ -1,0 +1,30 @@
+{
+ "id": "luthimodel-cf8651d3",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "cf8651d3daf34b01f239b338f790132668c6b3d7",
+ "base": "4c800723d8ba3fa5ca76d1150f2f63c1aabf8a50",
+ "test_files": [
+  "tests/test_learning_gain_layer.py"
+ ],
+ "run_files": [
+  "tests/test_learning_gain_layer.py"
+ ],
+ "gold_files": [
+  "luthi/v2/living_layer_pc.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_learning_gain_layer.py::test_learning_gain_layer::test_gain_off_bit_identical_to_default_layer",
+  "tests/test_learning_gain_layer.py::test_learning_gain_layer::test_gain_off_leaves_traces_and_sinks_inert",
+  "tests/test_learning_gain_layer.py::test_learning_gain_layer::test_first_forward_bit_identical_gain_on_vs_off",
+  "tests/test_learning_gain_layer.py::test_learning_gain_layer::test_traces_warm_after_warmup_forwards",
+  "tests/test_learning_gain_layer.py::test_learning_gain_layer::test_gain_amplifies_coherent_establishment_and_stays_bounded"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "feat: momentum foundations step 4 — layer plumbing for the inverted-U gain",
+  "date": "2026-07-06",
+  "src_lines": 61
+ }
+}

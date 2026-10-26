@@ -27,7 +27,7 @@ Two rules carry over from the LuthiWorks repos:
 Here that means:
 - An extension written in one session is reviewed in another.
 - The `protect-paths` guard gets a review from a different model family before the agent runs in Sanctuary unattended.
-- The local agent's own seat is Brian's call; it is an open question in `docs/plan.md`.
+- The local agent is tried in every seat, but its main job is implementation and coding (Brian, 2026-10-26). When it reviews, its reviews don't count as review by a different mind for code it wrote itself.
 
 ## Fresh-instance audits
 

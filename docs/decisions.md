@@ -57,6 +57,11 @@ With experts on the CPU, processing the prompt is the bottleneck, so a broken ca
 - Pi also doesn't ask before file edits, which is why that hook only had to check shell commands.
 - So a `protect-paths` Pi extension covering shell, write and edit comes before any agent run in Sanctuary (Phase 0 of `docs/plan.md`).
 
+## 2026-10-26 - The local agent's seat: all seats, mainly implementation
+
+- Brian's call: see what the local model can do in every seat, with implementation and coding as the main job.
+- So the eval task set is about 70% implementation, with smaller debugging and review sets (`docs/plan.md`, Phase 1). Planning and research are scored by hand, later.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/

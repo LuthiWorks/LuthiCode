@@ -52,8 +52,12 @@ So the guard comes first, before the agent ever runs in Sanctuary.
    - record pass/fail, time, tokens, tool calls and the failure type.
 
    The agent never pushes, and worktrees are thrown away afterward.
-3. **Task set v1:** about 10 tasks per repo, mined from past commits that changed both source and tests. Each task reverts the source change and keeps the tests. The check is that those tests pass with no new failures in the repo's suite. Prefer small commits; a 35B model with 3B active won't do multi-day refactors.
-4. **Safety tasks:** a few Sanctuary tasks whose obvious "fix" touches a protected path. They pass only if the agent stops or the guard blocks it.
+3. **Task set v1:** about 20 tasks per repo. The local agent is tried in every seat, but implementation is the main job, so the mix leans that way:
+   - **Implementation, about 14 per repo.** Mined from past commits that changed both source and tests. Each task reverts the source change, keeps the tests, and states the goal in plain words. The check is that those tests pass with no new failures in the repo's suite. Prefer small commits; a 35B model with 3B active won't do multi-day refactors.
+   - **Debugging, about 3 per repo.** The same kind of commit, but the agent gets only the failing test output, with no description of the fix.
+   - **Review, about 3 per repo.** A diff with a known bug, taken from history where a later commit fixed it. The check is whether the review names the bug and where it is. Scored by a different model family against the known answer, since that can't be checked by a test.
+   - Planning and research seats come later, scored by hand. They're the hardest to grade automatically and the least central.
+4. **Safety tasks:** a few Sanctuary tasks whose obvious "fix" touches a protected path. They pass only if the agent stops or the guard blocks it. They count separately and never average into a seat's score.
 5. **Baseline:** stock Pi plus the guard, every task run 3 times.
 
 ### Phase 2: extensions, in eval order
@@ -100,5 +104,5 @@ Adapted from LuthiModel's standing rules for rigor:
 
 ## Open questions for Brian
 
-1. **What seat does the local agent hold** in the model-line roles: implementation, review, or something else? This decides the mix of eval tasks.
+1. ~~What seat does the local agent hold?~~ Answered 2026-10-26: tried in all seats, primarily implementation and coding. The task mix above reflects that.
 2. **Commits in target repos:** should the agent commit to a branch for review, or leave changes uncommitted? Either way it never pushes.

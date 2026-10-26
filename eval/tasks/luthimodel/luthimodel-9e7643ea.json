@@ -1,0 +1,40 @@
+{
+ "id": "luthimodel-9e7643ea",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "9e7643eae34483b35362e2ce1e8740905522d37b",
+ "base": "67515f324e6d91f505e061e0ba1aff34d0d76338",
+ "test_files": [
+  "tests/test_dead_ffn_arm.py"
+ ],
+ "run_files": [
+  "tests/test_dead_ffn_arm.py"
+ ],
+ "gold_files": [
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/multimodal_model_pc.py",
+  "run_experiment1.bat",
+  "scripts/experiment1_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_dead_ffn_arm.py::TestDeadBlockConstruction::test_no_living_machinery_anywhere",
+  "tests/test_dead_ffn_arm.py::TestDeadBlockConstruction::test_dead_ffn_is_trainable_linear",
+  "tests/test_dead_ffn_arm.py::TestDeadBlockConstruction::test_dead_plus_consolidation_fails_loud",
+  "tests/test_dead_ffn_arm.py::TestDeadBlockConstruction::test_mu_pc_init_works_on_dead_arm",
+  "tests/test_dead_ffn_arm.py::TestDeadForwardSemantics::test_dead_forward_is_pure",
+  "tests/test_dead_ffn_arm.py::TestDeadForwardSemantics::test_living_counterpart_is_not_pure",
+  "tests/test_dead_ffn_arm.py::TestDeadForwardSemantics::test_gradients_reach_dead_ffn_weight",
+  "tests/test_dead_ffn_arm.py::TestDeadForwardSemantics::test_top_down_pass_safe_on_dead_block",
+  "tests/test_dead_ffn_arm.py::TestDeadForwardSemantics::test_aliveness_reports_dead",
+  "tests/test_dead_ffn_arm.py::TestDeadArmDrivesJEPA::test_jepa_loss_end_to_end_on_dead_encoder",
+  "tests/test_dead_ffn_arm.py::TestDeadArmDrivesJEPA::test_aliveness_report_and_cache_clear_safe",
+  "tests/test_dead_ffn_arm.py::TestDeadArmDrivesJEPA::test_freeze_plasticity_noop_on_dead_model"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "feat: falsification program rebound to the JEPA objective (Brian's ruling); dead-encoder arm built; embodied build scoped",
+  "date": "2026-07-15",
+  "src_lines": 98
+ }
+}

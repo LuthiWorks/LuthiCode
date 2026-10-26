@@ -1,0 +1,37 @@
+{
+ "id": "luthimodel-cc302265",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "cc302265261256f794e87e9235dd67355cf64173",
+ "base": "292f7c8e23be82212bff8165cb22b7e3e4785f47",
+ "test_files": [
+  "tests/test_cosine_lr_and_v4_arm.py"
+ ],
+ "run_files": [
+  "tests/test_cosine_lr_and_v4_arm.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_cosine_lr_and_v4_arm.py::TestMidSeedResume::test_resumed_epoch_continues_not_restarts"
+ ],
+ "pass_to_pass": [
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_endpoints_and_midpoint",
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_clamps_past_total",
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_monotone_decreasing",
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_zero_floor_refused",
+  "tests/test_cosine_lr_and_v4_arm.py::TestTrainerSchedule::test_enabled_requires_total_steps",
+  "tests/test_cosine_lr_and_v4_arm.py::TestTrainerSchedule::test_lr_follows_schedule",
+  "tests/test_cosine_lr_and_v4_arm.py::TestTrainerSchedule::test_disabled_leaves_lr_alone",
+  "tests/test_cosine_lr_and_v4_arm.py::TestV4ArmWiring::test_arm_tables_complete",
+  "tests/test_cosine_lr_and_v4_arm.py::TestV4ArmWiring::test_sigreg_override_reaches_loss"
+ ],
+ "source": {
+  "subject": "Mid-seed resume in the pilot driver + operational-queue runbook",
+  "date": "2026-07-20",
+  "src_lines": 19
+ }
+}

@@ -1,0 +1,31 @@
+{
+ "id": "luthimodel-b2a56a4b",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "b2a56a4bbf0c23ba9e4f371ec7387d434664ef44",
+ "base": "460cd42cf0c6be9afa47bac74e8c797beaf8c3df",
+ "test_files": [
+  "tests/v2/test_drive_normalization.py"
+ ],
+ "run_files": [
+  "tests/v2/test_drive_normalization.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/pc_ops.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_drive_normalization.py::test_drive_normalization::test_rms_tracker_follows_the_error_scale",
+  "tests/v2/test_drive_normalization.py::test_drive_normalization::test_normalized_drive_is_scale_free",
+  "tests/v2/test_drive_normalization.py::test_drive_normalization::test_off_by_default_and_bit_identical",
+  "tests/v2/test_drive_normalization.py::test_drive_normalization::test_precision_still_sees_raw_error"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Tier 0 measurement validity + item 1.1 drive normalization",
+  "date": "2026-07-28",
+  "src_lines": 105
+ }
+}

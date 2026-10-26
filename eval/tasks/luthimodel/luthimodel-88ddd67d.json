@@ -1,0 +1,36 @@
+{
+ "id": "luthimodel-88ddd67d",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "88ddd67d888e25d7a02d5f1de2666f6351b506bb",
+ "base": "5d608c9c49847f87a683bb84f41b750b3c71911d",
+ "test_files": [
+  "tests/v2/test_episode_store_admission.py"
+ ],
+ "run_files": [
+  "tests/v2/test_episode_store_admission.py"
+ ],
+ "gold_files": [
+  "luthi/v2/living_layer_pc.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_warmup_uses_legacy_admission_so_the_store_is_never_inert",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_transient_episodes_are_not_permanent",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_admits_after_warmup_on_relative_bar",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_admission_survives_a_signal_below_the_legacy_floor",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_store_does_not_freeze_under_decaying_salience",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_ordinary_wobble_is_not_admitted",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_refractory_prevents_consecutive_writes",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_age_decay_makes_stale_slots_evictable",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_legacy_path_is_preserved_for_ab",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_adaptive_recall_does_not_fire_on_every_step",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_stats_expose_store_health"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Admission v2: detrended surprise + refractory, after the probe failed",
+  "date": "2026-07-28",
+  "src_lines": 56
+ }
+}

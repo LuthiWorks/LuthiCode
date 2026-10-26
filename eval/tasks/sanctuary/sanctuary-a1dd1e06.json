@@ -1,0 +1,54 @@
+{
+ "id": "sanctuary-a1dd1e06",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "a1dd1e061f3f2dc953d2681b42e0ab3b471efae2",
+ "base": "b1b3cb31896cd0f43f68b66a76641d82f229c120",
+ "test_files": [
+  "sanctuary/tests/physics/test_orientation.py",
+  "sanctuary/tests/world/test_render_seam.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/physics/test_orientation.py",
+  "sanctuary/tests/world/test_render_seam.py"
+ ],
+ "gold_files": [
+  "sanctuary/physics/backends/mujoco_backend.py",
+  "sanctuary/physics/backends/reference.py",
+  "sanctuary/physics/state.py",
+  "sanctuary/world/render.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/physics/test_orientation.py::test_orientation::test_reference_backend_reports_none_not_identity",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_one_frame_is_published_per_step",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_headless_still_counts_frames",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_extra_on_step_runs_after_the_frame_is_published",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_render_frame_shows_the_world_not_the_perception",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_hidden_bodies_are_not_drawn",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_wire_format_is_json_serializable_and_versioned",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_wire_format_carries_pose_and_kind_when_present",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_shape_serializes_as_a_plain_string",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_positions_are_lists_of_plain_floats",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_orientation_is_absent_rather_than_faked",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_reference_backend_reports_no_orientation",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_recording_sink_reports_what_it_dropped",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_recording_sink_rejects_a_nonsense_bound",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_sinks_satisfy_the_protocol"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "Seam v2: orientation, shape, size and kind -- the format of Luthi's eye",
+  "date": "2026-08-18",
+  "src_lines": 227
+ }
+}

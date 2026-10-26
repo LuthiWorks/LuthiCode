@@ -1,0 +1,102 @@
+{
+ "id": "sanctuary-243d10b9",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "243d10b9e7acee7f5957c9b26d3cf05d64141d89",
+ "base": "7eedf5ea08dc3eb3673d29e5c5d0fa5acec7cb5f",
+ "test_files": [
+  "sanctuary/tests/api/test_ws_authorization.py",
+  "sanctuary/tests/api/test_ws_server.py",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/api/test_ws_authorization.py",
+  "sanctuary/tests/api/test_ws_server.py",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py"
+ ],
+ "gold_files": [
+  "sanctuary/api/health.py",
+  "sanctuary/api/ws_server.py",
+  "sanctuary/tools/builtin.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_status_auth_loopback_not_trusted_when_disabled",
+  "sanctuary/tests/api/test_ws_server.py::TestConnectionCap::test_gui_connection_cap_counts_open_connections",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_alternate_ipv4_encodings_blocked[0177.0.0.1]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_alternate_ipv4_encodings_blocked[2130706433]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_alternate_ipv4_encodings_blocked[127.1]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_web_fetch_denies_redirect_to_internal",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_web_fetch_follows_safe_redirect"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_capability_map_is_deny_by_default",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_capability_map_tiers",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_chat_only_may_inject_message",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_chat_only_denied_status_request",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_view_chat_and_full_may_status_request",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_unknown_tier_denied_message",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_missing_profile_denied_message",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_non_string_content_does_not_crash",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_full_tier_may_write_scene_state",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_under_privileged_cannot_spoof_scene_state",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_under_privileged_cannot_impersonate_visitor_chat",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_is_loopback_host",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_default_host_is_loopback",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_network_bind_without_tokens_refuses",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_network_bind_insecure_optout",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_loopback_bind_without_tokens_allowed",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_status_auth_loopback_allowed",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_status_auth_nonloopback_without_token_denied",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_status_auth_nonloopback_token",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_oversized_message_rejected",
+  "sanctuary/tests/api/test_ws_authorization.py::test_ws_authorization::test_normal_message_still_injected",
+  "sanctuary/tests/api/test_ws_server.py::TestServerLifecycle::test_start_and_stop",
+  "sanctuary/tests/api/test_ws_server.py::TestServerLifecycle::test_start_without_runner",
+  "sanctuary/tests/api/test_ws_server.py::TestHealthEndpoints::test_health_endpoint",
+  "sanctuary/tests/api/test_ws_server.py::TestHealthEndpoints::test_status_endpoint",
+  "sanctuary/tests/api/test_ws_server.py::TestHealthEndpoints::test_metrics_endpoint",
+  "sanctuary/tests/api/test_ws_server.py::TestWebSocketConnection::test_connect_and_receive_status",
+  "sanctuary/tests/api/test_ws_server.py::TestWebSocketConnection::test_send_message_injects_into_runner",
+  "sanctuary/tests/api/test_ws_server.py::TestWebSocketConnection::test_broadcast_speech",
+  "sanctuary/tests/api/test_ws_server.py::TestWebSocketConnection::test_invalid_json_returns_error",
+  "sanctuary/tests/api/test_ws_server.py::TestWebSocketConnection::test_status_request",
+  "sanctuary/tests/api/test_ws_server.py::TestWorldWebSocket::test_world_connect_and_receive_hello",
+  "sanctuary/tests/api/test_ws_server.py::TestWorldWebSocket::test_world_state_broadcast",
+  "sanctuary/tests/api/test_ws_server.py::TestWorldWebSocket::test_world_external_speech_is_separate_message",
+  "sanctuary/tests/api/test_ws_server.py::TestWorldWebSocket::test_world_scene_state_injects_environment_percept",
+  "sanctuary/tests/api/test_ws_server.py::TestWorldWebSocket::test_world_invalid_json_returns_error",
+  "sanctuary/tests/api/test_ws_server.py::TestWorldWebSocket::test_world_and_gui_channels_isolated",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_non_http_schemes_blocked[file:///etc/passwd]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_non_http_schemes_blocked[ftp://example.com/x]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_non_http_schemes_blocked[gopher://example.com]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_non_http_schemes_blocked[data:text/plain,hi]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_non_http_schemes_blocked[//example.com/no-scheme]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[127.0.0.1]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[10.0.0.5]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[192.168.1.1]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[172.16.0.1]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[169.254.169.254]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[0.0.0.0]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[[::1]]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_public_literal_ip_allowed",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_localhost_name_resolves_and_is_blocked",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_name_resolution_skipped_under_proxy",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_ip_is_blocked_classification",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_genuinely_public_octal_allowed"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "security: close audit findings (handshake DoS, proxy-loopback trust, SSRF gaps)",
+  "date": "2026-07-02",
+  "src_lines": 184
+ }
+}

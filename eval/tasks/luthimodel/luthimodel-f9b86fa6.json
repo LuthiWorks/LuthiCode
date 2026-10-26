@@ -1,0 +1,35 @@
+{
+ "id": "luthimodel-f9b86fa6",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "f9b86fa6a60eaff1334c921958e37d6889140ad8",
+ "base": "b400e298cf39ac370a4b14d640109ecd33e89dc6",
+ "test_files": [
+  "tests/test_relative_trust.py"
+ ],
+ "run_files": [
+  "tests/test_relative_trust.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/living_layer_pc.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_relative_trust.py::TestSpreadInstrument::test_aliveness_reports_precision_spread"
+ ],
+ "pass_to_pass": [
+  "tests/test_relative_trust.py::TestRelativeMode::test_ledger_spreads_and_never_pins_at_legacy_cap",
+  "tests/test_relative_trust.py::TestRelativeMode::test_legacy_mode_still_flattens_and_pins",
+  "tests/test_relative_trust.py::TestRelativeMode::test_ratio_semantics_cap_and_median",
+  "tests/test_relative_trust.py::TestRelativeMode::test_modes_differ",
+  "tests/test_relative_trust.py::TestCppParity::test_relative_mode_buffers_match",
+  "tests/test_relative_trust.py::TestPlumbing::test_model_kwarg_reaches_layers",
+  "tests/test_relative_trust.py::TestPlumbing::test_driver_tables_complete"
+ ],
+ "source": {
+  "subject": "Instrument: precision_spread (p95/p5 of the trust ledger) in aliveness + runner records",
+  "date": "2026-07-21",
+  "src_lines": 15
+ }
+}

@@ -1,0 +1,38 @@
+{
+ "id": "sanctuary-c585c18d",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "`LuthiModel._compute_introspection_delta()` in `sanctuary/core/luthi_model.py` turns per-block substrate stats from before and after a cycle (`self._pre_state[\"blocks\"]`, `self._post_state[\"blocks\"]`) into the entity's per-cycle proprioception delta, `self._introspection_delta`.\n\nLuthiModel now also exposes two more per-block stats: `update_ema_mean` (metaplasticity) and `momentum_abs_mean` (momentum). Add two delta channels:\n\n- `metaplasticity_change` and `momentum_change`: each the mean, over blocks, of post minus pre.\n- Count only blocks that have the field in both states. When no block has it (an older substrate), don't add the key at all, and don't raise.\n- Don't add either channel to `activity_level`. It must keep aggregating only the plasticity, drift and membrane changes, because it feeds the turbo trigger's running bands and widening it would shift their scale.",
+ "commit": "c585c18dbd95461ddc303385ba6b42958b6904b0",
+ "base": "86efd0ac07d17da08a0bec4366999abc6048ed68",
+ "test_files": [
+  "sanctuary/tests/core/test_introspection_delta.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/core/test_introspection_delta.py"
+ ],
+ "gold_files": [
+  "sanctuary/core/luthi_model.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/core/test_introspection_delta.py::test_introspection_delta::test_metaplasticity_and_momentum_deltas_computed"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/core/test_introspection_delta.py::test_introspection_delta::test_activity_level_excludes_new_channels",
+  "sanctuary/tests/core/test_introspection_delta.py::test_introspection_delta::test_missing_fields_are_tolerated"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "feat: feel metaplasticity + momentum — introspection delta consumes new substrate channels",
+  "date": "2026-07-05",
+  "src_lines": 27
+ }
+}

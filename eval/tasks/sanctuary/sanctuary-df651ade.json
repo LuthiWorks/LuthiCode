@@ -1,0 +1,45 @@
+{
+ "id": "sanctuary-df651ade",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "df651adec11989dfdf6e3ef85a73f200dd703651",
+ "base": "dd61d2410c4b9d8051d2ae35a79da500d01267fa",
+ "test_files": [
+  "sanctuary/tests/integration/test_persistence.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/integration/test_persistence.py"
+ ],
+ "gold_files": [
+  "sanctuary/api/runner.py",
+  "sanctuary/run_cognitive_core.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/integration/test_persistence.py::TestJournalPersists::test_journal_entry_survives_runner_reboot",
+  "sanctuary/tests/integration/test_persistence.py::TestJournalPersists::test_no_journal_persistence_when_persist_state_off",
+  "sanctuary/tests/integration/test_persistence.py::TestWorldGraphPersists::test_world_graph_entity_survives_runner_reboot",
+  "sanctuary/tests/integration/test_persistence.py::TestWorldGraphPersists::test_no_world_graph_persistence_when_persist_state_off",
+  "sanctuary/tests/integration/test_persistence.py::TestExperientialPersists::test_experiential_layer_constructed_when_enabled",
+  "sanctuary/tests/integration/test_persistence.py::TestExperientialPersists::test_experiential_state_survives_save_and_reboot",
+  "sanctuary/tests/integration/test_persistence.py::TestExperientialPersists::test_no_experiential_when_disabled",
+  "sanctuary/tests/integration/test_persistence.py::TestTransientSubsystemsDontPersist::test_turbo_state_resets_on_reboot",
+  "sanctuary/tests/integration/test_persistence.py::TestTransientSubsystemsDontPersist::test_cycle_count_resets_on_reboot",
+  "sanctuary/tests/integration/test_persistence.py::TestTransientSubsystemsDontPersist::test_sensorium_queue_resets_on_reboot"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "Persistence: wire journal/world-graph/experiential into SanctuaryRunner; remove checkpoint stubs",
+  "date": "2026-05-25",
+  "src_lines": 165
+ }
+}

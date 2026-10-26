@@ -1,0 +1,64 @@
+{
+ "id": "luthimodel-5f63385a",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "A healthy run was killed when a one-checkpoint NMSE \"breath\" coincided with a divergence-guard check. In `luthi/v2/jepa_runner.py`, replace the first-reading NMSE kill in `JEPATrainer._check_divergence` with three rules, all on by default.\n\nNew `RunnerConfig` fields:\n- `divergence_persist_steps: int = 500`: NMSE over the limit must be sustained this many steps (by `global_step`) before the kill fires. 0 restores the old first-reading kill.\n- `divergence_hard_ceiling_mult: float = 10.0`: a single reading above `limit * mult` kills immediately, regardless of persistence or the rank veto. 0 disables it.\n- `divergence_rank_veto_min_eff: float = 100.0`: an over-limit NMSE doesn't kill while the latest pooled effective rank is at or above this value. Log that loudly, but keep the persistence clock running, so a later drop in rank kills at once. 0 disables it.\n\nTrainer state (the tests read and set these directly):\n- `self._div_over_since: dict[str, int]`: per modality, the step at which NMSE first went over the limit. When NMSE comes back under the limit, remove the entry (and log it), so a new excursion waits its own full window.\n- `self._last_eff_rank: Optional[float]`: the latest pooled `effective_rank` from the deep-cadence collapse metrics. Update it where those metrics are computed.\n\nKill reasons: a hard-ceiling kill's string contains `hard-ceiling`, and a persistence kill's contains `sustained <n> steps`. A non-finite NMSE still kills instantly, and the existing perplexity veto still applies before these rules. Then: hard ceiling, rank veto, persistence.\n\nIn `scripts/jepa_pilot_driver.py`, add empty per-arm override dicts `ARM_DIV_PERSIST`, `ARM_DIV_CEIL_MULT` and `ARM_DIV_RANK_VETO`, pass their values (defaults 500, 10.0 and 100.0) into the runner config, and record them in the run's saved config.",
+ "commit": "5f63385a4903becaac9f46e6877d9dff8b767ff3",
+ "base": "bdb705250402558c85a751828591eff966000f27",
+ "test_files": [
+  "tests/v2/test_divergence_guards.py"
+ ],
+ "run_files": [
+  "tests/v2/test_divergence_guards.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_first_reading_does_not_kill",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_sustained_500_kills",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_recovery_resets_the_clock",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_hard_ceiling_kills_immediately_even_with_healthy_rank",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_rank_veto_blocks_kill_and_clock_keeps_running",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_toggles_disable_each_rule",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_seed_97_would_have_lived"
+ ],
+ "pass_to_pass": [
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_healthy_nmse_passes",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_diverged_nmse_trips",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_nmse_at_one_still_passes",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_nonfinite_nmse_trips",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_missing_nmse_is_not_a_trip",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_disabled_by_zero",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_baseline_is_frozen_not_rolling",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_single_spike_does_not_trip",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_two_of_three_sustained_does_not_trip",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_three_sustained_trips",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_not_armed_before_baseline_points",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_nonpositive_baseline_disarms_rather_than_misfires",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_nonfinite_loss_trips_immediately",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_disabled_by_zero",
+  "tests/v2/test_divergence_guards.py::TestAgainstRealSeries::test_healthy_shapes_do_not_trip",
+  "tests/v2/test_divergence_guards.py::TestAgainstRealSeries::test_the_diverged_shape_trips",
+  "tests/v2/test_divergence_guards.py::TestBaselineDuringDivergenceIsTheHole::test_loss_guard_misses_a_run_that_was_already_diverging",
+  "tests/v2/test_divergence_guards.py::TestBaselineDuringDivergenceIsTheHole::test_absolute_nmse_guard_catches_it_regardless_of_baseline",
+  "tests/v2/test_divergence_guards.py::TestBaselineDuringDivergenceIsTheHole::test_absolute_guard_needs_no_history",
+  "tests/v2/test_divergence_guards.py::TestMiddleGroundRules::test_nonfinite_still_kills_instantly",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_default_zero_never_suppresses",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_suppresses_before_min_step",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_fires_at_min_step",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_fires_after_min_step",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_suppression_is_loud",
+  "tests/v2/test_divergence_guards.py::TestPplVeto::test_veto_off_preserves_old_rule",
+  "tests/v2/test_divergence_guards.py::TestPplVeto::test_healthy_ppl_vetoes_marginal_trip",
+  "tests/v2/test_divergence_guards.py::TestPplVeto::test_broken_ppl_does_not_veto",
+  "tests/v2/test_divergence_guards.py::TestPplVeto::test_missing_ppl_does_not_veto",
+  "tests/v2/test_divergence_guards.py::TestPplVeto::test_nonfinite_nmse_never_vetoed"
+ ],
+ "source": {
+  "subject": "Middle-ground kill rules (Brian's ruling) + scale-breathing forensic",
+  "date": "2026-08-11",
+  "src_lines": 82
+ }
+}

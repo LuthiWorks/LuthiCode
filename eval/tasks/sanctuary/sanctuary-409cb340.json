@@ -1,0 +1,44 @@
+{
+ "id": "sanctuary-409cb340",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "Rename `ScaffoldAffect.merge_llm_emotion` (in `sanctuary/scaffold/affect.py`) to `merge_model_emotion`, as part of replacing \"LLM\" with \"model\" across the codebase. Update every caller, including `CognitiveScaffold` in `sanctuary/scaffold/cognitive_scaffold.py`. Behavior must not change.",
+ "commit": "409cb340bd64edf4dd2f60e5cdae124ab23d6497",
+ "base": "ebb9ed229f9c810d6a058e6daa820532d78e1c50",
+ "test_files": [
+  "sanctuary/tests/scaffold/test_affect.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/scaffold/test_affect.py"
+ ],
+ "gold_files": [
+  "sanctuary/scaffold/affect.py",
+  "sanctuary/scaffold/cognitive_scaffold.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/scaffold/test_affect.py::TestScaffoldAffect::test_merge_model_emotion_scaffold_only_ignores",
+  "sanctuary/tests/scaffold/test_affect.py::TestScaffoldAffect::test_merge_model_emotion_advises_small_blend",
+  "sanctuary/tests/scaffold/test_affect.py::TestScaffoldAffect::test_merge_model_emotion_guides_moderate_blend",
+  "sanctuary/tests/scaffold/test_affect.py::TestScaffoldAffect::test_merge_model_emotion_controls_full_blend"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/scaffold/test_affect.py::TestScaffoldAffect::test_initial_state_is_baseline",
+  "sanctuary/tests/scaffold/test_affect.py::TestScaffoldAffect::test_custom_baseline",
+  "sanctuary/tests/scaffold/test_affect.py::TestScaffoldAffect::test_decay_toward_baseline",
+  "sanctuary/tests/scaffold/test_affect.py::TestScaffoldAffect::test_emotion_label"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "Replaced \"LLM\" with \"model\" throughout the repo",
+  "date": "2026-06-06",
+  "src_lines": 4
+ }
+}

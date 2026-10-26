@@ -1,0 +1,37 @@
+{
+ "id": "luthimodel-27f9fa47",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "27f9fa476b12d9876b9988b71dbdaf9b63f56820",
+ "base": "1c44e7e4c930ba534d551cce4b746e1650a92c5b",
+ "test_files": [
+  "tests/v2/test_depth_remedies.py"
+ ],
+ "run_files": [
+  "tests/v2/test_depth_remedies.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_loss.py",
+  "luthi/v2/multimodal_model_pc.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_depth_remedies.py::TestTemporalCenter::test_shape_preserved",
+  "tests/v2/test_depth_remedies.py::TestTemporalCenter::test_constant_sequence_gives_zero_residual",
+  "tests/v2/test_depth_remedies.py::TestTemporalCenter::test_shared_offset_removed",
+  "tests/v2/test_depth_remedies.py::TestTemporalCenter::test_even_window_refused",
+  "tests/v2/test_depth_remedies.py::TestTemporalCenter::test_zero_window_is_identity",
+  "tests/v2/test_depth_remedies.py::TestSketchedIsotropy::test_isotropic_is_small_rank1_is_large",
+  "tests/v2/test_depth_remedies.py::TestSketchedIsotropy::test_collapse_toward_zero_variance_is_penalized",
+  "tests/v2/test_depth_remedies.py::TestOrthogonalityPenalty::test_orthogonal_matrix_is_near_zero_any_scale",
+  "tests/v2/test_depth_remedies.py::TestOrthogonalityPenalty::test_rank1_is_large",
+  "tests/v2/test_depth_remedies.py::TestOrthogonalityPenalty::test_scale_free"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Build the six depth-8 remedy probes: TC-SIGReg, interior Weak-SIGReg, orthogonal penalty, and pairs",
+  "date": "2026-08-07",
+  "src_lines": 148
+ }
+}

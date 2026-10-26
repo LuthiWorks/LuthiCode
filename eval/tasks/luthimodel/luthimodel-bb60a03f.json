@@ -1,0 +1,34 @@
+{
+ "id": "luthimodel-bb60a03f",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "bb60a03f77f7cf064625d748e6ffc14e53390a5e",
+ "base": "46473ec98f8fd21b8376ff246b5c92dd7b34a3a1",
+ "test_files": [
+  "tests/v2/test_wake_freeze.py"
+ ],
+ "run_files": [
+  "tests/v2/test_wake_freeze.py"
+ ],
+ "gold_files": [
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/plasticity.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_wake_freeze.py::test_wake_freeze::test_wake_freeze_leaves_the_substrate_bit_identical",
+  "tests/v2/test_wake_freeze.py::test_wake_freeze::test_wake_freeze_still_writes_episodes",
+  "tests/v2/test_wake_freeze.py::test_wake_freeze::test_plasticity_freeze_does_NOT_write_episodes",
+  "tests/v2/test_wake_freeze.py::test_wake_freeze::test_wake_freeze_keeps_the_noticing_machinery_live",
+  "tests/v2/test_wake_freeze.py::test_wake_freeze::test_recall_still_adapts_behaviour_within_the_day",
+  "tests/v2/test_wake_freeze.py::test_wake_freeze::test_sweep_reaches_every_layer_and_reports_count",
+  "tests/v2/test_wake_freeze.py::test_wake_freeze::test_wake_freeze_restores_prior_state_and_nests",
+  "tests/v2/test_wake_freeze.py::test_wake_freeze::test_wake_freeze_is_not_persisted"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Wake/rest regime ruled and the wake-freeze mode built",
+  "date": "2026-08-14",
+  "src_lines": 117
+ }
+}

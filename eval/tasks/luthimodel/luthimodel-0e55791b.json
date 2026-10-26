@@ -1,0 +1,38 @@
+{
+ "id": "luthimodel-0e55791b",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "Two fixes to the light-cadence per-block activation scalars in `luthi/v2/multimodal_model_pc.py`:\n\n1. `encode()` calls `_block_activation_scalars(h)` bare inside the training forward, so if the helper ever raises, the training step dies. Diagnostics must never kill a run. Guard the call: on any failure, append an entry with the same keys in the same order (`act_mean`, `act_std`, `act_rms`, `act_p50`, `act_p99`, `dead_frac`, `sat_frac`) and every value NaN.\n2. The p50/p99 quantiles sort a full copy of the block's activations, and older torch builds cap `quantile()` input at 2**24 elements. Add a module constant `_QUANTILE_MAX_ELEMS = 1 << 20`. Above that many elements, compute p50 and p99 on a deterministic strided subsample. Mean, std, rms and the dead and saturated fractions must stay exact over all elements.",
+ "commit": "0e55791b461af73045b32c09443c4d6c71801ba0",
+ "base": "ccc0e2f540b2ede7805ad519446b3f3139d171a1",
+ "test_files": [
+  "tests/test_light_block_activation.py"
+ ],
+ "run_files": [
+  "tests/test_light_block_activation.py"
+ ],
+ "gold_files": [
+  "luthi/v2/multimodal_model_pc.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_light_block_activation.py::TestReviewFixes::test_helper_failure_does_not_kill_training_step",
+  "tests/test_light_block_activation.py::TestReviewFixes::test_large_tensor_quantiles_subsampled_and_close"
+ ],
+ "pass_to_pass": [
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_keys_and_plain_floats",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_values_match_torch",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_dead_tensor_reads_dead",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_saturated_tensor_reads_saturated",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_healthy_tensor_reads_neither",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_thresholds_are_pinned",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_does_not_hold_graph",
+  "tests/test_light_block_activation.py::TestLightBlocksEmission::test_emitted_on_light_cadence_one_entry_per_block",
+  "tests/test_light_block_activation.py::TestLightBlocksEmission::test_absent_without_flag",
+  "tests/test_light_block_activation.py::TestLightBlocksEmission::test_deep_path_unaffected"
+ ],
+ "source": {
+  "subject": "Review fixes for light-cadence block scalars: guard + bounded quantiles",
+  "date": "2026-10-08",
+  "src_lines": 46
+ }
+}

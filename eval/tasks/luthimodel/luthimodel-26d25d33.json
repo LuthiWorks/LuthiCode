@@ -1,0 +1,29 @@
+{
+ "id": "luthimodel-26d25d33",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "26d25d332bc19357eee822b06c89bd0e94dd7c65",
+ "base": "fbb714a3d747db5be8e03dec7e6eb57512b0b1a8",
+ "test_files": [
+  "tests/test_jepa_runner_checkpoint_rotation.py"
+ ],
+ "run_files": [
+  "tests/test_jepa_runner_checkpoint_rotation.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_jepa_runner_checkpoint_rotation.py::TestRollingCapUnderfill::test_two_checkpoints_three_slots_keeps_both",
+  "tests/test_jepa_runner_checkpoint_rotation.py::TestRollingCapUnderfill::test_slots_actually_fill_to_cap",
+  "tests/test_jepa_runner_checkpoint_rotation.py::TestRollingCapOverfill::test_five_checkpoints_three_slots_keeps_newest_three",
+  "tests/test_jepa_runner_checkpoint_rotation.py::TestFallbackToOlderSlot::test_resume_from_latest_skips_corrupt_newest"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "fix: checkpoint rotation held ONE slot, not rolling_slots (negative-slice deletion)",
+  "date": "2026-07-12",
+  "src_lines": 76
+ }
+}

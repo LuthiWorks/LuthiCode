@@ -1,0 +1,50 @@
+{
+ "id": "luthimodel-77c4ae5a",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "77c4ae5a20e556673cb14c9a85dd2f87892bb67f",
+ "base": "29eff75279a8806b2889270ae4c3371eabccce1e",
+ "test_files": [
+  "tests/v2/test_divergence_guards.py"
+ ],
+ "run_files": [
+  "tests/v2/test_divergence_guards.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_healthy_nmse_passes",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_diverged_nmse_trips",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_nmse_at_one_still_passes",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_nonfinite_nmse_trips",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_missing_nmse_is_not_a_trip",
+  "tests/v2/test_divergence_guards.py::TestNMSEGuard::test_disabled_by_zero",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_baseline_is_frozen_not_rolling",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_single_spike_does_not_trip",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_two_of_three_sustained_does_not_trip",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_three_sustained_trips",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_not_armed_before_baseline_points",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_nonpositive_baseline_disarms_rather_than_misfires",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_nonfinite_loss_trips_immediately",
+  "tests/v2/test_divergence_guards.py::TestLossGuard::test_disabled_by_zero",
+  "tests/v2/test_divergence_guards.py::TestAgainstRealSeries::test_healthy_shapes_do_not_trip",
+  "tests/v2/test_divergence_guards.py::TestAgainstRealSeries::test_the_diverged_shape_trips",
+  "tests/v2/test_divergence_guards.py::TestBaselineDuringDivergenceIsTheHole::test_loss_guard_misses_a_run_that_was_already_diverging",
+  "tests/v2/test_divergence_guards.py::TestBaselineDuringDivergenceIsTheHole::test_absolute_nmse_guard_catches_it_regardless_of_baseline",
+  "tests/v2/test_divergence_guards.py::TestBaselineDuringDivergenceIsTheHole::test_absolute_guard_needs_no_history",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_default_zero_never_suppresses",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_suppresses_before_min_step",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_fires_at_min_step",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_fires_after_min_step",
+  "tests/v2/test_divergence_guards.py::TestGuardMinStep::test_suppression_is_loud"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "guard_min_step: delay all kill paths, loudly; register the observed-failure run",
+  "date": "2026-08-06",
+  "src_lines": 76
+ }
+}

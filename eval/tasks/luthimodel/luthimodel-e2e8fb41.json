@@ -1,0 +1,38 @@
+{
+ "id": "luthimodel-e2e8fb41",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "Replace the boolean `mu_pc_balance_rates` on `PredictiveCodingBlock` (`luthi/v2/hybrid_block_pc.py`) with a signed `mu_pc_rate_power: float = 0.0`, so attenuating, amplifying and off are one knob.\n\n- Store it as `self.mu_pc_rate_power`.\n- `self._mu_pc_rate_factor` becomes `residual_scale ** mu_pc_rate_power` when muPC is enabled and the power isn't 0, and exactly 1.0 otherwise:\n  - power 0 = off, bit-identical to before\n  - +1 = attenuate by residual_scale (what `mu_pc_balance_rates=True` did)\n  - -1 = amplify by 1/residual_scale\n- The living FFN's rates are still multiplied by the factor.\n- Rename the argument in `MultimodalPredictiveCodingLM` (`luthi/v2/multimodal_model_pc.py`) too, and update the comment that explains it.\n\nIn `scripts/jepa_pilot_driver.py`:\n- Switch `probe_surprise_d8_balanced` to `mu_pc_rate_power=1.0`.\n- Register stage 18, running a new arm `probe_surprise_d8_amplified` at d_model 512. It is `probe_surprise_d8`'s config with `mu_pc_rate_power=-1.0`, grad clip 1000.0, and the same taper, file list, SIGReg and cosine settings as `living_v5_4x_d4`.",
+ "commit": "e2e8fb41fab72ab13ff2de69bb4015d06a8695de",
+ "base": "2af229e6801147c1cae8e7718bbf0dde6f27f056",
+ "test_files": [
+  "tests/v2/test_mu_pc_balance.py"
+ ],
+ "run_files": [
+  "tests/v2/test_mu_pc_balance.py"
+ ],
+ "gold_files": [
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/multimodal_model_pc.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_negative_power_amplifies",
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_powers_are_symmetric_about_off",
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_factor_matches_residual_scale_when_enabled",
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_no_effect_when_mupc_disabled",
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_pc_rates_are_actually_scaled",
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_deeper_means_more_attenuation",
+  "tests/v2/test_mu_pc_balance.py::TestBitIdentity::test_forward_still_runs_with_balancing"
+ ],
+ "pass_to_pass": [
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_off_by_default",
+  "tests/v2/test_mu_pc_balance.py::TestBitIdentity::test_default_path_unchanged",
+  "tests/v2/test_mu_pc_balance.py::TestTheMeasurementThisRestsOn::test_pc_input_scale_is_depth_independent"
+ ],
+ "source": {
+  "subject": "Refute power=+1, register the opposite direction",
+  "date": "2026-07-30",
+  "src_lines": 53
+ }
+}

@@ -1,0 +1,52 @@
+{
+ "id": "luthimodel-f38bb9f2",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "The surprise-gated drive in the living layer can die out in two ways: by firing less often, or by firing more feebly. The cumulative duty cycle (`drive_duty`) can't tell these apart, and `drive_gain` is only a point sample. Add instrumentation that can.\n\n- In `PredictiveCodingLayer` (`luthi/v2/living_layer_pc.py`), add a buffer `drive_gain_sum`, a scalar tensor starting at 0.0. It accumulates the gain over firing calls only: the same calls that increment `drive_fire_count` (gain above `drive_gain_floor`, after warmup).\n  - It must stay at 0.0 in raw (non-surprise) drive mode, and must not change while plasticity is frozen.\n  - The self-modification happens in `pc_self_modify` / `_pc_self_modify_python` in `luthi/v2/pc_ops.py`. Pass the buffer through there as a new optional argument `drive_gain_sum`.\n- Add three entries to the layer's `aliveness()` dict:\n  - `drive_gain_mean_fired`: `drive_gain_sum / max(drive_fire_count, 1)`\n  - `drive_fires` and `drive_calls`: the cumulative counts, as floats\n- In `luthi/v2/jepa_runner.py`, include those three keys in the per-layer drive record the trainer logs alongside `drive_duty`.\n- In `scripts/jepa_pilot_driver.py`, register stage 14, running a new arm `probe_surprise_d8` at d_model 512. It is `probe_surprise`'s config with `n_blocks=8`, and the same taper, file list, SIGReg and cosine settings as `living_v5_4x_d4`.",
+ "commit": "f38bb9f257a0c78a17c567104a60f2ea14727ccd",
+ "base": "5ec1feffe4d420fb0fdf20f37ba633baebe7e92c",
+ "test_files": [
+  "tests/v2/test_surprise_drive.py"
+ ],
+ "run_files": [
+  "tests/v2/test_surprise_drive.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/pc_ops.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_surprise_drive.py::TestInstrumentation::test_duty_and_state_are_reported",
+  "tests/v2/test_surprise_drive.py::TestInstrumentation::test_mean_gain_when_firing_is_recoverable",
+  "tests/v2/test_surprise_drive.py::TestInstrumentation::test_gain_sum_untouched_in_raw_mode",
+  "tests/v2/test_surprise_drive.py::TestInstrumentation::test_gain_sum_frozen_path_safe"
+ ],
+ "pass_to_pass": [
+  "tests/v2/test_surprise_drive.py::TestConfigContract::test_default_is_raw",
+  "tests/v2/test_surprise_drive.py::TestConfigContract::test_rejects_unknown_mode",
+  "tests/v2/test_surprise_drive.py::TestConfigContract::test_surprise_requires_relative_trust",
+  "tests/v2/test_surprise_drive.py::TestConfigContract::test_surprise_with_relative_trust_constructs",
+  "tests/v2/test_surprise_drive.py::TestOffByDefault::test_raw_mode_leaves_drive_buffers_untouched",
+  "tests/v2/test_surprise_drive.py::TestOffByDefault::test_raw_mode_bit_identical_to_pre_change",
+  "tests/v2/test_surprise_drive.py::TestWarmup::test_warmup_behaves_exactly_like_raw",
+  "tests/v2/test_surprise_drive.py::TestWarmup::test_statistics_accumulate_during_warmup",
+  "tests/v2/test_surprise_drive.py::TestScaleFreedom::test_gain_survives_a_collapsing_error_scale",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_quiet_on_stationary_input",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_retains_range_while_quiet",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_duty_is_zero_on_a_predictable_error_scale",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_duty_rises_after_a_distribution_shift",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_duty_metric_survives_a_gain_floor",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_gain_is_bounded",
+  "tests/v2/test_surprise_drive.py::TestSurpriseGating::test_dev_floor_prevents_infinite_surprise",
+  "tests/v2/test_surprise_drive.py::TestSaturationRegressionGuard::test_absolute_precision_saturates_the_clamp",
+  "tests/v2/test_surprise_drive.py::TestSaturationRegressionGuard::test_relative_trust_does_not_saturate",
+  "tests/v2/test_surprise_drive.py::TestFrozenPathUntouched::test_frozen_reencode_mutates_no_drive_state"
+ ],
+ "source": {
+  "subject": "Add per-interval drive instrumentation and the depth-8 arm",
+  "date": "2026-07-29",
+  "src_lines": 47
+ }
+}

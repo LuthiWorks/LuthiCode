@@ -1,0 +1,34 @@
+{
+ "id": "luthimodel-8867a77e",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "In `luthi/v2/adaptation_eval.py`, `holdout_documents(windows, *, n_read, n_score, n_docs)` always selects the same set of held-out documents. Add a keyword argument `phase: int = 0` so a second, disjoint set can be drawn for replication:\n\n- Each document still has `n_read + n_score` windows. `phase` shifts every document by `phase` document lengths inside its stride, so phases 0, 1, 2, ... give mutually disjoint document sets.\n- Phase 0 must return exactly what the function returns today.\n- If the phase is negative or doesn't fit inside a document's stride, raise `ValueError` with a message that contains \"does not fit\".\n\nThen add a `--doc-phase` option (default 0) to `scripts/adaptation_eval.py` that passes the phase through, records the document settings (n_docs, n_read, n_score, phase) in the output JSON, and writes phase k to `adaptation_eval_phase<k>.json` (phase 0 keeps the name `adaptation_eval.json`).",
+ "commit": "8867a77e0e34ee973d9d5bc424b77250a16c4821",
+ "base": "1db1013539c55dfe5f516d7d6511b0526a873237",
+ "test_files": [
+  "tests/test_adaptation_eval.py"
+ ],
+ "run_files": [
+  "tests/test_adaptation_eval.py"
+ ],
+ "gold_files": [
+  "luthi/v2/adaptation_eval.py",
+  "scripts/adaptation_eval.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_adaptation_eval.py::test_adaptation_eval::test_document_phases_are_disjoint_and_phase0_is_unchanged"
+ ],
+ "pass_to_pass": [
+  "tests/test_adaptation_eval.py::test_adaptation_eval::test_dead_arm_is_an_exact_null",
+  "tests/test_adaptation_eval.py::test_adaptation_eval::test_model_restored_bitwise_after_eval",
+  "tests/test_adaptation_eval.py::test_adaptation_eval::test_reading_changes_the_score_on_a_living_arm",
+  "tests/test_adaptation_eval.py::test_adaptation_eval::test_rate_scale_is_restored",
+  "tests/test_adaptation_eval.py::test_adaptation_eval::test_holdout_documents_refuses_a_short_holdout",
+  "tests/test_adaptation_eval.py::test_adaptation_eval::test_needs_two_documents"
+ ],
+ "source": {
+  "subject": "Adaptation eval: disjoint replication set (--doc-phase)",
+  "date": "2026-10-19",
+  "src_lines": 18
+ }
+}

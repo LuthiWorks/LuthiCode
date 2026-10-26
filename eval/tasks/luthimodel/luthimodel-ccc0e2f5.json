@@ -1,0 +1,37 @@
+{
+ "id": "luthimodel-ccc0e2f5",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "Individual trunk blocks are invisible between deep-cadence firings, because the per-block deep tape uses SVD gauges too expensive for light cadence. Add a cheap per-block activation tape at light cadence.\n\nIn `luthi/v2/multimodal_model_pc.py`:\n- Add `_block_activation_scalars(h)`. It takes a block output tensor [B, T, D] and returns a dict of plain Python floats with exactly these keys, in this order:\n  - `act_mean`, `act_std` (population std), `act_rms`\n  - `act_p50` and `act_p99` (quantiles of |h|)\n  - `dead_frac`: the fraction with |h| < `_DEAD_ACT_EPS`\n  - `sat_frac`: the fraction with |h| > `_SAT_ACT_THRESH`\n- Module constants: `_DEAD_ACT_EPS = 1e-5`, `_SAT_ACT_THRESH = 5.0`.\n- The helper works on detached copies, and keeps no tensors or graph.\n- `MultimodalPredictiveCodingLM.encode()` gets `collect_block_activation_scalars: bool = False`. When set, compute the scalars for each block's output as it goes, and return them as `block_activation_scalars` (a list, one dict per block). Keep `collect_block_latents` independent of it.\n\nIn `luthi/v2/jepa_loss.py`, `compute_modality_loss()` gets the same flag, passes it to the context (online) encoder, and returns `block_activation_scalars` in its result.\n\nIn `luthi/v2/jepa_runner.py`:\n- `train_step()` gets `will_light: bool = False` (like `will_deep`) and requests the scalars when it's set.\n- `run()` passes the light-cadence flag it already computes.\n- `_compute_and_log_diagnostics()` adds `record[\"light_blocks\"]` on light firings: the list, or None when it wasn't collected.",
+ "commit": "ccc0e2f540b2ede7805ad519446b3f3139d171a1",
+ "base": "846c0536da931aaea9a7848d94392bc210263c26",
+ "test_files": [
+  "tests/test_light_block_activation.py"
+ ],
+ "run_files": [
+  "tests/test_light_block_activation.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_loss.py",
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/multimodal_model_pc.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_keys_and_plain_floats",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_values_match_torch",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_dead_tensor_reads_dead",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_saturated_tensor_reads_saturated",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_healthy_tensor_reads_neither",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_thresholds_are_pinned",
+  "tests/test_light_block_activation.py::TestBlockActivationScalars::test_does_not_hold_graph",
+  "tests/test_light_block_activation.py::TestLightBlocksEmission::test_emitted_on_light_cadence_one_entry_per_block",
+  "tests/test_light_block_activation.py::TestLightBlocksEmission::test_absent_without_flag",
+  "tests/test_light_block_activation.py::TestLightBlocksEmission::test_deep_path_unaffected"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Light-cadence per-block activation scalars (stage 1 of activation-monitoring plan)",
+  "date": "2026-10-06",
+  "src_lines": 68
+ }
+}

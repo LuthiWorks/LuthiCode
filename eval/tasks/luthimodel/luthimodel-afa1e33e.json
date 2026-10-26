@@ -1,0 +1,41 @@
+{
+ "id": "luthimodel-afa1e33e",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "Add scheduled muPC to the JEPA runner in `luthi/v2/jepa_runner.py`: train at residual scale 1.0 first, then anneal every block's residual scale to the muPC value over a ramp, never as a step change.\n\n- New `RunnerConfig` fields: `mu_pc_schedule_start: int = 0` (0 = disabled), `mu_pc_schedule_ramp: int = 1000`, `mu_pc_schedule_exponent: float = 0.25`.\n- New method `JEPATrainer._apply_mu_pc_schedule()`, called every training step right after `self._apply_taper()`. It must use only `self.config`, `self.global_step` and `self.loss_module.online_encoder.blocks`. When enabled, the target scale is `1 / (n_blocks ** exponent)`. Every block's `residual_scale` is 1.0 before `start`, moves linearly to the target over `ramp` steps, and stays at the target afterwards.\n- Loud contracts, checked the first time the schedule applies. Raise `RuntimeError` if any block's `residual_scale` isn't 1.0 at that point (the model was built with muPC on, and scheduling on top would double-attenuate; say \"double-attenuate\" in the message). Also raise if any block has a non-zero `mu_pc_rate_power` (not supported; mention \"rate_power\" in the message).\n\nIn `scripts/jepa_pilot_driver.py`:\n- Register stage 44, running a new arm `probe_d8_mupc_sched` at d_model 512.\n- The arm copies `probe_surprise_d8_nomupc`'s model config, with grad clip 1000.0, deep cadence 100, and the same taper, file list, SIGReg and cosine settings as `living_v5_4x_d4`.\n- Its muPC schedule is start 3000, ramp 1000, exponent 0.25, via a new `ARM_MUPC_SCHED` dict of (start, ramp, exponent) tuples.\n- Pass the schedule into the runner config, and record it in the run's saved config.",
+ "commit": "afa1e33e2767e0caf9c4e2f06ba941447008cf36",
+ "base": "fb9edd8a936d5092551db15dbd58ce6e854c2b07",
+ "test_files": [
+  "tests/v2/test_depth_remedies.py"
+ ],
+ "run_files": [
+  "tests/v2/test_depth_remedies.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_depth_remedies.py::TestMuPCSchedule::test_disabled_is_noop",
+  "tests/v2/test_depth_remedies.py::TestMuPCSchedule::test_anneal_reaches_mupc_target",
+  "tests/v2/test_depth_remedies.py::TestMuPCSchedule::test_refuses_built_in_mupc",
+  "tests/v2/test_depth_remedies.py::TestMuPCSchedule::test_refuses_rate_power_arms"
+ ],
+ "pass_to_pass": [
+  "tests/v2/test_depth_remedies.py::TestTemporalCenter::test_shape_preserved",
+  "tests/v2/test_depth_remedies.py::TestTemporalCenter::test_constant_sequence_gives_zero_residual",
+  "tests/v2/test_depth_remedies.py::TestTemporalCenter::test_shared_offset_removed",
+  "tests/v2/test_depth_remedies.py::TestTemporalCenter::test_even_window_refused",
+  "tests/v2/test_depth_remedies.py::TestTemporalCenter::test_zero_window_is_identity",
+  "tests/v2/test_depth_remedies.py::TestSketchedIsotropy::test_isotropic_is_small_rank1_is_large",
+  "tests/v2/test_depth_remedies.py::TestSketchedIsotropy::test_collapse_toward_zero_variance_is_penalized",
+  "tests/v2/test_depth_remedies.py::TestOrthogonalityPenalty::test_orthogonal_matrix_is_near_zero_any_scale",
+  "tests/v2/test_depth_remedies.py::TestOrthogonalityPenalty::test_rank1_is_large",
+  "tests/v2/test_depth_remedies.py::TestOrthogonalityPenalty::test_scale_free"
+ ],
+ "source": {
+  "subject": "Scheduled muPC (Brian's design): acquire at scale 1.0, anneal muPC in",
+  "date": "2026-08-07",
+  "src_lines": 51
+ }
+}

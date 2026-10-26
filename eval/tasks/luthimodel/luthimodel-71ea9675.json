@@ -1,0 +1,30 @@
+{
+ "id": "luthimodel-71ea9675",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "71ea9675f30ad0bba7a95e70858ae13807ec269f",
+ "base": "29aa03ae03486998736ba3caf042f2ac33c65c99",
+ "test_files": [
+  "tests/test_consolidation_fires_metric.py"
+ ],
+ "run_files": [
+  "tests/test_consolidation_fires_metric.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "luthi/v2/living_layer_pc.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_consolidation_fires_metric.py::test_consolidation_fires_metric::test_aliveness_reports_fires_and_counts_up",
+  "tests/test_consolidation_fires_metric.py::test_consolidation_fires_metric::test_runner_aggregates_fires_by_sum",
+  "tests/test_consolidation_fires_metric.py::test_consolidation_fires_metric::test_absent_fires_degrade_to_nan_not_crash",
+  "tests/test_consolidation_fires_metric.py::test_consolidation_fires_metric::test_fires_survive_checkpoint_roundtrip"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "feat: consolidation fire count surfaced as a substrate metric (Brian's request)",
+  "date": "2026-07-18",
+  "src_lines": 12
+ }
+}

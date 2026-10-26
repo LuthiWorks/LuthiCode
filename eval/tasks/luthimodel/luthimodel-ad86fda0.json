@@ -1,0 +1,33 @@
+{
+ "id": "luthimodel-ad86fda0",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "Spike detectors in the m9 code become hair triggers on quiet signals. Both `StalenessManager.spike()` / `living_spike()` in `luthi/v2/m9/staleness.py` and `TrendingBand.observe()` in `luthi/v2/m9/kills.py` floor the MAD with a bare absolute `max(mad, 1e-8)`. When a signal has a real scale but no spread, the band collapses onto its median: eight readings of 0.5 followed by 0.500001 (a 0.0002% move) fire a spike and force failover.\n\nFix both with a scale-relative floor:\n\n- The MAD used for the threshold is at least 0.05 x |median|. Make it configurable: `StalenessConfig.spike_mad_rel_floor = 0.05`, and `TrendingBand.mad_rel_floor = 0.05`. Keep a tiny absolute floor (1e-12) as a last resort.\n- A band whose median and MAD are both ~0 (an identically constant zero signal) has no scale to judge with. It must still spike when the value moves off zero (0 then 1e-7 is a real event; 0 then 10 must still flag and then fire a kill), but count those scale-less cycles instead of hiding them. For `StalenessManager`, count per band and expose it as `snapshot()[\"degenerate_band_skips\"]`, a dict keyed by band name (`\"drift\"`, `\"living\"`). Give `TrendingBand` a `degenerate_skips` counter.\n- Share one implementation between `spike()` and `living_spike()`.\n\nReal spikes on noisy signals, and real breaches off a non-zero baseline, must still fire.",
+ "commit": "ad86fda0506932fe80f766e2dcc07a8490e4c755",
+ "base": "df938a79ce7a537e31a9704053784892ecb802ab",
+ "test_files": [
+  "tests/m9/test_band_mad_floor.py"
+ ],
+ "run_files": [
+  "tests/m9/test_band_mad_floor.py"
+ ],
+ "gold_files": [
+  "luthi/v2/m9/kills.py",
+  "luthi/v2/m9/staleness.py"
+ ],
+ "fail_to_pass": [
+  "tests/m9/test_band_mad_floor.py::test_band_mad_floor::test_quiet_signal_does_not_spike_on_a_hair",
+  "tests/m9/test_band_mad_floor.py::test_band_mad_floor::test_zero_baseline_still_spikes_and_is_counted_as_scaleless",
+  "tests/m9/test_band_mad_floor.py::test_band_mad_floor::test_trending_band_ignores_a_hair_off_a_quiet_baseline"
+ ],
+ "pass_to_pass": [
+  "tests/m9/test_band_mad_floor.py::test_band_mad_floor::test_real_spike_still_fires_on_a_noisy_signal",
+  "tests/m9/test_band_mad_floor.py::test_band_mad_floor::test_trending_band_still_fires_on_a_real_breach",
+  "tests/m9/test_band_mad_floor.py::test_band_mad_floor::test_trending_band_fires_on_a_real_breach_off_a_nonzero_baseline"
+ ],
+ "source": {
+  "subject": "m9 audit: spike and kill bands were hair triggers on quiet signals",
+  "date": "2026-08-14",
+  "src_lines": 110
+ }
+}

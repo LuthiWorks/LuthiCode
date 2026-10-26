@@ -1,0 +1,50 @@
+{
+ "id": "sanctuary-eb19c4ca",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "`web_fetch` in `sanctuary/tools/builtin.py` fetches any URL the entity supplies, following redirects without checking them. So it can reach `http://127.0.0.1`, the cloud-metadata endpoint `169.254.169.254`, and internal LAN services (SSRF). Guard it:\n\n- `_ip_is_blocked(ip_str) -> bool`: True for private, loopback, link-local, reserved, multicast and unspecified addresses (IPv4 and IPv6). False for anything that isn't an IP.\n- `_validate_fetch_url(url, *, resolve: bool) -> Optional[str]`: returns a reason containing \"blocked\" if the URL is denied, or None if it's allowed.\n  - Only `http` and `https` are allowed (a URL with no scheme is blocked), and the URL must have a host.\n  - A host that is a literal internal IP is always blocked, whatever `resolve` is.\n  - A hostname is resolved, and blocked if any address it resolves to is internal, but only when `resolve` is True. When a proxy is configured, the proxy is the egress boundary, so `web_fetch` passes `resolve=False` and leaves DNS to it.\n- In `_web_fetch`, don't let the HTTP client follow redirects. Follow up to 5 redirects yourself, validating every hop before requesting it, and fail if there are more.",
+ "commit": "eb19c4cadfcadebae004ce73667f3974d95979d6",
+ "base": "f2e793afae68fc34fe239520d6fd6bbcba9217af",
+ "test_files": [
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py"
+ ],
+ "gold_files": [
+  "sanctuary/tools/builtin.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_non_http_schemes_blocked[file:///etc/passwd]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_non_http_schemes_blocked[ftp://example.com/x]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_non_http_schemes_blocked[gopher://example.com]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_non_http_schemes_blocked[data:text/plain,hi]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_non_http_schemes_blocked[//example.com/no-scheme]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[127.0.0.1]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[10.0.0.5]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[192.168.1.1]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[172.16.0.1]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[169.254.169.254]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[0.0.0.0]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_literal_internal_ips_blocked[[::1]]",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_public_literal_ip_allowed",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_localhost_name_resolves_and_is_blocked",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_name_resolution_skipped_under_proxy",
+  "sanctuary/tests/tools/test_web_fetch_ssrf.py::test_web_fetch_ssrf::test_ip_is_blocked_classification"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "security: SSRF-guard web_fetch (scheme allowlist + internal-address block)",
+  "date": "2026-07-02",
+  "src_lines": 107
+ }
+}

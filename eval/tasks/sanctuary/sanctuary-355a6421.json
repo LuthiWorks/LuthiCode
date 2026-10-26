@@ -1,0 +1,69 @@
+{
+ "id": "sanctuary-355a6421",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "Add trace logging to `TurboManager` (`sanctuary/core/turbo.py`), to support tuning its thresholds from real data.\n\n- New constructor parameter `trace_path: Optional[Path] = None`.\n- When it's set, every `observe()` call appends one JSON line to that file with these fields:\n  - `t`: the observe time\n  - `per_source`: each source's intensity, keyed by the source's `name`\n  - `intensity`: the aggregate\n  - `dominant_source`\n  - `state_before` and `state_after`: the state enum values, like \"idle\", \"armed\", \"active\"\n  - `current_rate_hz`: the controller's current rate\n  - `is_turbo_active`\n- Create the file's parent directories as needed. Tracing is best-effort: a write failure is logged and otherwise ignored, and must never affect the cognitive cycle. With no trace path, no file is created.\n- Add `turbo_trace_path: Optional[str] = None` to `RunnerConfig` in `sanctuary/api/runner.py`, and pass it through when the runner builds its `TurboManager`.",
+ "commit": "355a6421a44ffd09a6ff2b8e9d65c40b9af34071",
+ "base": "df651adec11989dfdf6e3ef85a73f200dd703651",
+ "test_files": [
+  "sanctuary/tests/core/test_turbo.py",
+  "sanctuary/tests/integration/test_turbo_trace_pipeline.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/core/test_turbo.py",
+  "sanctuary/tests/integration/test_turbo_trace_pipeline.py"
+ ],
+ "gold_files": [
+  "pyproject.toml",
+  "sanctuary/api/runner.py",
+  "sanctuary/core/turbo.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/core/test_turbo.py::TestTraceLogging::test_trace_path_writes_jsonl",
+  "sanctuary/tests/core/test_turbo.py::TestTraceLogging::test_no_trace_path_means_no_file",
+  "sanctuary/tests/core/test_turbo.py::TestTraceLogging::test_trace_creates_parent_directories"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/core/test_turbo.py::TestInitialState::test_starts_idle",
+  "sanctuary/tests/core/test_turbo.py::TestInitialState::test_default_target_is_60hz",
+  "sanctuary/tests/core/test_turbo.py::TestInitialState::test_default_source_is_mechanical",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_low_intensity_stays_idle",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_arm_threshold_crosses_idle_to_armed",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_intensity_drops_armed_back_to_idle",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_armed_to_active_after_confirmation",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_sharp_spike_bypasses_confirmation",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_active_to_refractory_on_max_duration",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_active_to_refractory_on_sustained_low_signal",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_refractory_to_idle_after_refractory_seconds",
+  "sanctuary/tests/core/test_turbo.py::TestControllerInteraction::test_engage_called_on_active",
+  "sanctuary/tests/core/test_turbo.py::TestControllerInteraction::test_release_called_on_refractory",
+  "sanctuary/tests/core/test_turbo.py::TestControllerInteraction::test_controller_rate_reaches_turbo_target_when_active",
+  "sanctuary/tests/core/test_turbo.py::TestJournalAutoEntry::test_journal_write_on_refractory",
+  "sanctuary/tests/core/test_turbo.py::TestJournalAutoEntry::test_no_journal_means_no_write_error",
+  "sanctuary/tests/core/test_turbo.py::TestJournalAutoEntry::test_journal_write_failure_is_non_fatal",
+  "sanctuary/tests/core/test_turbo.py::TestSignalStamping::test_apply_to_signals_when_idle",
+  "sanctuary/tests/core/test_turbo.py::TestSignalStamping::test_apply_to_signals_when_active",
+  "sanctuary/tests/core/test_turbo.py::TestMechanicalIntensitySource::test_reads_activity_index",
+  "sanctuary/tests/core/test_turbo.py::TestMechanicalIntensitySource::test_missing_key_returns_zero",
+  "sanctuary/tests/core/test_turbo.py::TestMechanicalIntensitySource::test_short_list_returns_zero",
+  "sanctuary/tests/core/test_turbo.py::TestMechanicalIntensitySource::test_negative_values_are_abs",
+  "sanctuary/tests/core/test_turbo.py::TestMechanicalIntensitySource::test_configurable_key_and_index",
+  "sanctuary/tests/core/test_turbo.py::TestMultipleSources::test_max_of_sources_used",
+  "sanctuary/tests/core/test_turbo.py::TestMultipleSources::test_source_exception_treated_as_zero",
+  "sanctuary/tests/core/test_turbo.py::TestEventHistory::test_event_recorded_on_exit"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "Turbo trace logging + v1/v2 substrate verification + cryptography dep",
+  "date": "2026-05-25",
+  "src_lines": 104
+ }
+}

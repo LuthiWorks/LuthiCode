@@ -1,0 +1,40 @@
+{
+ "id": "sanctuary-b61c6bac",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "b61c6bacaae0052dc4a904b7d2845a118c51a479",
+ "base": "97e8b243806c4f11eb00683d2be7b4381f7c316e",
+ "test_files": [
+  "sanctuary/tests/integration/test_luthi_bridge_e2e.py",
+  "sanctuary/tests/test_no_hardcoded_paths.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/integration/test_luthi_bridge_e2e.py",
+  "sanctuary/tests/test_no_hardcoded_paths.py"
+ ],
+ "gold_files": [
+  "examples/demo_action_subsystem.py",
+  "sanctuary/core/luthi_model.py",
+  "scripts/validate_journal.py",
+  "scripts/validate_json.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/test_no_hardcoded_paths.py::test_no_hardcoded_paths::test_no_hardcoded_user_paths_in_source"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "add path-hygiene + cross-repo integration tests, audit protocol",
+  "date": "2026-04-26",
+  "src_lines": 43
+ }
+}

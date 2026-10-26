@@ -1,0 +1,39 @@
+{
+ "id": "luthimodel-0cacc238",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "The JEPA runner's LR schedule in `luthi/v2/jepa_runner.py` has no warmup: every run trains at full learning rate from step 0. Add a linear warmup in front of the cosine schedule.\n\n- New field `LRScheduleConfig.warmup_steps: int = 0`. 0 must leave the schedule exactly as it is today.\n- With `w = warmup_steps > 0` and the schedule enabled: at step k < w, the LR scale is (k + 1) / w, so step 0 trains at 1/w of base rather than at zero. From step w on, cosine decay (`cosine_lr_scale`) runs over the remaining steps, with progress (step - w) / (total_steps - w), starting again from 1.0.\n\nIn `scripts/jepa_pilot_driver.py`:\n- Register stage 31, running a new arm `probe_v5_d8_warmup` at d_model 512.\n- Its model config is identical to `probe_v5_d8`. It uses deep cadence 100 and the same taper, file list, SIGReg and cosine settings as `living_v5_4x_d4`.\n- Hold its guards until step 1000 (`ARM_GUARD_MIN_STEP`).\n- Give it a 1000-step warmup through a new `ARM_LR_WARMUP` dict (default 0). Pass that into the LR schedule config, and record it in the run's saved config as `lr_warmup_steps`.",
+ "commit": "0cacc2389777bd014710be8c6c8dabd5956a2835",
+ "base": "db909f9bb41c55db6bd86f04e6cec5602e7306d2",
+ "test_files": [
+  "tests/test_cosine_lr_and_v4_arm.py"
+ ],
+ "run_files": [
+  "tests/test_cosine_lr_and_v4_arm.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_cosine_lr_and_v4_arm.py::TestWarmup::test_zero_warmup_is_bit_exact_legacy",
+  "tests/test_cosine_lr_and_v4_arm.py::TestWarmup::test_ramp_then_cosine"
+ ],
+ "pass_to_pass": [
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_endpoints_and_midpoint",
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_clamps_past_total",
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_monotone_decreasing",
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_zero_floor_refused",
+  "tests/test_cosine_lr_and_v4_arm.py::TestTrainerSchedule::test_enabled_requires_total_steps",
+  "tests/test_cosine_lr_and_v4_arm.py::TestTrainerSchedule::test_lr_follows_schedule",
+  "tests/test_cosine_lr_and_v4_arm.py::TestTrainerSchedule::test_disabled_leaves_lr_alone",
+  "tests/test_cosine_lr_and_v4_arm.py::TestMidSeedResume::test_resumed_epoch_continues_not_restarts",
+  "tests/test_cosine_lr_and_v4_arm.py::TestV4ArmWiring::test_arm_tables_complete",
+  "tests/test_cosine_lr_and_v4_arm.py::TestV4ArmWiring::test_sigreg_override_reaches_loss"
+ ],
+ "source": {
+  "subject": "LR warmup: attack Opus's S1, survived; build warmup_steps; register stage 31",
+  "date": "2026-08-06",
+  "src_lines": 23
+ }
+}

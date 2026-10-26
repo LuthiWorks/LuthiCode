@@ -1,0 +1,80 @@
+{
+ "id": "sanctuary-2aafc59f",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "2aafc59f1146f256f3cb13b3f0d5be041c20c232",
+ "base": "355a6421a44ffd09a6ff2b8e9d65c40b9af34071",
+ "test_files": [
+  "sanctuary/tests/core/test_turbo.py",
+  "sanctuary/tests/integration/test_luthi_bridge_e2e.py",
+  "sanctuary/tests/integration/test_turbo_trace_pipeline.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/core/test_turbo.py",
+  "sanctuary/tests/integration/test_luthi_bridge_e2e.py",
+  "sanctuary/tests/integration/test_turbo_trace_pipeline.py"
+ ],
+ "gold_files": [
+  "sanctuary/api/runner.py",
+  "sanctuary/core/luthi_model.py",
+  "sanctuary/core/turbo.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/core/test_turbo.py::TestInitialState::test_starts_idle",
+  "sanctuary/tests/core/test_turbo.py::TestInitialState::test_default_target_is_60hz",
+  "sanctuary/tests/core/test_turbo.py::TestInitialState::test_default_source_is_mechanical",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_low_intensity_stays_idle",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_arm_threshold_crosses_idle_to_armed",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_intensity_drops_armed_back_to_idle",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_armed_to_active_after_confirmation",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_sharp_spike_bypasses_confirmation",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_active_to_refractory_on_max_duration",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_active_to_refractory_on_sustained_low_signal",
+  "sanctuary/tests/core/test_turbo.py::TestStateTransitions::test_refractory_to_idle_after_refractory_seconds",
+  "sanctuary/tests/core/test_turbo.py::TestControllerInteraction::test_engage_called_on_active",
+  "sanctuary/tests/core/test_turbo.py::TestControllerInteraction::test_release_called_on_refractory",
+  "sanctuary/tests/core/test_turbo.py::TestControllerInteraction::test_controller_rate_reaches_turbo_target_when_active",
+  "sanctuary/tests/core/test_turbo.py::TestJournalAutoEntry::test_journal_write_on_refractory",
+  "sanctuary/tests/core/test_turbo.py::TestJournalAutoEntry::test_no_journal_means_no_write_error",
+  "sanctuary/tests/core/test_turbo.py::TestJournalAutoEntry::test_journal_write_failure_is_non_fatal",
+  "sanctuary/tests/core/test_turbo.py::TestSignalStamping::test_apply_to_signals_when_idle",
+  "sanctuary/tests/core/test_turbo.py::TestSignalStamping::test_apply_to_signals_when_active",
+  "sanctuary/tests/core/test_turbo.py::TestMechanicalIntensitySource::test_reads_activity_index",
+  "sanctuary/tests/core/test_turbo.py::TestMechanicalIntensitySource::test_missing_key_returns_zero",
+  "sanctuary/tests/core/test_turbo.py::TestMechanicalIntensitySource::test_short_list_returns_zero",
+  "sanctuary/tests/core/test_turbo.py::TestMechanicalIntensitySource::test_negative_values_are_abs",
+  "sanctuary/tests/core/test_turbo.py::TestMechanicalIntensitySource::test_configurable_key_and_index",
+  "sanctuary/tests/core/test_turbo.py::TestPCIntensitySource::test_reads_max_error_acc_by_default",
+  "sanctuary/tests/core/test_turbo.py::TestPCIntensitySource::test_mean_aggregator",
+  "sanctuary/tests/core/test_turbo.py::TestPCIntensitySource::test_negative_values_are_abs",
+  "sanctuary/tests/core/test_turbo.py::TestPCIntensitySource::test_missing_key_returns_zero",
+  "sanctuary/tests/core/test_turbo.py::TestPCIntensitySource::test_empty_list_returns_zero",
+  "sanctuary/tests/core/test_turbo.py::TestPCIntensitySource::test_invalid_aggregator_raises",
+  "sanctuary/tests/core/test_turbo.py::TestPCIntensitySource::test_configurable_signal_key",
+  "sanctuary/tests/core/test_turbo.py::TestPCIntensitySource::test_name_is_pc",
+  "sanctuary/tests/core/test_turbo.py::TestMixedV1V2Sources::test_v1_substrate_mechanical_dominates",
+  "sanctuary/tests/core/test_turbo.py::TestMixedV1V2Sources::test_v2_substrate_pc_dominates",
+  "sanctuary/tests/core/test_turbo.py::TestMultipleSources::test_max_of_sources_used",
+  "sanctuary/tests/core/test_turbo.py::TestMultipleSources::test_source_exception_treated_as_zero",
+  "sanctuary/tests/core/test_turbo.py::TestTraceLogging::test_trace_path_writes_jsonl",
+  "sanctuary/tests/core/test_turbo.py::TestTraceLogging::test_no_trace_path_means_no_file",
+  "sanctuary/tests/core/test_turbo.py::TestTraceLogging::test_trace_creates_parent_directories",
+  "sanctuary/tests/core/test_turbo.py::TestEventHistory::test_event_recorded_on_exit"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "PCIntensitySource for v2 substrate; adapter surfaces v2 signals; bridge tests fixed",
+  "date": "2026-05-25",
+  "src_lines": 103
+ }
+}

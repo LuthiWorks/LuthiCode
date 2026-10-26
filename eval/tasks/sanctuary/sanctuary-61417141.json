@@ -1,0 +1,46 @@
+{
+ "id": "sanctuary-61417141",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "614171413e1f7a430494371fc822a881ef98a77e",
+ "base": "db71caab5a37ff7f26ff75d93a2c6cd7198a36f0",
+ "test_files": [
+  "sanctuary/tests/tools/test_filesystem_sandbox.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/tools/test_filesystem_sandbox.py"
+ ],
+ "gold_files": [
+  "sanctuary/tools/builtin.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_no_roots_denies_read",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_no_roots_denies_write",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_read_inside_root",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_write_inside_root_including_nested",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_list_inside_root",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_traversal_escape_denied",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_absolute_outside_denied",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_write_cannot_escape_root",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_symlink_inside_root_pointing_outside_denied",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_final_path_of_fd_matches_the_open_file",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_verify_fd_rejects_out_of_root_handle",
+  "sanctuary/tests/tools/test_filesystem_sandbox.py::test_filesystem_sandbox::test_verify_fd_allows_in_root_handle"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "security: close the filesystem-sandbox TOCTOU via opened-handle verification",
+  "date": "2026-07-02",
+  "src_lines": 157
+ }
+}

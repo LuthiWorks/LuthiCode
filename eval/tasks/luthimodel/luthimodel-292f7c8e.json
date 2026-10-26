@@ -1,0 +1,36 @@
+{
+ "id": "luthimodel-292f7c8e",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "292f7c8e23be82212bff8165cb22b7e3e4785f47",
+ "base": "4ff2046ed0174cfff153140b9b5550e134fb56a1",
+ "test_files": [
+  "tests/test_cosine_lr_and_v4_arm.py"
+ ],
+ "run_files": [
+  "tests/test_cosine_lr_and_v4_arm.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py",
+  "scripts/jepa_pilot_driver.py",
+  "scripts/pilot_verdict.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_endpoints_and_midpoint",
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_clamps_past_total",
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_monotone_decreasing",
+  "tests/test_cosine_lr_and_v4_arm.py::TestCosineScale::test_zero_floor_refused",
+  "tests/test_cosine_lr_and_v4_arm.py::TestTrainerSchedule::test_enabled_requires_total_steps",
+  "tests/test_cosine_lr_and_v4_arm.py::TestTrainerSchedule::test_lr_follows_schedule",
+  "tests/test_cosine_lr_and_v4_arm.py::TestTrainerSchedule::test_disabled_leaves_lr_alone",
+  "tests/test_cosine_lr_and_v4_arm.py::TestV4ArmWiring::test_arm_tables_complete",
+  "tests/test_cosine_lr_and_v4_arm.py::TestV4ArmWiring::test_sigreg_override_reaches_loss"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "v4 depth bundle: cosine LR + 2x SIGReg folded into the d4 family; 7a truncated to 3 seeds",
+  "date": "2026-07-20",
+  "src_lines": 52
+ }
+}

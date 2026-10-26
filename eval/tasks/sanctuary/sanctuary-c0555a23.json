@@ -1,0 +1,38 @@
+{
+ "id": "sanctuary-c0555a23",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "In `sanctuary/core/cognitive_cycle.py`, `CognitiveCycle._cycle()` calls `self.model.consolidate()` synchronously during NREM sleep. Living-weight consolidation can take a while, and running it on the event-loop thread stalls the 10 Hz cognitive loop for that whole time.\n\nRun consolidation on a worker thread instead, so the event loop stays free. It's safe: `consolidate()` already takes the shared model lock internally. Keep the existing behavior otherwise. It runs only during NREM and only if the model has `consolidate`, and an error is logged as non-fatal.",
+ "commit": "c0555a23963b5040363858069d6c3f985498e829",
+ "base": "8bd80942e31c6bbdbf5ef45281d619f1f270ddfb",
+ "test_files": [
+  "sanctuary/tests/test_liveness_phase3.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/test_liveness_phase3.py"
+ ],
+ "gold_files": [
+  "sanctuary/core/cognitive_cycle.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_consolidate_runs_off_the_loop_thread"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_consolidate_not_called_when_awake",
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_loop_is_not_blocked_during_consolidation"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "fix: Phase 3 W1 — offload NREM consolidate() off the loop thread (audit item 12)",
+  "date": "2026-07-04",
+  "src_lines": 7
+ }
+}

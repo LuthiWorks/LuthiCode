@@ -1,0 +1,42 @@
+{
+ "id": "luthimodel-3940aa39",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "3940aa39e5c7e9dedd89c2fa3f29055e290219f6",
+ "base": "99d5e5a3f65446085135fa4271af63ebcc4a20ba",
+ "test_files": [
+  "tests/test_catastrophic_forgetting.py",
+  "tests/v2/test_episode_store_admission.py"
+ ],
+ "run_files": [
+  "tests/test_catastrophic_forgetting.py",
+  "tests/v2/test_episode_store_admission.py"
+ ],
+ "gold_files": [
+  "luthi/v2/living_layer_pc.py",
+  "scripts/force_adaptive_episodes_plugin.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_warmup_uses_legacy_admission_so_the_store_is_never_inert"
+ ],
+ "pass_to_pass": [
+  "tests/test_catastrophic_forgetting.py::test_catastrophic_forgetting::test_baseline_shows_measurable_weight_drift",
+  "tests/test_catastrophic_forgetting.py::test_catastrophic_forgetting::test_gradient_consolidation_reduces_weight_drift_vs_baseline",
+  "tests/test_catastrophic_forgetting.py::test_catastrophic_forgetting::test_attractor_consolidation_reduces_weight_drift_vs_baseline",
+  "tests/test_catastrophic_forgetting.py::test_catastrophic_forgetting::test_all_pathways_produce_finite_states",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_transient_episodes_are_not_permanent",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_admits_after_warmup_on_relative_bar",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_admission_survives_a_signal_below_the_legacy_floor",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_store_does_not_freeze_under_decaying_salience",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_age_decay_makes_stale_slots_evictable",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_legacy_path_is_preserved_for_ab",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_adaptive_recall_does_not_fire_on_every_step",
+  "tests/v2/test_episode_store_admission.py::test_episode_store_admission::test_stats_expose_store_health"
+ ],
+ "source": {
+  "subject": "Statistical warmup: the store is never inert, in any length of run",
+  "date": "2026-07-27",
+  "src_lines": 45
+ }
+}

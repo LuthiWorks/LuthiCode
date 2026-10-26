@@ -1,0 +1,31 @@
+{
+ "id": "luthimodel-9bc38826",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "9bc388260353904bf4b73f4c64740df09a720983",
+ "base": "6eeceb9f374a1935f41586ec3b08c8f9900e8870",
+ "test_files": [
+  "tests/test_kill5_corroboration.py"
+ ],
+ "run_files": [
+  "tests/test_kill5_corroboration.py"
+ ],
+ "gold_files": [
+  "luthi/v2/jepa_runner.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_kill5_corroboration.py::test_kill5_corroboration::test_high_cosine_with_rising_rank_does_not_kill",
+  "tests/test_kill5_corroboration.py::test_kill5_corroboration::test_high_cosine_with_degrading_rank_kills",
+  "tests/test_kill5_corroboration.py::test_kill5_corroboration::test_high_cosine_with_collapsed_std_kills",
+  "tests/test_kill5_corroboration.py::test_kill5_corroboration::test_healthy_crossing_logs_once_not_per_step"
+ ],
+ "pass_to_pass": [
+  "tests/test_kill5_corroboration.py::test_kill5_corroboration::test_cosine_below_threshold_untouched"
+ ],
+ "source": {
+  "subject": "fix: kill-5 requires the degeneracy signature (Brian's ruling; post-hoc, disclosed); run-2 rerun",
+  "date": "2026-07-17",
+  "src_lines": 61
+ }
+}

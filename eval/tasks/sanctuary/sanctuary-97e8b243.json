@@ -1,0 +1,67 @@
+{
+ "id": "sanctuary-97e8b243",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "97e8b243806c4f11eb00683d2be7b4381f7c316e",
+ "base": "1428553fd2d961d50ceef227f03e1a051a139e41",
+ "test_files": [
+  "sanctuary/tests/test_fallback_removal_crash_paths.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/test_fallback_removal_crash_paths.py"
+ ],
+ "gold_files": [
+  "sanctuary/core/cognitive_cycle.py",
+  "sanctuary/core/luthi_model.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestCognitiveCycleGracefulDegradation::test_run_loop_propagates_first_cycle_failure",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestCognitiveCycleGracefulDegradation::test_run_loop_propagates_repeated_failure",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestTransientFailureEdgeCases::test_cycle_failure_propagates_out_of_run"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestProducerFailFast::test_surfacer_raises_on_store_failure",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestProducerFailFast::test_substrate_propagates_surfacer_error",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestProducerFailFast::test_substrate_context_surfacing_error_propagates",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestProducerFailFast::test_retriever_raises_on_zero_k",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestProducerFailFast::test_retriever_raises_on_negative_k",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestProducerFailFast::test_retriever_wraps_internal_errors",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestProducerFailFast::test_checkpoint_raises_on_corrupted_json",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestProducerFailFast::test_checkpoint_raises_on_wrong_types",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestProducerFailFast::test_checkpoint_compare_propagates_corruption",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestCognitiveCycleGracefulDegradation::test_assemble_input_catches_memory_failure",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestStateManagerGracefulDegradation::test_single_encode_failure_preserves_other_percepts",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestStateManagerGracefulDegradation::test_all_encodes_fail_returns_empty",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestStateManagerGracefulDegradation::test_tool_percepts_preserved_despite_encode_failure",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestLanguageInputParserGracefulDegradation::test_create_percept_returns_minimal_on_encode_failure",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestLanguageInputParserGracefulDegradation::test_fallback_parse_survives_encode_failure",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestLanguageInputParserGracefulDegradation::test_cached_parse_survives_encode_failure",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestTransientFailureEdgeCases::test_single_bad_memory_entry_in_surfacer",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestTransientFailureEdgeCases::test_empty_context_returns_empty",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestTransientFailureEdgeCases::test_none_store_returns_empty",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestTransientFailureEdgeCases::test_concurrent_encode_failures_dont_compound",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestMemorySubstratePartialFailure::test_queued_retrieval_failure_preserves_context_memories",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestMemorySubstratePartialFailure::test_multiple_queued_retrievals_partial_failure",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestMemorySubstratePartialFailure::test_retrieval_queue_cleared_even_on_all_failures",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestCycleInteriorCrashPaths::test_identity_update_failure_doesnt_kill_cycle",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestCycleInteriorCrashPaths::test_execute_failure_doesnt_prevent_broadcast",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestCycleInteriorCrashPaths::test_broadcast_failure_doesnt_kill_cycle",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestPerceptionBootFailure::test_perception_init_failure_falls_back_to_mock",
+  "sanctuary/tests/test_fallback_removal_crash_paths.py::TestPerceptionBootFailure::test_perception_init_failure_in_real_coordinator"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "remove premature crash boundary, refactor Luthi bridge to use stable adapter",
+  "date": "2026-04-26",
+  "src_lines": 173
+ }
+}

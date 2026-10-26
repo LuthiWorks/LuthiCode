@@ -1,0 +1,36 @@
+{
+ "id": "luthimodel-2af229e6",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "Under muPC, `residual_scale` attenuates each `PredictiveCodingBlock`'s output into the residual stream, so every backprop-trained parameter in the block gets a gradient scaled by it. The living FFN doesn't: it self-modifies locally, before that multiplication, at full rate. The deeper the trunk, the worse this imbalance.\n\nAdd an opt-in fix in `luthi/v2/hybrid_block_pc.py`:\n\n- New constructor argument `mu_pc_balance_rates: bool = False`.\n- Store `self._mu_pc_rate_factor`: equal to `self.residual_scale` when both `mu_pc_enabled` and `mu_pc_balance_rates` are true, otherwise exactly 1.0.\n- Multiply the living FFN's `pc_rate` and `pred_learning_rate` by that factor when constructing it. Without the flag, everything must be bit-identical to today.\n- Pass `mu_pc_balance_rates` through `MultimodalPredictiveCodingLM` (`luthi/v2/multimodal_model_pc.py`) to its blocks.\n\nIn `scripts/jepa_pilot_driver.py`, register stage 17, running a new arm `probe_surprise_d8_balanced` at d_model 512. It is `probe_surprise_d8`'s config plus `mu_pc_balance_rates=True`, with grad clip 1000.0 and the same taper, file list, SIGReg and cosine settings as `living_v5_4x_d4`.",
+ "commit": "2af229e6801147c1cae8e7718bbf0dde6f27f056",
+ "base": "16fce1c705dffc39b7f05ca6cb82364480238eda",
+ "test_files": [
+  "tests/v2/test_mu_pc_balance.py"
+ ],
+ "run_files": [
+  "tests/v2/test_mu_pc_balance.py"
+ ],
+ "gold_files": [
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/multimodal_model_pc.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_off_by_default",
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_factor_matches_residual_scale_when_enabled",
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_no_effect_when_mupc_disabled",
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_pc_rates_are_actually_scaled",
+  "tests/v2/test_mu_pc_balance.py::TestRateFactor::test_deeper_means_more_attenuation",
+  "tests/v2/test_mu_pc_balance.py::TestBitIdentity::test_forward_still_runs_with_balancing"
+ ],
+ "pass_to_pass": [
+  "tests/v2/test_mu_pc_balance.py::TestBitIdentity::test_default_path_unchanged",
+  "tests/v2/test_mu_pc_balance.py::TestTheMeasurementThisRestsOn::test_pc_input_scale_is_depth_independent"
+ ],
+ "source": {
+  "subject": "Fix the muPC depth asymmetry: balance PC rates against residual_scale",
+  "date": "2026-07-30",
+  "src_lines": 51
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "id": "luthimodel-282921a4",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "282921a4817124d0159557fae97feee67acae2c3",
+ "base": "3940aa39e5c7e9dedd89c2fa3f29055e290219f6",
+ "test_files": [
+  "tests/v2/test_homeostatic_band.py"
+ ],
+ "run_files": [
+  "tests/v2/test_homeostatic_band.py"
+ ],
+ "gold_files": [
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/multimodal_model_pc.py"
+ ],
+ "fail_to_pass": [
+  "tests/v2/test_homeostatic_band.py::test_homeostatic_band::test_disabled_is_a_no_op",
+  "tests/v2/test_homeostatic_band.py::test_homeostatic_band::test_multiplier_is_bounded_at_both_ends",
+  "tests/v2/test_homeostatic_band.py::test_homeostatic_band::test_dead_rows_are_boosted",
+  "tests/v2/test_homeostatic_band.py::test_homeostatic_band::test_healthy_layer_is_exactly_neutral",
+  "tests/v2/test_homeostatic_band.py::test_homeostatic_band::test_rate_limit_caps_simultaneous_boosts",
+  "tests/v2/test_homeostatic_band.py::test_homeostatic_band::test_band_reopens_a_gated_row",
+  "tests/v2/test_homeostatic_band.py::test_homeostatic_band::test_warmup_is_inert",
+  "tests/v2/test_homeostatic_band.py::test_homeostatic_band::test_band_cannot_manufacture_an_update_from_nothing"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Homeostatic activity band: the sparse gate gets its key",
+  "date": "2026-07-27",
+  "src_lines": 137
+ }
+}

@@ -1,0 +1,39 @@
+{
+ "id": "luthimodel-a862b9c8",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "a862b9c849d747a77a66688209b3247d53cea2c3",
+ "base": "9ada037b223ca2ed9cd293c9035e5669329f10b3",
+ "test_files": [
+  "tests/test_llm_jepa.py"
+ ],
+ "run_files": [
+  "tests/test_llm_jepa.py"
+ ],
+ "gold_files": [
+  "luthi/v2/eval_heldout.py",
+  "luthi/v2/jepa_loss.py",
+  "luthi/v2/jepa_runner.py",
+  "scripts/calibrate_ntp.py",
+  "scripts/jepa_pilot_driver.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_llm_jepa.py::test_llm_jepa::test_ntp_matches_hand_computed_cross_entropy",
+  "tests/test_llm_jepa.py::test_llm_jepa::test_ntp_at_init_is_near_ln_vocab",
+  "tests/test_llm_jepa.py::test_llm_jepa::test_ntp_path_is_causal_no_future_leakage",
+  "tests/test_llm_jepa.py::test_llm_jepa::test_combined_loss_reaches_trunk_head_and_predictor",
+  "tests/test_llm_jepa.py::test_llm_jepa::test_ntp_alone_does_not_reach_the_predictor",
+  "tests/test_llm_jepa.py::test_llm_jepa::test_defaults_off_produce_no_ntp_term",
+  "tests/test_llm_jepa.py::test_llm_jepa::test_defaults_off_is_bit_exact_against_pre_ntp_loss",
+  "tests/test_llm_jepa.py::test_llm_jepa::test_missing_lm_head_fails_loud",
+  "tests/test_llm_jepa.py::test_llm_jepa::test_text_modality_without_tokens_fails_before_reaching_ntp",
+  "tests/test_llm_jepa.py::test_llm_jepa::test_ntp_freeze_plasticity_default_is_on"
+ ],
+ "pass_to_pass": [],
+ "source": {
+  "subject": "Build LLM-JEPA integration; the dose is 10-70x the spec's estimate",
+  "date": "2026-08-08",
+  "src_lines": 91
+ }
+}

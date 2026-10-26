@@ -1,0 +1,42 @@
+{
+ "id": "sanctuary-2eb4b4dc",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "Add a `set_visible(body_id: str, visible: bool) -> None` operation to the physics seam. A changing population (creatures born and dying) should be expressed by toggling the visibility of pre-allocated bodies. Using `add_body`/`remove_body` instead forces a model rebuild on a compiling backend, about a 40 ms stall, and it fails outright while a viewer is open.\n\n- Declare it as an abstract method on `PhysicsAuthority` in `sanctuary/physics/authority.py`, with a docstring stating the contract below.\n- Implement it in both backends: `ReferencePhysicsAuthority` (`sanctuary/physics/backends/reference.py`) and `MuJoCoPhysicsAuthority` (`sanctuary/physics/backends/mujoco_backend.py`).\n- An unknown body id raises `KeyError`.\n- A hidden body is absent from `observe()` and `render_state()`, but still present in `ground_truth()` (with `visible` False), because instrumentation reports what is true, not what is seen. Its physics are unchanged: it keeps falling and colliding.\n- In the MuJoCo backend, toggling visibility must not mark the model dirty or cause a rebuild; the compiled model doesn't depend on visibility.",
+ "commit": "2eb4b4dcfc173d10c994da4f6bc82dcae2eded28",
+ "base": "1dcac4c8b683fbe4e09a5262e72d41d9db80be64",
+ "test_files": [
+  "sanctuary/tests/physics/test_set_visible.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/physics/test_set_visible.py"
+ ],
+ "gold_files": [
+  "sanctuary/physics/authority.py",
+  "sanctuary/physics/backends/mujoco_backend.py",
+  "sanctuary/physics/backends/reference.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/physics/test_set_visible.py::test_set_visible::test_hiding_removes_a_body_from_the_model_facing_view[reference]",
+  "sanctuary/tests/physics/test_set_visible.py::test_set_visible::test_hiding_removes_a_body_from_the_renderer_view[reference]",
+  "sanctuary/tests/physics/test_set_visible.py::test_set_visible::test_hiding_does_NOT_hide_from_instrumentation[reference]",
+  "sanctuary/tests/physics/test_set_visible.py::test_set_visible::test_revealing_brings_it_back[reference]",
+  "sanctuary/tests/physics/test_set_visible.py::test_set_visible::test_a_hidden_body_still_obeys_physics[reference]",
+  "sanctuary/tests/physics/test_set_visible.py::test_set_visible::test_unknown_body_raises[reference]"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "Births and deaths without a 40ms stall; recover the spec's caregiving half",
+  "date": "2026-08-17",
+  "src_lines": 54
+ }
+}

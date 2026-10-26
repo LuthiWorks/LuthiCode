@@ -1,0 +1,62 @@
+{
+ "id": "luthimodel-01c22a49",
+ "repo": "luthimodel",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "01c22a49dde2fdfd8874a5171939511b3e455566",
+ "base": "b70dec4fad2759a899541ab0ad6e5b5f00a9e179",
+ "test_files": [
+  "tests/test_applied_change_signal.py",
+  "tests/test_learning_gain_layer.py",
+  "tests/test_learning_gain_regimes.py",
+  "tests/test_living_drift_source.py"
+ ],
+ "run_files": [
+  "tests/test_applied_change_signal.py",
+  "tests/test_learning_gain_layer.py",
+  "tests/test_learning_gain_regimes.py",
+  "tests/test_living_drift_source.py"
+ ],
+ "gold_files": [
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/m9/runner.py",
+  "luthi/v2/m9/staleness.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_layer_gain_on_feeds_sinks",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_layer_gain_off_sinks_inert",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_eye_reading_by_explicit_source",
+  "tests/test_learning_gain_layer.py::test_learning_gain_layer::test_gain_off_leaves_traces_and_sinks_inert",
+  "tests/test_learning_gain_regimes.py::test_learning_gain_regimes::test_h_frozen_plasticity_no_self_mod_with_gain_on",
+  "tests/test_living_drift_source.py::test_living_drift_source::test_config_default_source_is_momentum",
+  "tests/test_living_drift_source.py::test_living_drift_source::test_reading_momentum_source_ignores_gain_flag",
+  "tests/test_living_drift_source.py::test_living_drift_source::test_reading_applied_source_none_until_fed",
+  "tests/test_living_drift_source.py::test_living_drift_source::test_applied_ema_uses_momentum_decay",
+  "tests/test_living_drift_source.py::test_living_drift_source::test_set_source_rewarms_band_only_on_change",
+  "tests/test_living_drift_source.py::test_living_drift_source::test_set_source_rejects_unknown",
+  "tests/test_living_drift_source.py::test_living_drift_source::test_resolution_decay_defaults_are_generous"
+ ],
+ "pass_to_pass": [
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_default_return_is_two_tuple_unchanged",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_applied_change_returned_when_requested",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_applied_change_equals_gain_off_when_gain_is_one",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_applied_change_exceeds_gain_off_when_gain_above_one",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_accumulator_read_and_reset_zeros_the_day",
+  "tests/test_applied_change_signal.py::test_applied_change_signal::test_traces_and_accumulator_round_trip",
+  "tests/test_learning_gain_layer.py::test_learning_gain_layer::test_gain_off_bit_identical_to_default_layer",
+  "tests/test_learning_gain_layer.py::test_learning_gain_layer::test_first_forward_bit_identical_gain_on_vs_off",
+  "tests/test_learning_gain_layer.py::test_learning_gain_layer::test_traces_warm_after_warmup_forwards",
+  "tests/test_learning_gain_layer.py::test_learning_gain_layer::test_gain_amplifies_coherent_establishment_and_stays_bounded",
+  "tests/test_learning_gain_regimes.py::test_learning_gain_regimes::test_b_equilibrium_shift_bounded_and_never_suppresses",
+  "tests/test_learning_gain_regimes.py::test_learning_gain_regimes::test_b_gain_returns_to_one_on_sustained_nonresolution",
+  "tests/test_learning_gain_regimes.py::test_learning_gain_regimes::test_b_stacked_layers_bounded",
+  "tests/test_learning_gain_regimes.py::test_learning_gain_regimes::test_i_collection_captures_traces_by_type",
+  "tests/test_learning_gain_regimes.py::test_learning_gain_regimes::test_j_consolidation_replay_does_not_apply_gain",
+  "tests/test_learning_gain_regimes.py::test_learning_gain_regimes::test_k_oscillating_error_stays_bounded_under_cap"
+ ],
+ "source": {
+  "subject": "fix: momentum step-8 review — eye source is explicit config, not flag-keyed (Fable ruling)",
+  "date": "2026-07-06",
+  "src_lines": 141
+ }
+}

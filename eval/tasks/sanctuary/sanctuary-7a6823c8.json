@@ -1,0 +1,58 @@
+{
+ "id": "sanctuary-7a6823c8",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "7a6823c859942dd9538d0786d4580a81746a4bee",
+ "base": "efdd4f2f41be3b01f304c3d20e1f754d73a1475e",
+ "test_files": [
+  "sanctuary/tests/physics/test_weather.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/physics/test_weather.py"
+ ],
+ "gold_files": [
+  "sanctuary/physics/weather/__init__.py",
+  "sanctuary/physics/weather/model.py",
+  "sanctuary/physics/weather/state.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_cold_is_optimal_and_pleasant",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_freezing_point_itself_is_still_optimal",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_seventy_is_comfortable_but_not_peak",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_heat_is_the_enemy",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_cooler_beats_warmer",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_subfreezing_is_only_a_mild_caution",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_levels_track_the_bands",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_any_rain_is_aversive_not_refreshing",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_shelter_blocks_rain_and_cools_when_hot",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_shelter_does_not_warm_the_cold",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_shelter_improves_comfort_in_hot_rain"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_heavier_rain_is_more_aversive",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_water_drives_avoidance_even_at_optimal_temperature",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_shelter_from_exposure_means_no_wetness",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_mobility_decreases_with_rain",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_mobility_is_monotonic_and_bounded",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_outside_shelter_radius_is_unchanged",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_synthetic_source_is_deterministic",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_synthetic_source_has_a_diurnal_cycle",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_synthetic_source_rains_in_its_window_only",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_synthetic_source_rejects_nonpositive_day_length"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "refactor(physics): electronics-native weather — cold is good, heat is the enemy, water respected",
+  "date": "2026-07-19",
+  "src_lines": 205
+ }
+}

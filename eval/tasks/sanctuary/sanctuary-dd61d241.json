@@ -1,0 +1,55 @@
+{
+ "id": "sanctuary-dd61d241",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "dd61d2410c4b9d8051d2ae35a79da500d01267fa",
+ "base": "2fa33cc381609d5f0cf84641a18da07f597501e2",
+ "test_files": [
+  "sanctuary/tests/core/test_stimulus_density.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/core/test_stimulus_density.py"
+ ],
+ "gold_files": [
+  "sanctuary/api/runner.py",
+  "sanctuary/core/cognitive_cycle.py",
+  "sanctuary/core/stimulus_density.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/core/test_stimulus_density.py::TestQuietPeriodProposesSlowdown::test_long_silence_proposes_slowdown",
+  "sanctuary/tests/core/test_stimulus_density.py::TestQuietPeriodProposesSlowdown::test_no_input_ever_proposes_slowdown",
+  "sanctuary/tests/core/test_stimulus_density.py::TestQuietPeriodProposesSlowdown::test_brief_silence_doesnt_propose",
+  "sanctuary/tests/core/test_stimulus_density.py::TestQuietPeriodProposesSlowdown::test_slowdown_proposed_once_per_quiet_period",
+  "sanctuary/tests/core/test_stimulus_density.py::TestFreshInputProposesSpeedup::test_recent_input_proposes_speedup",
+  "sanctuary/tests/core/test_stimulus_density.py::TestFreshInputProposesSpeedup::test_no_speedup_when_already_at_target",
+  "sanctuary/tests/core/test_stimulus_density.py::TestFreshInputProposesSpeedup::test_speedup_cooldown_respected",
+  "sanctuary/tests/core/test_stimulus_density.py::TestEntityAuthority::test_entity_proposal_silences_heuristic_within_quiet_window",
+  "sanctuary/tests/core/test_stimulus_density.py::TestEntityAuthority::test_heuristic_resumes_after_quiet_window",
+  "sanctuary/tests/core/test_stimulus_density.py::TestEntityAuthority::test_heuristic_doesnt_override_entity_recent_proposal_speedup",
+  "sanctuary/tests/core/test_stimulus_density.py::TestTurboStepBack::test_heuristic_silent_when_turbo_active",
+  "sanctuary/tests/core/test_stimulus_density.py::TestTurboStepBack::test_heuristic_resumes_when_turbo_inactive",
+  "sanctuary/tests/core/test_stimulus_density.py::TestSensoriumSource::test_reads_time_since_last_input",
+  "sanctuary/tests/core/test_stimulus_density.py::TestSensoriumSource::test_passes_through_none",
+  "sanctuary/tests/core/test_stimulus_density.py::TestSensoriumSource::test_name_is_sensorium",
+  "sanctuary/tests/core/test_stimulus_density.py::TestProposalRecord::test_slowdown_proposal_recorded",
+  "sanctuary/tests/core/test_stimulus_density.py::TestProposalRecord::test_speedup_proposal_recorded",
+  "sanctuary/tests/core/test_stimulus_density.py::TestProposalRecord::test_proposals_is_a_copy",
+  "sanctuary/tests/core/test_stimulus_density.py::TestClamping::test_targets_clamped_to_slider"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "Stimulus-density heuristic: autonomic rate adjustment with entity authority",
+  "date": "2026-05-22",
+  "src_lines": 300
+ }
+}

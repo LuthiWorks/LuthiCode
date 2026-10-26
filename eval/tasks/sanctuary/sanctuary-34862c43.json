@@ -1,0 +1,50 @@
+{
+ "id": "sanctuary-34862c43",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "When `AsyncLearner` in `sanctuary/core/async_learner.py` dies, transitions still in its queue are kept in `self.dead_letter`, but only in memory. A process exit loses them, and nothing ever recovers them. Make the dead letter durable:\n\n- New constructor argument `dead_letter_path: Optional[Path] = None`, stored as `self.dead_letter_path` (a `Path`, or None). None keeps today's in-memory-only behavior.\n- When the learner dies and drains its remaining queue into `dead_letter`, save those transitions to `dead_letter_path` with `torch.save`, atomically: write a temp file, fsync, then replace. A failure to save is logged as an error, never raised.\n- On `start()`, a learner with a path loads any transitions a previous learner saved there, deletes the file, and submits them into its own queue. A file that can't be read is logged and skipped (and removed so the problem doesn't recur), never fatal.\n- Pass the option through `LuthiModel.attach_seam(..., dead_letter_path=None)` in `sanctuary/core/luthi_model.py` to the learner it creates.",
+ "commit": "34862c43aad22d4ef60915396103f3a257ec548a",
+ "base": "222bb9e5cf13bdfa557269cb5ae7ee409f5e835c",
+ "test_files": [
+  "sanctuary/tests/test_liveness_phase3.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/test_liveness_phase3.py"
+ ],
+ "gold_files": [
+  "sanctuary/core/async_learner.py",
+  "sanctuary/core/luthi_model.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/test_liveness_phase3.py::TestDeadLetterDurability::test_dead_letter_persisted_on_death",
+  "sanctuary/tests/test_liveness_phase3.py::TestDeadLetterDurability::test_recovered_and_requeued_by_next_learner",
+  "sanctuary/tests/test_liveness_phase3.py::TestDeadLetterDurability::test_no_path_keeps_dead_letter_in_memory_only",
+  "sanctuary/tests/test_liveness_phase3.py::TestDeadLetterDurability::test_corrupt_dead_letter_file_is_skipped"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_consolidate_runs_off_the_loop_thread",
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_consolidate_not_called_when_awake",
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_loop_is_not_blocked_during_consolidation",
+  "sanctuary/tests/test_liveness_phase3.py::TestBlockingToolOffload::test_shell_subprocess_runs_off_loop_thread",
+  "sanctuary/tests/test_liveness_phase3.py::TestBlockingToolOffload::test_watchdog_times_out_a_hung_tool",
+  "sanctuary/tests/test_liveness_phase3.py::TestBlockingToolOffload::test_loop_runs_while_a_slow_tool_is_in_flight",
+  "sanctuary/tests/test_liveness_phase3.py::TestBackgroundTaskSupervision::test_death_invokes_on_death_and_logs",
+  "sanctuary/tests/test_liveness_phase3.py::TestBackgroundTaskSupervision::test_fatal_logs_at_critical",
+  "sanctuary/tests/test_liveness_phase3.py::TestBackgroundTaskSupervision::test_cancellation_is_not_treated_as_death",
+  "sanctuary/tests/test_liveness_phase3.py::TestBackgroundTaskSupervision::test_clean_exit_does_not_fire_handler"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "fix: Phase 3 W4 — durable dead-letter recovery for the async learner (audit item 8)",
+  "date": "2026-07-04",
+  "src_lines": 80
+ }
+}

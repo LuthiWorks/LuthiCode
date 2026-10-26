@@ -1,0 +1,42 @@
+{
+ "id": "sanctuary-d5614f3a",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "Blocking tool bodies in `sanctuary/tools/builtin.py` run synchronously on the event-loop thread, stalling the 10 Hz cognitive loop for as long as they take: up to 30 s for a subprocess, and unbounded for Wikipedia's network calls. Fix it in two parts.\n\n1. Offload the blocking work to worker threads:\n   - the `subprocess.run` calls in the shell and `run_code` (Docker) tools\n   - Wikipedia's `summary` and `page` calls\n   - the three filesystem tools (read file, write file, list directory)\n\n   Move each filesystem tool's existing body into a synchronous helper (`_read_file_sync`, `_write_file_sync`, `_list_directory_sync`) and run that on a thread, so each tool's open/verify/read sequence stays together and its safety checks are unchanged. Subprocess calls keep their own timeouts.\n2. Add a watchdog to `ToolRegistry` in `sanctuary/tools/registry.py`. Add a constructor argument `tool_timeout_seconds: float = 60.0`, and bound every tool call in `execute()` by it. A call that runs over returns a failed `ToolResult` whose error contains \"timed out\", and the timeout is logged as an error. This only works because the bodies no longer block the loop.",
+ "commit": "d5614f3a5d135115acbd294eeea4863fdb347702",
+ "base": "c0555a23963b5040363858069d6c3f985498e829",
+ "test_files": [
+  "sanctuary/tests/test_liveness_phase3.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/test_liveness_phase3.py"
+ ],
+ "gold_files": [
+  "sanctuary/tools/builtin.py",
+  "sanctuary/tools/registry.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/test_liveness_phase3.py::TestBlockingToolOffload::test_shell_subprocess_runs_off_loop_thread",
+  "sanctuary/tests/test_liveness_phase3.py::TestBlockingToolOffload::test_watchdog_times_out_a_hung_tool",
+  "sanctuary/tests/test_liveness_phase3.py::TestBlockingToolOffload::test_loop_runs_while_a_slow_tool_is_in_flight"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_consolidate_runs_off_the_loop_thread",
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_consolidate_not_called_when_awake",
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_loop_is_not_blocked_during_consolidation"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "fix: Phase 3 W2 — offload blocking tool bodies + watchdog ceiling (audit item 13)",
+  "date": "2026-07-04",
+  "src_lines": 73
+ }
+}

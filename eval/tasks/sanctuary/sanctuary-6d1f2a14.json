@@ -1,0 +1,51 @@
+{
+ "id": "sanctuary-6d1f2a14",
+ "repo": "sanctuary",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "6d1f2a143da1509f587272ad7c690e4270f8ab27",
+ "base": "4d70cfa877fe3bdc5b789d90f1ae3cbb3f876f30",
+ "test_files": [
+  "sanctuary/tests/tools/test_tool_policy.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/tools/test_tool_policy.py"
+ ],
+ "gold_files": [
+  "sanctuary/api/runner.py",
+  "sanctuary/tools/builtin.py",
+  "sanctuary/tools/registry.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_open_tool_runs_by_default",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_gated_tool_denied_by_default",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_denied_call_is_recorded_in_history",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_gated_tool_runs_when_named",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_enable_gated_method_grants_at_runtime",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_allow_gated_switch_grants_all",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_named_grant_is_specific_not_global",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_confirm_hook_sync_approves_and_denies",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_confirm_hook_async_is_awaited",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_confirm_hook_receives_spec_and_params",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_with_enabled_does_not_mutate_original",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_default_registry_gates_write_file_but_not_read",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_default_registry_gates_shell_and_run_code",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_default_registry_can_grant_via_create",
+  "sanctuary/tests/tools/test_tool_policy.py::test_tool_policy::test_environment_search_cannot_leak_secrets"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "security: enforce graduated-capability gating on the tool layer",
+  "date": "2026-07-02",
+  "src_lines": 176
+ }
+}

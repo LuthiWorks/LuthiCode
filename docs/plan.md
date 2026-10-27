@@ -79,12 +79,13 @@ Details: `eval/README.md`, `docs/research/2026-10-26_eval-build.md`.
 
 Each extension is added on its own, the eval re-run, and the result written to `eval/results/`. Provisional order:
 
-1. **`run_tests`.**
+1. **`run_tests`.** Built 2026-10-27 (`extensions/run-tests.ts`); its eval comparison waits for the baseline.
    - Wraps each repo's own test command.
    - Forces CPU: `LUTHI_ALLOW_CPU=1`, and hides the GPU from ROCm. Confirm on the first run.
    - Applies a timeout.
    - Compares against a pre-task baseline, so failures that already existed aren't blamed on the agent.
    - Returns only the failures, truncated.
+   - Measure it on what it's for: fewer turns and tokens spent reading test output, and fewer "fixes" aimed at failures that were already there. Not only the pass rate.
 2. **`todo`:** a plan and checklist that keeps long tasks on track.
 3. **LSP diagnostics.**
    - Try the existing `lsp-pi` package (pyright) before building one. It adds one tool and reports diagnostics for touched files at the end of each response.

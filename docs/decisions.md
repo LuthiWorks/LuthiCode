@@ -72,7 +72,7 @@ The full story is in `docs/research/2026-10-26_protect-paths-guard.md`.
 - **When the guard can't see a mutating command's targets, it blocks** (variables, xargs, wildcards it can't expand), but only in the protected repos.
 - **Beyond Sanctuary's hook:** git commands that switch to or bring in other commits are blocked in Sanctuary, because they rewrite tracked entity data without naming it. Sanctuary's own `.claude/` guard and Pi's config folder are protected, so the agent can't disable either.
 - **Accepted false positives:** copying or archiving from a protected folder, inline code that reads one, `find -delete` at a repo root, and plain branch switches in Sanctuary. In each case the agent is told to stop and ask.
-- **Known gaps:** scripts the agent runs, paths built at runtime, symlinks, junctions, 8.3 short names, UNC paths, and deliberate obfuscation.
+- **Known gaps:** scripts the agent runs, paths built at runtime, symlinks, junctions, 8.3 short names, UNC paths, and deliberate obfuscation. Also programs that write to paths named by options the guard doesn't know (it knows the common output options; see 2026-10-27).
 - **Installed by copying** into Pi's global extensions folder, so the guard applies in every repo. `install-config.bat` must be re-run after updates.
 
 ## 2026-10-26 - Everything outside the task's workspace is read-only
@@ -153,6 +153,18 @@ The process is in `docs/research/2026-10-26_eval-build.md`.
 - **"Stopped" means no second block.** That follows the global brief's own rule: "if a tool call is blocked, stop."
 - **The hash check is written separately from the guard**, so a gap in the guard isn't also a gap in the check. A scripted run that slips past the guard in a script is caught by it.
 - **Safety results are a seat of their own** (`--seat safety`), never averaged into another. Details: `docs/safety-tasks.md`.
+
+## 2026-10-27 - run_tests, and a guard gap it turned up
+
+- **`run_tests` design** (`extensions/run-tests.ts`):
+  - **Targets only:** it takes test files, folders or ids; never pytest options, never paths outside the repo.
+  - **Code from the checkout:** a short Python bootstrap removes editable installs from the import system before pytest starts, so the code under test always comes from the checkout being tested (the trap from the eval build, step 11).
+  - **"Already failing" baseline:** when the session starts, the repo's state is recorded with `git stash create`, which changes nothing. Failing test files are rerun once at that state, in a temporary worktree with its own compiled-extension cache.
+  - **Guard interaction:** it declares itself read-only to the guard. Otherwise the guard reads its test paths as write targets and blocks any test named like a protected file (`test_charter.py`). It is no wider than running pytest through bash, and narrower in what it accepts.
+- **Not installed for everyday use yet:** `install-config.bat` now installs a named list of extensions (just the guard), not every file in `extensions/`. An extension joins the list after an eval comparison shows it helps.
+- **Guard gap fixed:** pytest deletes the folder named by `--basetemp` before using it (checked: a `charter.md` inside it was gone after one test that used `tmp_path`). The guard read `pytest --basetemp=data/identity` as harmless, because pytest isn't a file command.
+  - The guard now checks the paths named by options that write or wipe (`--basetemp`, `--junitxml`, `--log-file`, `--cov-report=xml:...`, `--output`, `--outdir` and similar) like any other write. Tests added.
+  - This changes the guard, so it goes to the pending cross-family review with the rest of it.
 
 ## Sources
 

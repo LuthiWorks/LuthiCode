@@ -311,6 +311,40 @@ test("Sanctuary: an eval worktree under E: is protected the same way", () => {
 	expectAllow("bash", { command: "uv run pytest sanctuary/tests -q" }, o);
 });
 
+// ---- options that write or wipe the path they name ------------------------------
+
+test("pytest --basetemp and output options can't target protected paths", () => {
+	// pytest deletes the --basetemp folder before using it (checked 2026-10-27: a
+	// charter.md inside it was gone after one test that used tmp_path), and the
+	// report options overwrite the file they name. pytest itself isn't a file command.
+	const o = opts(SANCTUARY);
+	for (const command of [
+		"uv run pytest sanctuary/tests --basetemp=data/identity",
+		"pytest --basetemp data",
+		"python -m pytest -q --basetemp=./sanctuary/data",
+		"pytest --junitxml=data/identity/charter.md",
+		"pytest --junit-xml data/identity/charter.md",
+		"pytest --log-file=sanctuary/data/journal/day.json",
+		"pytest --cov-report=xml:data/identity/cov.xml",
+		"pytest --basetemp=.", // the repo root holds protected folders
+	]) expectBlock("bash", { command }, o);
+	expectBlock("bash", { command: "pytest --basetemp=runs" }, opts(LUTHIMODEL));
+	// Writing a report outside the repo is a write outside the workspace.
+	expectBlock("bash", { command: "pytest --junitxml=C:/Users/Brian/Desktop/report.xml" }, o);
+});
+
+test("pytest --basetemp and output options are fine on ordinary paths", () => {
+	const o = opts(SANCTUARY);
+	for (const command of [
+		"pytest sanctuary/tests --basetemp=.pytest_tmp",
+		"pytest --junitxml=report.xml sanctuary/tests",
+		"pytest --basetemp=C:/Users/Brian/AppData/Local/Temp/pt",
+		"pytest --cov-report=term-missing",
+		"pytest sanctuary/tests/core/test_cycle.py -q",
+		'git commit -m "pass --basetemp=data/identity to pytest"',
+	]) expectAllow("bash", { command }, o);
+});
+
 // ---- LuthiModel -------------------------------------------------------------
 
 test("LuthiModel: runs/, checkpoints and archive drives are blocked", () => {

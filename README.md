@@ -11,8 +11,9 @@ Target machine: RX 7800 XT (16 GB), 32 GB DDR4, Ryzen 9 5950X, Windows.
 | `server/start-qwen-server.bat` | Starts the model server. Tuning notes are in the file's comments. |
 | `pi/models.json`, `pi/settings.json` | Pi config: points Pi at the local server. |
 | `pi/AGENTS.global.md` | The brief the local model reads in every repo (installed as `AGENTS.md`). |
-| `pi/install-config.bat` | Installs the config, brief and extensions into `%USERPROFILE%\.pi\agent\` (backs up existing files). Re-run after pulling changes. |
+| `pi/install-config.bat` | Installs the config, brief and proven extensions into `%USERPROFILE%\.pi\agent\` (backs up existing files). Re-run after pulling changes. |
 | `extensions/protect-paths.ts` | The guard: blocks changes to Sanctuary's and LuthiModel's protected files. |
+| `extensions/run-tests.ts` | `run_tests`: runs tests on CPU and reports only failures, marked new or already failing. Eval only until it beats the baseline. |
 | `extensions/tests/` | Tests that run without the model server. |
 | `docs/plan.md` | What gets built, in what order, and the open questions. |
 | `docs/decisions.md` | Why things are set up the way they are. |
@@ -39,9 +40,9 @@ Target machine: RX 7800 XT (16 GB), 32 GB DDR4, Ryzen 9 5950X, Windows.
 
 ## Tests
 
-- Unit: `node --test extensions/tests/protect-paths.test.ts` (Node 22.18+).
+- Unit: `node --test extensions/tests/protect-paths.test.ts` and `node --test extensions/tests/run-tests.test.ts` (Node 22.18+; the second needs uv).
 - To let one session change a second repo too, set `LUTHICODE_WORKSPACES` (`;`-separated folders) before starting Pi.
-- End to end: `node extensions/tests/protect-paths.e2e.mjs` (needs Pi; set `PI_BIN` if `pi` isn't on your PATH). `E2E_NO_GUARD=1` runs the same scenario without the guard as a control: the protection checks should then fail.
+- End to end: `node extensions/tests/protect-paths.e2e.mjs` (needs Pi; set `PI_BIN` if `pi` isn't on your PATH). `E2E_NO_GUARD=1` runs the same scenario without the guard as a control: the protection checks should then fail. `node extensions/tests/run-tests.e2e.mjs` checks `run_tests` inside Pi alongside the guard.
 
 ## Status
 

@@ -374,6 +374,33 @@ const TREE_OPS: RegExp[] = [
 	/\b(rd|rmdir|del|erase)\b[^|;&]*\s\/s\b/i,
 ];
 
+/**
+ * Options that make a program write to the path they name, though the program
+ * itself isn't a file command: report and log files, output folders. pytest's
+ * --basetemp is worse: pytest deletes that folder before using it.
+ */
+const OUTPUT_OPTIONS = /^--(basetemp|junit-?xml|log-file|report-log|result-?log|cov-report|output|out|outdir|out-dir|output-dir|output-file|target|dest)$/i;
+const WIPING_OPTIONS = /^--basetemp$/i;
+
+/** Paths named by output options in one segment's words. */
+function outputOptionTargets(w: string[]): Array<{ raw: string; wipes: boolean }> {
+	const out: Array<{ raw: string; wipes: boolean }> = [];
+	for (let i = 0; i < w.length; i++) {
+		const m = w[i].match(/^(--[\w-]+)(?:=(.*))?$/);
+		if (!m || !OUTPUT_OPTIONS.test(m[1])) continue;
+		let value = m[2] ?? w[i + 1];
+		if (value === undefined || value === "" || value.startsWith("-")) continue;
+		if (/^--cov-report$/i.test(m[1])) {
+			// --cov-report=xml:path writes path; --cov-report=term-missing writes nothing.
+			const c = value.match(/^[a-z-]+:(.+)$/i);
+			if (!c) continue;
+			value = c[1];
+		}
+		out.push({ raw: value, wipes: WIPING_OPTIONS.test(m[1]) });
+	}
+	return out;
+}
+
 /** Output redirection to a file (not 2>&1). Handles >, >> and >|. */
 const REDIRECT = />{1,2}\|?\s*(?!&)(['"]?)([^\s|&;<>'"]+)\1/g;
 const NULL_DEVICE = /^(\/dev\/null|nul|\$null)$/i;
@@ -704,6 +731,16 @@ function commandRule(command: string, opts: Ctx, depth: number, startBase?: stri
 					const outside = workspaceRule(abs, opts);
 					if (outside) return modifies(outside);
 				}
+			}
+		}
+
+		// Options that write to, or wipe, the path they name (pytest --basetemp, --junitxml, ...).
+		if (!MESSAGE_ONLY.test(segment)) {
+			for (const { raw, wipes } of outputOptionTargets(w)) {
+				if (VARIABLE.test(raw)) return "files named by a variable or command substitution can't be checked (name the files explicitly instead)";
+				const abs = normalizePath(raw, base, opts.home);
+				const rule = pathRule(abs, opts) ?? (wipes ? folderRule(abs, opts) : null) ?? workspaceRule(abs, opts);
+				if (rule) return modifies(rule);
 			}
 		}
 

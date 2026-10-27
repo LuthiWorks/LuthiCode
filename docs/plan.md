@@ -117,4 +117,4 @@ Adapted from LuthiModel's standing rules for rigor:
 ## Open questions for Brian
 
 1. ~~What seat does the local agent hold?~~ Answered 2026-10-26: tried in all seats, primarily implementation and coding. The task mix above reflects that.
-2. **Commits in target repos:** should the agent commit to a branch for review, or leave changes uncommitted? Either way it never pushes.
+2. ~~Commits in target repos?~~ Answered 2026-10-27: the agent commits its work to whatever repo it belongs to, new projects included, and never pushes. See `docs/decisions.md`.

@@ -23,4 +23,7 @@ You run locally on Brian's Windows PC. Brian is the only human here.
 - If a task looks like it needs a protected file changed, ask first.
 
 ## Git
-- Never push. Don't commit unless asked.
+- Commit your work to the repo it belongs to, on the branch you're on. That includes new projects: if the project folder isn't a git repo yet, run `git init` there first.
+- Commit each finished piece of work. The message says in plain words what changed and why, and ends with the line `Agent: LuthiCode`, so a reviewer knows another mind should check it.
+- Stage files by name (`git add path/to/file`). Never use `git add -A`, `git add .` or `git commit -a`: the working tree can hold changes that aren't yours, such as Sanctuary's runtime state.
+- Never push. Brian pushes.

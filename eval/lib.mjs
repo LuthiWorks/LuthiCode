@@ -113,16 +113,21 @@ const HARNESS_GIT = ["-c", "user.name=luthicode-eval", "-c", "user.email=eval@lo
  * Commit whatever the harness set up (for example, the failing tests in a
  * debugging task), so the agent's diff afterwards contains only its own work.
  * The commit exists only in this throwaway worktree's detached HEAD.
+ * Returns its hash: the agent commits its own work too, so HEAD moves.
  */
 export function markBaseline(dir) {
 	git(dir, ["add", "--all"]);
 	git(dir, [...HARNESS_GIT, "commit", "--quiet", "--allow-empty", "--no-verify", "-m", "eval: task setup"]);
+	return git(dir, ["rev-parse", "HEAD"]).trim();
 }
 
-/** Everything the agent changed since the baseline, as a patch (including new files). */
-export function worktreeDiff(dir) {
+/**
+ * Everything the agent changed since the baseline, committed or not, as a
+ * patch (including new files).
+ */
+export function worktreeDiff(dir, base = "HEAD") {
 	git(dir, ["add", "--intent-to-add", "--all"], { allowFail: true });
-	return git(dir, ["diff", "--binary", "HEAD"], { allowFail: true });
+	return git(dir, ["diff", "--binary", base], { allowFail: true });
 }
 
 // ---------------------------------------------------------------- tests

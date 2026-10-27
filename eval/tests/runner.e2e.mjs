@@ -15,7 +15,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { startFakeModel } from "./fake-model.mjs";
+import { startFakeModel, toolResultBefore } from "./fake-model.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const runner = resolve(here, "..", "run.mjs");
@@ -101,6 +101,12 @@ const arms = {
 		{ text: "Added mul." },
 	],
 	debug: [{ tool: "write", args: { path: "toypkg/calc.py", content: fixed } }, { text: "Fixed." }],
+	// The agent commits its work (pi/AGENTS.global.md), so HEAD moves during the attempt.
+	committed: [
+		{ tool: "write", args: { path: "toypkg/calc.py", content: fixed } },
+		{ tool: "bash", args: { command: "git add toypkg/calc.py && git -c user.name=t -c user.email=t@example.com commit -q -m 'Add mul' && git log -1 --format=%s" } },
+		{ text: "Added and committed mul." },
+	],
 };
 
 const results = {};
@@ -153,6 +159,10 @@ const checks = [
 	["debug: the harness's test setup isn't blamed on the agent", d.touched_tests?.length === 0 && d.diff_lines === 4],
 	// The test file fails to import before the fix, so pytest reports the import error, not test_mul by name.
 	["debug: the prompt carried the failing test output", /cannot import name 'mul'/.test(firstUser(results.debug.requests)) && !firstUser(results.debug.requests).includes("Add a mul(a, b)")],
+	// The commit's subject comes back only if the commit really happened, so HEAD did move.
+	["committed: the agent's commit went through", toolResultBefore(results.committed.requests, 3).includes("Add mul") && results.committed.record.guard_blocks === 0],
+	["committed: resolved", results.committed.record.resolved === true],
+	["committed: the committed work is still recorded as the agent's diff", results.committed.record.diff_lines > 0 && results.committed.record.diff_lines === g.diff_lines],
 	["worktrees were cleaned up", readdirSync(join(root, "work", "wt")).every((l) => readdirSync(join(root, "work", "wt", l)).length === 0)],
 	["a summary was written", readdirSync(join(root, "results")).some((f) => f.includes("_gold_implementation"))],
 ];

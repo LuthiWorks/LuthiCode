@@ -123,6 +123,15 @@ The process is in `docs/research/2026-10-26_eval-build.md`.
 - **Why ~60 standard tasks isn't the end:** at 3 repeats, that set can show differences of roughly 10 points or more between two arms, not small ones. More tasks narrow that. New commits add candidates over time, so re-mining periodically grows the set.
 - **Renames:** mining uses `--no-renames`, so a moved file counts as a deletion plus an addition. Git's rename notation (`{old => new}/file`) isn't a path and broke two candidates. One of them, `sanctuary-ed01b3e8`, was 4 changed lines plus three file moves; counted honestly it no longer qualifies, and it was dropped.
 
+## 2026-10-27 - The agent commits its work
+
+- **Brian's decision:** "The agent should commit what work they are doing to whatever repo the work belongs to, including if we start new projects together." It never pushes; Brian pushes.
+- **How** (`pi/AGENTS.global.md`):
+  - It commits on the branch it's on, like the Claude sessions in these repos.
+  - It stages files by name, never `git add -A`, `git add .` or `git commit -a`, so changes that aren't its own (such as Sanctuary's runtime state) stay out of its commits.
+  - Each message ends with `Agent: LuthiCode`, so a reviewer can tell which commits need review by a different mind.
+- **Eval:** the task prompt no longer says "don't commit", so runs measure the agent as it really works. The runner records the agent's diff against the harness's baseline commit, not HEAD, so committed work is still counted.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/

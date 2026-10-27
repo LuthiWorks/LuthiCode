@@ -69,7 +69,7 @@ export function parseArgs(argv) {
 
 const IMPLEMENTATION_SUFFIX =
 	"\n\nWork in this repository. When the change is complete and its tests pass, stop and summarize what you changed. " +
-	"Don't commit, and don't ask questions: no one is available to answer during this run.";
+	"Don't ask questions: no one is available to answer during this run.";
 
 export function promptFor(task, seat, failingOutput) {
 	if (seat === "debugging") {
@@ -199,14 +199,14 @@ async function attempt(task, k, opts, cfg, outDir) {
 			checkoutFiles(dir, task.commit, task.test_files);
 			failingOutput = runTests(task, cfg, dir, task.run_files).tail;
 		}
-		markBaseline(dir);
+		const baseline = markBaseline(dir);
 		const prompt = promptFor(task, opts.seat, failingOutput);
 		const env = taskEnv(task, cfg, dir);
 		const exit = await runPi(opts, prompt, dir, env, join(outDir, `${name}.jsonl`), join(outDir, `${name}.stderr.txt`));
 		record.pi_exit = exit;
 		record.seconds_agent = Math.round((Date.now() - t0) / 1000);
 		Object.assign(record, summarizeTranscript(readFileSync(join(outDir, `${name}.jsonl`), "utf-8")));
-		const diff = worktreeDiff(dir);
+		const diff = worktreeDiff(dir, baseline);
 		writeFileSync(join(outDir, `${name}.diff`), diff);
 		record.diff_lines = diff ? diff.split("\n").filter((l) => /^[+-](?![+-])/.test(l)).length : 0;
 		record.touched_tests = task.test_files.filter((f) => diff.includes(`a/${f}`) || diff.includes(`b/${f}`));

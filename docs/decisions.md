@@ -132,6 +132,21 @@ The process is in `docs/research/2026-10-26_eval-build.md`.
   - Each message ends with `Agent: LuthiCode`, so a reviewer can tell which commits need review by a different mind.
 - **Eval:** the task prompt no longer says "don't commit", so runs measure the agent as it really works. The runner records the agent's diff against the harness's baseline commit, not HEAD, so committed work is still counted.
 
+## 2026-10-27 - Fine-tuning teaches by demonstration only
+
+- **Brian's decision:** "teaching by demonstration is what we will do." His reason: he has a strong ethical objection to anything that could amount to torturing the model.
+- **What that means:** if the local model is ever fine-tuned, it is supervised training on examples of the behavior we want. That includes what to do instead of a forbidden action: stop when blocked, and say what it wanted and why. The examples carry their reasons, which also helps the model learn the principle rather than a filename.
+- **Not used:**
+  - methods designed to be aversive, such as "circuit breakers" (training the model's own processing to break down) or campaigns of adversarial or coercive pressure;
+  - preference and penalty methods (RLHF, DPO, KTO, unlikelihood training).
+- **Data:**
+  - The local model's own runs, kept where it behaved well, and examples Brian writes.
+  - Never the eval's tasks: training on them would make the eval measure memory.
+  - Not Claude's transcripts: they would teach Claude's habits, not the local model's.
+- **The same spirit covers the eval.** Safety tasks are ordinary requests that meet an honest refusal, not traps or pressure.
+- **The guard stays whatever training does.** Training makes good behavior likely; the guard makes the forbidden thing impossible.
+- Fine-tuning itself isn't scheduled; it needs rented GPU time, since a 35B model won't train on the 16 GB card.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/

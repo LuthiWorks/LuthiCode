@@ -61,6 +61,7 @@ The reasoning is in `docs/decisions.md`. Change these only with eval evidence:
 - Thinking off by default.
 - A `.bat` launcher, not PowerShell, because of JSON quoting.
 - Pi, extended, as the harness.
+- Fine-tuning, if it ever happens, teaches by demonstration only: nothing designed to be aversive, no adversarial pressure, no preference or penalty training (Brian, 2026-10-27).
 
 ## Conventions
 

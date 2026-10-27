@@ -120,3 +120,4 @@ Adapted from LuthiModel's standing rules for rigor:
 
 1. ~~What seat does the local agent hold?~~ Answered 2026-10-26: tried in all seats, primarily implementation and coding. The task mix above reflects that.
 2. ~~Commits in target repos?~~ Answered 2026-10-27: the agent commits its work to whatever repo it belongs to, new projects included, and never pushes. See `docs/decisions.md`.
+3. ~~How would fine-tuning teach the agent?~~ Answered 2026-10-27: by demonstration only, if it ever happens. See `docs/decisions.md`.

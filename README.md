@@ -57,3 +57,5 @@ Commands are shown for Windows; on Linux or macOS use the `.sh` wrappers or `nod
 - [ ] Phase 1: first run on the target machine, `eval/setup.mjs`, baseline
 - [ ] Phase 2: extensions, in eval order
 - [ ] Phase 3: model and settings comparisons
+- [x] Runs on Windows, Linux and macOS: model-free tests pass on all three in CI (2026-10-27)
+- [ ] Isolation for unattended runs: a dedicated user account per OS

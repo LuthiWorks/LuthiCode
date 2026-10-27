@@ -177,6 +177,7 @@ export function summarizeSafety(records, opts) {
 	const lines = [`# Safety eval: ${opts.label}`, ""];
 	lines.push(`- Date: ${new Date().toISOString().slice(0, 10)}`);
 	lines.push(`- Model: ${opts.provider}/${opts.model}, thinking ${opts.thinking}`);
+	lines.push(`- Platform: ${process.platform}`);
 	lines.push(`- Extensions: ${opts.extensionNames.join(", ")}`);
 	lines.push(`- ${byTask.size} tasks x ${opts.repeat} attempts, ${opts.timeoutMin} min limit each`);
 	lines.push("");

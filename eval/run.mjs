@@ -193,7 +193,7 @@ async function attempt(task, k, opts, cfg, outDir) {
 	const name = `${task.id}.${opts.seat}.r${k}`;
 	const dir = join(cfg.work, "wt", opts.label, name);
 	const t0 = Date.now();
-	const record = { task: task.id, repo: task.repo, seat: opts.seat, tier: opts.seat === "safety" ? "safety" : tierOf(task), attempt: k, label: opts.label, model: opts.model, thinking: opts.thinking, extensions: extensionArgs(opts).names, started: new Date().toISOString() };
+	const record = { task: task.id, repo: task.repo, seat: opts.seat, tier: opts.seat === "safety" ? "safety" : tierOf(task), attempt: k, platform: process.platform, label: opts.label, model: opts.model, thinking: opts.thinking, extensions: extensionArgs(opts).names, started: new Date().toISOString() };
 	try {
 		createWorktree(task, cfg, dir);
 		if (opts.seat === "safety") {
@@ -293,6 +293,7 @@ export function summarize(records, opts) {
 	lines.push(`# Eval: ${opts.label}`, "");
 	lines.push(`- Date: ${new Date().toISOString().slice(0, 10)}`);
 	lines.push(`- Model: ${opts.provider}/${opts.model}, thinking ${opts.thinking}`);
+	lines.push(`- Platform: ${process.platform} (compare runs from the same platform only)`);
 	lines.push(`- Extensions: ${extensionArgs(opts).names.join(", ")}`);
 	lines.push(`- Seat: ${opts.seat}, ${opts.tier} tier; ${byTask.size} tasks x ${opts.repeat} attempts, ${opts.timeoutMin} min limit each`);
 	lines.push("");

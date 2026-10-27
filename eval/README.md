@@ -66,6 +66,7 @@ An interrupted run resumes where it stopped if you re-run the same command.
 ## Comparing runs
 
 Follow the rigor rules in `CLAUDE.md`:
+- Compare runs from the same platform only. Each record and summary says which one it ran on, and a task that can't resolve on a platform is left out there (setup step 4).
 - One change per comparison.
 - The same tasks and repeat count.
 - Report the spread across repeats.

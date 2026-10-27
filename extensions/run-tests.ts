@@ -34,7 +34,7 @@
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { isAbsolute, join, relative, resolve, sep } from "node:path";
 
@@ -255,9 +255,22 @@ function git(cwd: string, args: string[]): { ok: boolean; out: string } {
 	return { ok: r.status === 0, out: (r.stdout ?? "").trim() };
 }
 
+/**
+ * A path in its canonical form, so two spellings of one folder compare equal:
+ * macOS temp folders are symlinks (/var -> /private/var), and Windows paths can
+ * use 8.3 short names (RUNNER~1). git reports the canonical form.
+ */
+export function canonical(p: string): string {
+	try {
+		return realpathSync.native(p);
+	} catch {
+		return resolve(p);
+	}
+}
+
 export function repoRoot(cwd: string): string {
 	const r = git(cwd, ["rev-parse", "--show-toplevel"]);
-	return r.ok && r.out ? resolve(r.out) : resolve(cwd);
+	return canonical(r.ok && r.out ? r.out : cwd);
 }
 
 /** Record the repo's current state without changing anything (git stash create writes only an object). */
@@ -363,8 +376,9 @@ export default function (pi: ExtensionAPI) {
 		parameters: PARAMETERS as never,
 		annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
 		async execute(_id: string, params: { paths: string[]; timeout_s?: number }, signal: AbortSignal | undefined, _onUpdate: unknown, ctx: { cwd: string }) {
-			const root = repoRoot(ctx.cwd);
-			const targets = normalizeTargets(root, ctx.cwd, params.paths);
+			const cwd = canonical(ctx.cwd);
+			const root = repoRoot(cwd);
+			const targets = normalizeTargets(root, cwd, params.paths);
 			const timeoutS = Math.min(Math.max(1, params.timeout_s ?? DEFAULT_TIMEOUT_S), MAX_TIMEOUT_S);
 			const kind = detectRepo(root);
 			const python = pythonFor(root);
@@ -372,7 +386,7 @@ export default function (pi: ExtensionAPI) {
 			const failing = r.cases.filter((c) => c.outcome === "failed" || c.outcome === "error");
 			let before: Map<string, TestCase["outcome"]> | null = null;
 			if (failing.length && !r.timedOut && !signal?.aborted) {
-				baseline ??= startBaseline(ctx.cwd);
+				baseline ??= startBaseline(cwd);
 				if (baseline.ref && baseline.root === root) before = await baselineOutcomes(baseline, kind, python, [...new Set(failing.map((c) => fileOf(c.key)))], timeoutS, signal);
 			}
 			const { text, details } = report(r, before);

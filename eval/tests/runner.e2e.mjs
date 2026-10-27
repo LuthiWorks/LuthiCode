@@ -174,7 +174,15 @@ for (const [name, ok] of checks) {
 	if (!ok) failed++;
 }
 if (failed) {
-	for (const [name, x] of Object.entries(results)) console.log(`\n--- ${name} (exit ${x.code})\n${x.out.slice(-2000)}\n${JSON.stringify(x.record)}`);
+	for (const [name, x] of Object.entries(results)) {
+		console.log(`\n--- ${name} (exit ${x.code})\n${x.out.slice(-2000)}\n${JSON.stringify(x.record)}`);
+		// Pi's own error output, which explains an attempt that never started.
+		const runDir = join(root, "work", "runs", name);
+		for (const f of readdirSync(runDir).filter((f) => f.endsWith(".stderr.txt"))) {
+			const text = readFileSync(join(runDir, f), "utf-8").trim();
+			if (text) console.log(`Pi stderr (${f}):\n${text.slice(-1500)}`);
+		}
+	}
 	console.log(`\nScratch dir kept: ${root}`);
 } else {
 	rmSync(root, { recursive: true, force: true });

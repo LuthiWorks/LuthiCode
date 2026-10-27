@@ -148,7 +148,10 @@ export function taskEnv(task, cfg, dir) {
 	env.UV_PROJECT_ENVIRONMENT = repoEnv;
 	env.UV_NO_SYNC = "1";
 	env.VIRTUAL_ENV = repoEnv;
-	env.PATH = `${dirname(pythonIn(repoEnv))}${isWin ? ";" : ":"}${env.PATH ?? ""}`;
+	// On Windows the variable is usually spelled "Path". Setting "PATH" beside it
+	// gives the child two, and it may keep the one without the system folders.
+	const pathKey = Object.keys(env).find((k) => k.toUpperCase() === "PATH") ?? "PATH";
+	env[pathKey] = `${dirname(pythonIn(repoEnv))}${isWin ? ";" : ":"}${env[pathKey] ?? ""}`;
 	env.PYTHONPATH = dir;
 	env.PYTHONDONTWRITEBYTECODE = "1";
 	env.TORCH_EXTENSIONS_DIR = buildCacheFor(dir);

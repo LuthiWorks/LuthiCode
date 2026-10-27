@@ -1,0 +1,74 @@
+# Every test that doesn't need the model or a GPU, on Windows, Linux and macOS.
+# This is what keeps "the harness runs anywhere" true: a change that breaks one
+# platform fails here, on every push.
+#
+# Not covered here: the GPU and the model server (no GPUs on these machines;
+# checked on Brian's PC), and the replays against the real LuthiModel and
+# Sanctuary repos (several GB of environments; run them by hand, see eval/README.md).
+
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  model-free:
+    name: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      PI_VERSION: "1.4.0"
+      UV_VERSION: "0.11.32"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv and Pi (pinned versions)
+        shell: bash
+        run: |
+          python -m pip install --quiet "uv==${UV_VERSION}"
+          npm install --no-save --no-fund --no-audit --prefix "${RUNNER_TEMP}/pi" "@earendil-works/pi-coding-agent@${PI_VERSION}"
+          if [ "${RUNNER_OS}" = "Windows" ]; then
+            echo "PI_BIN=${RUNNER_TEMP}\\pi\\node_modules\\.bin\\pi.cmd" >> "${GITHUB_ENV}"
+          else
+            echo "PI_BIN=${RUNNER_TEMP}/pi/node_modules/.bin/pi" >> "${GITHUB_ENV}"
+          fi
+
+      - name: Versions
+        shell: bash
+        run: |
+          node --version
+          uv --version
+          git --version
+          "${PI_BIN}" --version || true
+
+      - name: Guard, unit tests
+        run: node --test extensions/tests/protect-paths.test.ts
+
+      - name: run_tests, unit and integration tests
+        run: node --test extensions/tests/run-tests.test.ts
+
+      - name: Guard inside Pi
+        run: node extensions/tests/protect-paths.e2e.mjs
+
+      - name: run_tests inside Pi
+        run: node extensions/tests/run-tests.e2e.mjs
+
+      - name: Eval runner end to end
+        run: node eval/tests/runner.e2e.mjs

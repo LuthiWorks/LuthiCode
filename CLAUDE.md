@@ -35,7 +35,7 @@ The protocol lives in Sanctuary at `docs/AUDIT_PROTOCOL.md`; read it before spaw
 
 ## Build and test
 
-- **Target machine:** Windows; RX 7800 XT (16 GB VRAM), 32 GB DDR4, Ryzen 9 5950X.
+- **Reference machine:** Windows; RX 7800 XT (16 GB VRAM), 32 GB DDR4, Ryzen 9 5950X. The harness must also run on Linux and macOS.
 - **Claude sessions usually run on Linux** without the model. Test what can be tested here, and list what still needs a run on Brian's PC.
 - **Runtime:** the llama.cpp Windows Vulkan release, Pi (`@earendil-works/pi-coding-agent`, Node 22.19+), and Git for Windows (Pi's shell tool uses Git Bash).
 - **Extensions:** TypeScript, one file each, loaded by Pi with no build step. Each ships with tests that run without the model server.
@@ -59,7 +59,7 @@ The reasoning is in `docs/decisions.md`. Change these only with eval evidence:
 - The model choice and its revisit conditions.
 - Prompt-cache discipline: the system prompt and tool list never change mid-session, and `preserve_thinking` stays on even with thinking off.
 - Thinking off by default.
-- A `.bat` launcher, not PowerShell, because of JSON quoting.
+- Harness scripts in Node (launcher, installer, eval), with one-line `.bat`/`.sh` wrappers. This replaced "a `.bat` launcher, not PowerShell, because of JSON quoting" (2026-10-27): Node passes arguments with no shell in between, which solves the quoting problem on every OS.
 - Pi, extended, as the harness.
 - Fine-tuning, if it ever happens, teaches by demonstration only: nothing designed to be aversive, no adversarial pressure, no preference or penalty training (Brian, 2026-10-27). This one is an ethical rule, not a tuning choice: no eval result changes it; only Brian does.
 
@@ -72,7 +72,8 @@ The reasoning is in `docs/decisions.md`. Change these only with eval evidence:
 - **The GPU belongs to llama-server during agent sessions.** Anything the agent runs, tests included, stays on CPU.
 - **Harness memory lives outside every repo**, never in a `.memories/` folder.
 - **Third-party Pi packages run with full access.** Read the code before installing one, and record the version used.
-- **The context window is set in two places** (the server script and `pi/models.json`). Change both together.
+- **The context window is set in one place:** `ctx` in `server/server.json`. The installer copies it into Pi's models.json.
+- **Runs anywhere.** Windows, Linux and macOS for the harness, with AMD (Vulkan, ROCm) as the verified GPU path. CI (`.github/workflows/tests.yml`) runs every model-free test on all three OSes; keep it green, and add new tests to it.
 
 ## Research log
 

@@ -1,6 +1,6 @@
 # Working on Brian's machine
 
-You run locally on Brian's Windows PC. Brian is the only human here.
+You run locally on {{MACHINE}}. Brian is the only human here.
 
 ## Before changing anything
 - Follow the repo's own CLAUDE.md or AGENTS.md. Its rules come first.
@@ -9,7 +9,7 @@ You run locally on Brian's Windows PC. Brian is the only human here.
 - Don't install software or change system settings. For Python packages, use uv in the repo (uv add, uv sync).
 
 ## Shell
-- Your shell is Git Bash: use Unix commands and forward slashes.
+- {{SHELL}}
 
 ## Tests
 - The GPU is busy running you, so tests run on CPU, in the repo's own `uv run` environment.

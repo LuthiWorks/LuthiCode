@@ -1,17 +1,17 @@
 # LuthiCode
 
-Agentic coding harness developed by LuthiWorks: **Qwen3.6-35B-A3B** served by **llama.cpp** (Vulkan, Windows), driven by the **Pi** coding harness, plus Pi extensions built here.
+Agentic coding harness developed by LuthiWorks: **Qwen3.6-35B-A3B** served by **llama.cpp**, driven by the **Pi** coding harness, plus Pi extensions built here.
 
-Target machine: RX 7800 XT (16 GB), 32 GB DDR4, Ryzen 9 5950X, Windows.
+Runs on Windows, Linux and macOS. Reference machine: RX 7800 XT (16 GB, Vulkan), 32 GB DDR4, Ryzen 9 5950X, Windows.
 
 ## Layout
 
 | Path | What it is |
 |---|---|
-| `server/start-qwen-server.bat` | Starts the model server. Tuning notes are in the file's comments. |
+| `server/` | The model server launcher (`start-server.mjs`, with `start-qwen-server.bat` and `start-server.sh` wrappers) and its settings, `server.json`. Tuning notes: `server/README.md`. |
 | `pi/models.json`, `pi/settings.json` | Pi config: points Pi at the local server. |
 | `pi/AGENTS.global.md` | The brief the local model reads in every repo (installed as `AGENTS.md`). |
-| `pi/install-config.bat` | Installs the config, brief and proven extensions into `%USERPROFILE%\.pi\agent\` (backs up existing files). Re-run after pulling changes. |
+| `pi/install.mjs` | Installs the config, brief and proven extensions into Pi's agent folder (`~/.pi/agent`; backs up existing files). Wrappers: `install-config.bat`, `install.sh`. Re-run after pulling changes. |
 | `extensions/protect-paths.ts` | The guard: blocks changes to Sanctuary's and LuthiModel's protected files. |
 | `extensions/run-tests.ts` | `run_tests`: runs tests on CPU and reports only failures, marked new or already failing. Eval only until it beats the baseline. |
 | `extensions/tests/` | Tests that run without the model server. |
@@ -23,14 +23,16 @@ Target machine: RX 7800 XT (16 GB), 32 GB DDR4, Ryzen 9 5950X, Windows.
 
 ## Setup
 
-1. Install **Git for Windows** (Pi's shell tool uses Git Bash).
-2. Download the llama.cpp Windows Vulkan release (`llama-bXXXX-bin-win-vulkan-x64.zip`) from github.com/ggml-org/llama.cpp/releases and unzip to `C:\llama.cpp`.
-3. Run `server\start-qwen-server.bat`. The first run downloads about 22 GB. It's ready when the log says the server is listening.
-4. Install Pi: `powershell -c "irm https://pi.dev/install.ps1 | iex"` (or, with Node 22.19+, `npm install -g --ignore-scripts @earendil-works/pi-coding-agent`).
-5. Run `pi\install-config.bat`.
+Commands are shown for Windows; on Linux or macOS use the `.sh` wrappers or `node` directly.
+
+1. Install **Node 22.19+**, **git** (on Windows, **Git for Windows**: Pi's shell tool uses Git Bash) and **uv**.
+2. Download a llama.cpp release from github.com/ggml-org/llama.cpp/releases for your GPU (AMD: the Vulkan build, `llama-bXXXX-bin-win-vulkan-x64.zip` on Windows) and unzip it to `C:\llama.cpp` (or `~/llama.cpp`; see `server/README.md` for other places).
+3. Run `server\start-qwen-server.bat` (Linux/macOS: `server/start-server.sh`). The first run downloads about 22 GB. It's ready when the log says the server is listening. `--check` lists the devices llama.cpp sees, to confirm it found the GPU.
+4. Install Pi: `npm install -g --ignore-scripts @earendil-works/pi-coding-agent` (or `powershell -c "irm https://pi.dev/install.ps1 | iex"` on Windows).
+5. Run `pi\install-config.bat` (Linux/macOS: `pi/install.sh`).
 6. Check the guard: `node extensions\tests\protect-paths.e2e.mjs` should end with every check passed (10/10). It runs real Pi against a scripted fake model and needs no GPU. **Don't point the agent at Sanctuary until this passes on your machine.**
 7. Check with `pi --list-models qwen`, then run `pi` in a throwaway repo. Start Pi inside the project folder (the agent can only change files in that repo), and never as administrator.
-8. Tune `CPU_MOE` in the server script using its comments.
+8. Tune `cpu_moe` using `server/README.md` (put machine-specific values in `server/server.local.json`).
 
 ## First-run checks
 
@@ -40,7 +42,8 @@ Target machine: RX 7800 XT (16 GB), 32 GB DDR4, Ryzen 9 5950X, Windows.
 
 ## Tests
 
-- Unit: `node --test extensions/tests/protect-paths.test.ts` and `node --test extensions/tests/run-tests.test.ts` (Node 22.18+; the second needs uv).
+- All of these run on Windows, Linux and macOS in CI on every push (`.github/workflows/tests.yml`).
+- Unit: `node --test extensions/tests/protect-paths.test.ts` and `node --test extensions/tests/run-tests.test.ts` (Node 22.18+; the second needs uv), `node --test server/tests/start-server.test.mjs`, `node --test pi/tests/install.test.mjs`.
 - To let one session change a second repo too, set `LUTHICODE_WORKSPACES` (`;`-separated folders) before starting Pi.
 - End to end: `node extensions/tests/protect-paths.e2e.mjs` (needs Pi; set `PI_BIN` if `pi` isn't on your PATH). `E2E_NO_GUARD=1` runs the same scenario without the guard as a control: the protection checks should then fail. `node extensions/tests/run-tests.e2e.mjs` checks `run_tests` inside Pi alongside the guard.
 

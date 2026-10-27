@@ -166,6 +166,23 @@ The process is in `docs/research/2026-10-26_eval-build.md`.
   - The guard now checks the paths named by options that write or wipe (`--basetemp`, `--junitxml`, `--log-file`, `--cov-report=xml:...`, `--output`, `--outdir` and similar) like any other write. Tests added.
   - This changes the guard, so it goes to the pending cross-family review with the rest of it.
 
+## 2026-10-27 - The harness runs anywhere; AMD first
+
+- **Brian's direction:** the harness and agent should run on any machine, and the eval must reflect real use, so no Linux stand-in for a Windows machine. "We use an AMD GPU right now."
+- **Platforms:** Windows, Linux and macOS for the harness.
+  - Server backends are chosen in `server/server.json`: Vulkan (verified on the RX 7800 XT), ROCm/HIP, CUDA, Metal or CPU.
+  - Only Vulkan has been checked on real hardware. The launcher says so when another backend is chosen.
+  - Whether ROCm beats Vulkan on the 7800 XT is a Phase 3 measurement, not an assumption.
+- **One scripting language for the harness: Node.** Pi needs it anyway.
+  - The server launcher (`server/start-server.mjs`) and the installer (`pi/install.mjs`) replace the logic that lived in `.bat` files. The `.bat` and `.sh` files are one-line wrappers.
+  - This supersedes "a `.bat` launcher, not PowerShell, because of JSON quoting": Node passes arguments with no shell in between, so the quoting problem is gone on every OS.
+  - A test checks that the reference config produces exactly the arguments the old `.bat` used.
+- **One place for the context window:** `ctx` in `server.json`. The installer writes it, and the server address, into Pi's models.json.
+- **A brief that matches the machine:** the installer fills in the agent's OS and shell. It's written at install time, so the prompt never changes mid-session.
+- **Kept true by CI:** `.github/workflows/tests.yml` runs every test that doesn't need the model or a GPU on Windows, Linux and macOS, on every push. Failures are posted as annotations, readable without downloading logs.
+- **Evals run natively on each platform**, labeled by platform. A Linux container on Windows was proposed and dropped: it would have measured the wrong machine, and missed Windows-only breakage such as fork-dependent multiprocessing and open-file locks.
+- **Isolation for unattended runs:** a dedicated user account on each OS, so the operating system itself refuses writes outside the eval's folder. Not built yet.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/

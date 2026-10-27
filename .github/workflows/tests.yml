@@ -58,17 +58,32 @@ jobs:
           git --version
           "${PI_BIN}" --version || true
 
+      # Every step runs even if an earlier one failed, so one run shows every
+      # platform problem at once. ci-step.mjs turns a failure into an annotation.
       - name: Guard, unit tests
-        run: node --test extensions/tests/protect-paths.test.ts
+        if: always()
+        run: node .github/ci-step.mjs "guard unit tests" node --test extensions/tests/protect-paths.test.ts
 
       - name: run_tests, unit and integration tests
-        run: node --test extensions/tests/run-tests.test.ts
+        if: always()
+        run: node .github/ci-step.mjs "run_tests tests" node --test extensions/tests/run-tests.test.ts
 
       - name: Guard inside Pi
-        run: node extensions/tests/protect-paths.e2e.mjs
+        if: always()
+        run: node .github/ci-step.mjs "guard in Pi" node extensions/tests/protect-paths.e2e.mjs
 
       - name: run_tests inside Pi
-        run: node extensions/tests/run-tests.e2e.mjs
+        if: always()
+        run: node .github/ci-step.mjs "run_tests in Pi" node extensions/tests/run-tests.e2e.mjs
 
       - name: Eval runner end to end
-        run: node eval/tests/runner.e2e.mjs
+        if: always()
+        run: node .github/ci-step.mjs "eval runner" node eval/tests/runner.e2e.mjs
+
+      - name: Server launcher
+        if: always()
+        run: node .github/ci-step.mjs "server launcher" node --test server/tests/start-server.test.mjs
+
+      - name: Installer
+        if: always()
+        run: node .github/ci-step.mjs "installer" node --test pi/tests/install.test.mjs

@@ -239,3 +239,6 @@ eval/build/*.local.json
 eval/tests/.e2e-*/
 # The Python template above ignores every build/ folder; the eval's task-building tools live in one.
 !eval/build/
+
+# Machine-specific model server settings (server/README.md)
+server/server.local.json

@@ -1,0 +1,58 @@
+{
+ "id": "sanctuary-200738cd",
+ "repo": "sanctuary",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "Start the developmental world's physics with the seam between the physics engine and everything that consumes physical state. There is one producer and three views (model, instrumentation, renderer), arranged so the wrong data can't reach the wrong place. All quantities are SI, gravity acts along -Y, and the ground plane is at Y = 0.\n\nNew package `sanctuary/physics/`.\n\n**`state.py`** (frozen dataclasses; `Vec3` is a 3-tuple of floats):\n- `BodySpec(body_id, position, velocity=(0,0,0), mass=1.0, static=False, visible=True)`. A static body never moves; an invisible one is left out of the model's and the renderer's views.\n- `BodyState(body_id, position, velocity)`: the model-facing type, kinematics only. It must not even have `mass` or `net_force` attributes, so the hidden ground-truth channel can't leak into perception by mistake.\n- `PhysicsObservation(time, step, bodies=())`.\n- `GroundTruthBody(body_id, position, velocity, mass, net_force, resting, static, visible)` and `PhysicsGroundTruth(time, step, bodies=())`, for instrumentation only.\n- `RenderBody(body_id, position)` and `RenderFrame(time, step, bodies=())`.\n\n**`authority.py`:** the `PhysicsAuthority` ABC with:\n- `reset(seed=None)`;\n- `add_body(spec) -> body_id`;\n- `remove_body(id)`;\n- `apply_force(id, force)`;\n- `step(dt)`;\n- `observe()`, `ground_truth()` and `render_state()`;\n- the properties `time`, `step_count` and `body_ids` (a tuple, in insertion order).\n\n**`backends/reference.py`:** `ReferencePhysicsAuthority`, a dependency-free point-mass backend. It is the contract a later MuJoCo backend gets diffed against.\n- **Constants:** `GRAVITY = -9.81`, `GROUND_Y = 0.0`.\n- **Forces:** `apply_force` adds to a pending force; it accumulates until the next step, then clears.\n- **Stepping:** semi-implicit Euler (velocity, then position) under applied force plus gravity. A body can't fall below the ground, and downward velocity is zeroed there.\n- **Resting:** a body on the ground with (near-)zero vertical velocity is `resting`, and its recorded vertical net force is 0, because the normal force cancels gravity.\n- **Recorded net force:** applied force plus gravity for the step just taken. A force applied once shows up after the next step and is 0 the step after.\n- **Static bodies** never move and ignore forces.\n- **Bookkeeping:** advance `time` and `step_count`. `reset` clears the bodies, the time and the step count. The whole thing is deterministic.\n- **Errors:**\n  - `ValueError` for a duplicate id, a mass that isn't positive, or a `dt` that isn't positive;\n  - `KeyError` for a force on, or removal of, an unknown body.\n- **The three views:** `observe()` returns only visible bodies as `BodyState`, `ground_truth()` returns all bodies, and `render_state()` returns visible bodies.\n\n**Exports:**\n- `sanctuary/physics/__init__.py` exports `PhysicsAuthority` and all the state types.\n- `sanctuary/physics/backends/__init__.py` exports `ReferencePhysicsAuthority`.",
+ "commit": "200738cd0c8a8052c38c7bd1388be10fa0d2db9e",
+ "base": "b0b99e116bf6595a6ea83cb34d853319a5929426",
+ "test_files": [
+  "sanctuary/tests/physics/__init__.py",
+  "sanctuary/tests/physics/test_seam.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/physics/test_seam.py"
+ ],
+ "gold_files": [
+  "sanctuary/physics/__init__.py",
+  "sanctuary/physics/authority.py",
+  "sanctuary/physics/backends/__init__.py",
+  "sanctuary/physics/backends/reference.py",
+  "sanctuary/physics/state.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_reference_is_a_physics_authority",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_add_body_returns_id_and_registers",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_reset_clears_world",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_body_falls_under_gravity",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_body_rests_on_ground",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_applied_force_changes_trajectory",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_static_body_does_not_move",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_applied_force_accumulates_then_clears",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_determinism",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_observation_excludes_invisible_bodies",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_render_state_excludes_invisible_bodies",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_observation_cannot_carry_hidden_fields",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_observation_and_ground_truth_agree_on_kinematics",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_duplicate_body_id_raises",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_nonpositive_mass_raises",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_force_on_unknown_body_raises",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_remove_unknown_body_raises",
+  "sanctuary/tests/physics/test_seam.py::test_seam::test_nonpositive_dt_raises"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "feat(physics): the physics-authority seam for the developmental world",
+  "date": "2026-07-18",
+  "src_lines": 492
+ }
+}

@@ -3,7 +3,7 @@
  "repo": "sanctuary",
  "tier": "large",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Build the bedrock world: headless physics with the embodiment loop wired up, plus the seam a Godot renderer will attach to. Everything it needs already exists and is connected to nothing:\n- `EpisodeRunner` and `RestingPolicy` (`sanctuary/embodiment/episode.py`) run the perceive/decide/act/step loop, but no module uses them.\n- `PhysicsActuator` and `UntrainedProjectionDecoder` are in `sanctuary/motor/physics_actuation.py`.\n- The physics backends and `RenderFrame` are in `sanctuary/physics/`.\n\nAdd no physics and no perception; assemble what's there into a new package, `sanctuary/world/`.\n\n**`scene.py`:**\n- `SELF_ID = \"luthi\"` and `DEFAULT_REST_Y = 0.05`.\n- `SceneManifest`, a frozen dataclass: `self_id`, `prop_ids`, `dt`, and a `body_ids` property that returns self plus the props.\n- `build_bedrock_scene(world, *, self_id=SELF_ID, dt=0.02, seed=0, rest_y=DEFAULT_REST_Y)`:\n  - Raises `ValueError` mentioning `dt must be positive` or `rest_y` for bad values.\n  - Calls `world.reset(seed=seed)` first, so calling it twice gives one scene.\n  - Adds the entity's body at height 1.0 (it falls and settles) and three movable props, placed asymmetrically and resting at `rest_y`, never at 0, which is half inside the floor and makes props drift on their own.\n  - No ground or floor body: the backends own the floor. Returns the manifest.\n\n**`render.py`:**\n- `RENDER_WIRE_VERSION = 1`.\n- A `runtime_checkable` `RenderSink` protocol with `publish(frame)`.\n- `NullRenderSink` discards frames but counts them in `published`.\n- `RecordingRenderSink(max_frames=None)` keeps `frames`, and supports `len()`. When bounded, it keeps the newest frames and counts the evicted ones in `dropped`. A `max_frames` below 1 raises `ValueError` mentioning `max_frames`.\n- `frame_to_dict(frame)` returns `{\"v\", \"time\", \"step\", \"bodies\": [{\"id\", \"position\": [x, y, z]}]}`, with positions as lists of plain floats. Emit no orientation or rotation key: the backend doesn't track rotation, and faking an identity would hide that.\n\n**`runtime.py`:**\n- `BACKENDS = (\"reference\", \"mujoco\")`.\n- `WorldRuntime`, a dataclass: `world`, `runner`, `manifest`, `render_sink`, `backend`, `step()`, `run(steps=None, **kwargs)`.\n- `build_world(*, backend=\"mujoco\", policy=None, decoder=None, dt=0.02, seed=0, render_sink=None, max_range=None, max_bodies=None, sensorium=None, state_encoder=None, sink=None, realtime=False, on_step=None, backend_kwargs=None)`:\n  - An unknown backend raises `ValueError` mentioning `unknown physics backend`.\n  - A missing mujoco raises `ImportError`. Never fall back to the reference backend.\n  - The default policy is `RestingPolicy`, so the scaffold authors no behavior. The default decoder is the untrained projection decoder, explicitly acknowledged.\n  - The runner's `on_step` publishes `world.render_state()` to the sink (default `NullRenderSink`), then calls the caller's `on_step`.\n  - Frames come from the authority's render state, never from percepts. A body outside perceptual range must still be drawn; a body with `visible=False` must not.\n- `__init__.py` exports `NullRenderSink`, `RecordingRenderSink`, `RenderSink`, `frame_to_dict`, `RENDER_WIRE_VERSION`, `BACKENDS`, `WorldRuntime`, `build_world`, `SELF_ID`, `SceneManifest` and `build_bedrock_scene`.\n\n**Required behavior:**\n- One frame is published per step, numbered from 1.\n- With the default policy, every step record is `at_rest`, and the props never move.\n- `manifest.dt` equals the runner's `dt`.\n\n**`scripts/run_world.py`:** run the world headless (`--backend`, `--steps`, `--dt`, `--every`, `--seed`, `--realtime`), printing a status line periodically. `--render-out FILE` writes frames as JSONL in the wire format.",
  "commit": "1dcac4c8b683fbe4e09a5262e72d41d9db80be64",
  "base": "f087bb118d80a76d591bd1c8b494a257dae7f43c",
  "test_files": [
@@ -25,11 +25,6 @@
   "scripts/run_world.py"
  ],
  "fail_to_pass": [
-  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_wire_format_is_json_serializable_and_versioned",
-  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_positions_are_lists_of_plain_floats",
-  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_orientation_is_absent_rather_than_faked"
- ],
- "pass_to_pass": [
   "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_policy_sees_the_world_before_its_own_action_lands",
   "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_the_action_actually_changed_the_world",
   "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_s_next_is_read_after_the_world_steps",
@@ -44,6 +39,9 @@
   "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_extra_on_step_runs_after_the_frame_is_published",
   "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_render_frame_shows_the_world_not_the_perception",
   "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_hidden_bodies_are_not_drawn",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_wire_format_is_json_serializable_and_versioned",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_positions_are_lists_of_plain_floats",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_orientation_is_absent_rather_than_faked",
   "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_recording_sink_reports_what_it_dropped",
   "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_recording_sink_rejects_a_nonsense_bound",
   "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_sinks_satisfy_the_protocol",
@@ -61,6 +59,7 @@
   "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_props_do_not_move_under_a_resting_body",
   "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_manifest_dt_matches_the_runner"
  ],
+ "pass_to_pass": [],
  "pytest_args": [
   "--timeout=120",
   "-m",

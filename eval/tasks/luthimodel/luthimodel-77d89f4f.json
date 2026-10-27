@@ -3,7 +3,7 @@
  "repo": "luthimodel",
  "tier": "large",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "`LivingLayerV6` and `SpikingLivingLayer` already take `buffer_dtypes` (per-buffer dtype overrides for the buffer-compression ablations, e.g. `{\"momentum\": torch.bfloat16}`), but nothing above the layer passes it through, so the ablations can't be run from the models or the training script.\n\n- `LuthiLM` (`luthi/model.py`) and `SpikingLuthiLM` (`luthi/model_spiking.py`) take a new keyword argument `buffer_dtypes: dict[str, torch.dtype] | None = None` and pass it to every block. `SpikingHybridBlock` (`luthi/hybrid_block_spiking.py`) must accept it too and hand it to its living layer. Each block's `living_ffn` then has the overridden buffers at the requested dtype and the rest at FP32, and forward passes stay NaN-free.\n- `luthi/train.py`:\n  - Add `bf16` (`torch.bfloat16`) to the dtype map.\n  - Add a `--buffer_dtypes` option in the form `momentum=bf16,set_point=bf16`. Parse it into a dict of buffer name to dtype, skipping empty entries. Raise `ValueError` for an entry without `=` or with an unknown dtype.\n  - Pass the result to whichever model the script builds.",
  "commit": "77d89f4f397a0e3b41c5a8dff17d02ffa8ed6e08",
  "base": "dfdb94f1720af8029e43c4e6476dbb047b0bcdf2",
  "test_files": [

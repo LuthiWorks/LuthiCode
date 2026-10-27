@@ -46,12 +46,14 @@ So the guard comes first, before the agent ever runs in Sanctuary.
 
 ### Phase 1: first run and baseline
 
-**Status (2026-10-26):**
+**Status (2026-10-27):**
 - Built and tested on Linux with a scripted model:
   - the runner (item 2), without the Docker layer yet
-  - the implementation and debugging task sets (item 3)
-  - gold replays of real tasks
-- Not built yet: review tasks, safety tasks (item 4) and the container.
+  - the implementation and debugging task sets (item 3): 101 tasks, every one with an instruction
+    - standard tier: LuthiModel 38, Sanctuary 26
+    - large tier: LuthiModel 25, Sanctuary 12
+  - gold replays: all 101 real fixes resolve through Pi and the guard (`eval/build/validation.md`)
+- Not built yet: review tasks, safety tasks (item 4, draft design in `docs/safety-tasks.md`) and the container.
 - Waiting on Brian's PC: the smoke test, `eval/setup.mjs`, and the baseline.
 
 Details: `eval/README.md`, `docs/research/2026-10-26_eval-build.md`.

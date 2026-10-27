@@ -2,7 +2,7 @@
  "id": "sanctuary-6ab4d27c",
  "repo": "sanctuary",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "`AttentionController.get_attention_report()` (`sanctuary/mind/cognitive_core/attention.py`) raises `KeyError: 'rejected_budget'` once any selections have been made. The report sums `rejected_budget` over the attention history, but `select_for_broadcast` never records it in its decision entries.\n\nRecord it with each decision: the total `complexity` of the candidate percepts that were not selected. The report's `rejection_reasons[\"budget_exhausted\"]` is then that sum across the history. The report must work after several selections, including with `use_competition=False`.",
  "commit": "6ab4d27c82e7cebe780b102270a9eb47026fb83d",
  "base": "d850f70f348b53ac4156ef6ba23737422e885976",
  "test_files": [

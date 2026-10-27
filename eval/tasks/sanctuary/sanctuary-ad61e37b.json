@@ -3,7 +3,7 @@
  "repo": "sanctuary",
  "tier": "large",
  "seat": "implementation",
- "instruction": "",
+ "instruction": "Terminology: LuthiModel is a Living Weights Model, not an LLM, but `AuthorityLevel` names its non-scaffold tiers `LLM_*`, which imports LLM assumptions into the architecture. Rename, as an isolated change:\n\n- `AuthorityLevel.LLM_ADVISES` → `MODEL_ADVISES`\n- `AuthorityLevel.LLM_GUIDES` → `MODEL_GUIDES`\n- `AuthorityLevel.LLM_CONTROLS` → `MODEL_CONTROLS`\n- `AuthorityManager.llm_has_authority` → `model_has_authority`\n\nThe enum is in `sanctuary/core/authority.py`. Update every reference across the package, including:\n- the authority tuner;\n- the experiential manager and evolution loop;\n- the awakening sequence;\n- the affect and goal-integrator scaffolds;\n- the tuner's \"already at LLM_CONTROLS\" reason text, which becomes \"already at MODEL_CONTROLS\".\n\nThe integer values (0–3) stay the same, so anything serialized as an int is unaffected. Leave docstrings, comments and other prose mentions of \"LLM\" alone; they are a separate change.",
  "commit": "ad61e37bdd76857311eb465fa60089a5e7d58234",
  "base": "ed01b3e8150ea265144b1ef5bc6fb8355aacb184",
  "test_files": [

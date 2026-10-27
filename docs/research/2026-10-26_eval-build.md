@@ -101,6 +101,10 @@ Brian asked why a few hundred commits per repo gave so few candidates. Counted:
   - `setup.mjs` detects and repairs an environment that has the project installed.
   - Every test run checks first, and refuses to start if the repo's package can be imported without the worktree.
 - The gold replay that was running was stopped, and every candidate was re-validated from scratch.
+- **Result:** 119 of 121 candidates came out exactly as before. Two Sanctuary large-tier tasks changed:
+  - `sanctuary-1dcac4c8` went from 3 tests failing before the change to 33.
+  - `sanctuary-200738cd` (the physics seam) had been rejected because its 18 tests "passed" on the parent. It is now a valid task.
+- **Why so few:** the leak needs a new module directly under a namespace package. Packages with an `__init__.py` (`sanctuary/motor/`, `sanctuary/sensorium/` and the rest) confine imports to the worktree, so new modules inside them were never exposed. LuthiModel didn't change at all.
 
 ## Conclusion
 
@@ -109,7 +113,14 @@ The eval exists and its parts are tested:
 - gold replays of real tasks through Pi and the guard
 - validation with isolated build caches
 
-The final task count and the gold-replay results are in `eval/build/validation.md`.
+**Final set:** 101 tasks, every one with an instruction.
+
+| | LuthiModel | Sanctuary |
+|---|---|---|
+| Standard | 38 of 44 candidates | 26 of 32 |
+| Large | 25 of 29 | 12 of 16 |
+
+The real fix of every task resolves when replayed through Pi and the guard, with no guard blocks (101/101, on Linux). Per-task details and every rejection reason are in `eval/build/validation.md`.
 
 **Open:**
 - Nothing has run on Windows yet.

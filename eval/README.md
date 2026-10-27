@@ -20,11 +20,13 @@ Task files are in `tasks/<repo>/<id>.json`. Every task was validated before it w
 
 1. Copy `config.example.json` to `config.local.json` and set `work` to a folder with ~30 GB free. The eval keeps its own clones of both repos, their test environments, and its scratch space there. Don't use `E:\runs` or the experiment archive; the guard protects those.
 2. `node eval/setup.mjs`. This clones both repos, builds a CPU-only test environment for each from its `uv.lock`, and runs one quick test in each. The environments are several GB each, so the first run takes a while.
+   - The environments hold dependencies only, never the repo's own package. Otherwise a task's tests could import code from the eval's clone, at its newest commit, in place of the worktree's. Every test run checks this and refuses to start if it's wrong.
 3. `node eval/tests/gold-replay.mjs`. A scripted model writes the real fix for one task per repo through Pi and the guard, and each must come out resolved. This checks the whole pipeline without the model or GPU.
 4. **Before the first baseline, replay every task:** `node eval/tests/gold-replay.mjs luthimodel- sanctuary-` (one to two hours on CPU).
    - The tasks were validated on Linux, and a few may behave differently on Windows:
      - Tests that skip there, such as symlink tests or paths that need `/proc`, count as not passed.
      - LuthiModel's C++ ops need a compiler. Without one, the C++ parity tests skip.
+     - One Sanctuary task's tests start a local server on all interfaces (`sanctuary-0df08c51`), so Windows Firewall may ask once about Python. Localhost works either way; "Cancel" is fine.
    - A task whose real fix doesn't resolve on your machine can never be resolved by the agent either. List those failures and leave them out of runs on that machine; don't change the tasks.
 
 The model server must be running (`server\start-qwen-server.bat`) for real runs.

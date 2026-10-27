@@ -86,6 +86,22 @@ Brian asked why a few hundred commits per repo gave so few candidates. Counted:
   - LuthiModel's C++ parity tests skip without a compiler.
 - The gold replay of every task on Brian's PC is the check. A task whose real fix doesn't resolve there is left out of runs on that machine.
 
+### Step 11: tests were importing code from the future
+
+- While writing the instruction for `sanctuary-1dcac4c8`, its numbers looked wrong. The commit adds a whole new package (`sanctuary/world/`) and its tests, yet only 3 of 33 tests counted as failing before the change. The other 30 "passed" on a parent commit where the code they test doesn't exist.
+- **Cause:**
+  - `uv sync` installs the project itself in editable mode, so each test environment pointed at the eval's clone, which is checked out at the newest commit.
+  - Sanctuary's `sanctuary/` folder has no `__init__.py`, which makes it a namespace package, and Python merges every folder of that name on the path. The worktree came first, so existing modules were the worktree's. A module missing from the worktree, though, was found in the clone, at its newest version.
+  - LuthiModel's `luthi/` is a regular package, so only its namespace folders (`scripts/`) were exposed.
+- **What it broke:**
+  - Validation counted tests of brand-new modules as passing before the change, so they landed in pass-to-pass.
+  - Worse, in a real run an agent that never wrote the module would still pass those tests, against the repo's own later code. The agent's own test runs during a task would have used it too.
+- **Fix:**
+  - Environments are synced with `--no-install-project` (dependencies only), so the worktree on `PYTHONPATH` is the only place the repo's code can come from.
+  - `setup.mjs` detects and repairs an environment that has the project installed.
+  - Every test run checks first, and refuses to start if the repo's package can be imported without the worktree.
+- The gold replay that was running was stopped, and every candidate was re-validated from scratch.
+
 ## Conclusion
 
 The eval exists and its parts are tested:

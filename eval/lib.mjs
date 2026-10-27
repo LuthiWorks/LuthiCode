@@ -12,10 +12,10 @@ const isWin = process.platform === "win32";
 
 // ---------------------------------------------------------------- config
 
-/** The repos tasks come from. */
+/** The repos tasks come from. `pkg` is the repo's own top-level Python package. */
 export const REPOS = {
-	luthimodel: { url: "https://github.com/LuthiWorks/luthimodel", sync: ["--extra", "dev"] },
-	sanctuary: { url: "https://github.com/LuthiWorks/sanctuary", sync: [] },
+	luthimodel: { url: "https://github.com/LuthiWorks/luthimodel", sync: ["--extra", "dev"], pkg: "luthi" },
+	sanctuary: { url: "https://github.com/LuthiWorks/sanctuary", sync: [], pkg: "sanctuary" },
 };
 
 /**
@@ -156,11 +156,36 @@ export function taskEnv(task, cfg, dir) {
 }
 
 /**
+ * Whether the repo's own package can be imported from its test environment
+ * with no worktree on the path. It must not be: a plain `uv sync` installs the
+ * project in editable mode, pointing at the eval's clone. Sanctuary's package
+ * has no __init__.py (a namespace package), so Python merges both locations,
+ * and any module missing from a task's worktree is silently imported from the
+ * clone at its newest commit. A test of code the agent never wrote then passes,
+ * and validation counts it as passing before the change.
+ */
+export function projectInstalled(name, cfg) {
+	const env = resolve(cfg.repos[name].env);
+	const clean = { ...process.env };
+	delete clean.PYTHONPATH;
+	const r = run(pythonIn(env), ["-c", `import importlib.util as u; print(u.find_spec(${JSON.stringify(REPOS[name].pkg)}) is not None)`], { cwd: env, env: clean });
+	return r.stdout.trim() !== "False";
+}
+
+const checkedEnvs = new Set();
+
+/**
  * Run pytest on the given test files; return a map of test id -> outcome
  * ("passed" | "failed" | "error" | "skipped"). A file that fails to import
  * shows up as one "error" entry named after the file.
  */
 export function runTests(task, cfg, dir, testFiles, { timeoutMs, outFile } = {}) {
+	if (REPOS[task.repo] && !checkedEnvs.has(task.repo)) {
+		if (projectInstalled(task.repo, cfg)) {
+			throw new Error(`The ${task.repo} test environment has the repo's own package installed, so tests could import code from the eval's clone instead of the task worktree. Run node eval/setup.mjs to fix it.`);
+		}
+		checkedEnvs.add(task.repo);
+	}
 	const junit = outFile ?? join(dir, ".luthicode-junit.xml");
 	rmSync(junit, { force: true });
 	const args = [

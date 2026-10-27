@@ -5,6 +5,7 @@
 // For each repo in eval/lib.mjs REPOS:
 //   1. clone it into <work>/repos/<name> (its own clone, separate from yours), or fetch if present
 //   2. build a CPU-only test environment at <work>/envs/<name> from the repo's uv.lock
+//      (dependencies only; the repo's own code always comes from the task's worktree)
 //   3. check that torch and torchaudio load, fixing a torchaudio that doesn't match torch
 //   4. run one quick test file, so a broken environment shows up now, not mid-eval
 //
@@ -13,7 +14,7 @@
 
 import { existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { REPOS, git, loadConfig, pythonIn, run } from "./lib.mjs";
+import { REPOS, git, loadConfig, projectInstalled, pythonIn, run } from "./lib.mjs";
 
 const cfg = loadConfig();
 mkdirSync(cfg.work, { recursive: true });
@@ -38,14 +39,17 @@ for (const [name, info] of Object.entries(REPOS)) {
 		git(clone, ["fetch", "--quiet", "origin"], { timeoutMs: 1_800_000, allowFail: true });
 	}
 
-	// 2. environment from the lockfile (CPU torch on Windows)
+	// 2. environment from the lockfile (CPU torch on Windows). Dependencies only:
+	//    with the project itself installed, tests in a task worktree could import
+	//    code from this clone instead (see projectInstalled in lib.mjs).
+	const sync = () => run("uv", ["sync", "--frozen", "--no-install-project", ...info.sync], {
+		cwd: clone,
+		env: { ...process.env, UV_PROJECT_ENVIRONMENT: env },
+		timeoutMs: 7_200_000,
+	});
 	if (!existsSync(pythonIn(env))) {
 		console.log(`building environment ${env} (several GB; can take a while)`);
-		const r = run("uv", ["sync", "--frozen", ...info.sync], {
-			cwd: clone,
-			env: { ...process.env, UV_PROJECT_ENVIRONMENT: env },
-			timeoutMs: 7_200_000,
-		});
+		const r = sync();
 		if (r.code !== 0) {
 			console.log(`  uv sync failed:\n${(r.stderr || r.stdout).slice(-3000)}`);
 			problems++;
@@ -53,6 +57,15 @@ for (const [name, info] of Object.entries(REPOS)) {
 		}
 	} else {
 		console.log(`environment exists: ${env}`);
+	}
+	if (projectInstalled(name, cfg)) {
+		console.log(`  ${info.pkg} is installed in the environment; re-syncing without it`);
+		sync();
+		if (projectInstalled(name, cfg)) {
+			console.log(`  ${info.pkg} is still importable from the environment. Delete ${env} and run setup again.`);
+			problems++;
+			continue;
+		}
 	}
 	const py = pythonIn(env);
 

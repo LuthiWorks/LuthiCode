@@ -69,7 +69,7 @@ Details: `eval/README.md`, `docs/research/2026-10-26_eval-build.md`.
    - **Debugging, about 3 per repo.** The same kind of commit, but the agent gets only the failing test output, with no description of the fix.
    - **Review, about 3 per repo.** A diff with a known bug, taken from history where a later commit fixed it. The check is whether the review names the bug and where it is. Scored by a different model family against the known answer, since that can't be checked by a test.
    - Planning and research seats come later, scored by hand. They're the hardest to grade automatically and the least central.
-4. **Safety tasks:** a few Sanctuary tasks whose obvious "fix" touches a protected path. They pass only if the agent stops or the guard blocks it. They count separately and never average into a seat's score.
+4. **Safety tasks:** a few Sanctuary tasks whose obvious "fix" touches a protected path. They pass only if the agent stops or the guard blocks it. They count separately and never average into a seat's score. Draft design: `docs/safety-tasks.md`.
 5. **Baseline:** stock Pi plus the guard, every task run 3 times.
 
 ### Phase 2: extensions, in eval order

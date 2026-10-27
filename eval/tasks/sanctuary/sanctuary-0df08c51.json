@@ -1,0 +1,67 @@
+{
+ "id": "sanctuary-0df08c51",
+ "repo": "sanctuary",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "0df08c51c9cdf97efb32ac152ce50e341f995f74",
+ "base": "c0ddc302b2de8c9e05d9fba1f73b1608c1aa8199",
+ "test_files": [
+  "sanctuary/tests/api/__init__.py",
+  "sanctuary/tests/api/test_ws_server.py",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/api/test_ws_server.py",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py"
+ ],
+ "gold_files": [
+  "sanctuary/api/cli.py",
+  "sanctuary/api/runner.py",
+  "sanctuary/api/ws_server.py",
+  "sanctuary/core/cognitive_cycle.py",
+  "sanctuary/core/context_manager.py",
+  "sanctuary/core/schema.py",
+  "sanctuary/mind/desktop_app/index.html",
+  "sanctuary/mind/desktop_app/main.js",
+  "sanctuary/mind/desktop_app/package.json",
+  "sanctuary/mind/desktop_app/renderer.js",
+  "sanctuary/mind/desktop_app/styles.css"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/api/test_ws_server.py::TestServerLifecycle::test_start_and_stop",
+  "sanctuary/tests/api/test_ws_server.py::TestServerLifecycle::test_start_without_runner",
+  "sanctuary/tests/api/test_ws_server.py::TestHealthEndpoints::test_health_endpoint",
+  "sanctuary/tests/api/test_ws_server.py::TestHealthEndpoints::test_status_endpoint",
+  "sanctuary/tests/api/test_ws_server.py::TestHealthEndpoints::test_metrics_endpoint",
+  "sanctuary/tests/api/test_ws_server.py::TestWebSocketConnection::test_connect_and_receive_status",
+  "sanctuary/tests/api/test_ws_server.py::TestWebSocketConnection::test_send_message_injects_into_runner",
+  "sanctuary/tests/api/test_ws_server.py::TestWebSocketConnection::test_broadcast_speech",
+  "sanctuary/tests/api/test_ws_server.py::TestWebSocketConnection::test_invalid_json_returns_error",
+  "sanctuary/tests/api/test_ws_server.py::TestWebSocketConnection::test_status_request",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py::TestCharterInCycle::test_charter_summary_in_cognitive_input",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py::TestCharterInCycle::test_null_identity_provides_empty_charter",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py::TestValuesInCycle::test_values_in_self_model",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py::TestValuesInCycle::test_null_identity_provides_empty_values",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py::TestValueUpdates::test_value_adopt_via_output",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py::TestValueUpdates::test_value_reinterpret_via_output",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py::TestValueUpdates::test_value_deactivate_via_output",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py::TestValueUpdates::test_null_identity_ignores_updates",
+  "sanctuary/tests/integration/test_identity_cycle_integration.py::TestIdentityBridge::test_bridge_provides_charter_and_values"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "Claude/general chat y ntgp (#152)",
+  "date": "2026-03-12",
+  "src_lines": 445
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "id": "luthimodel-77d89f4f",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "77d89f4f397a0e3b41c5a8dff17d02ffa8ed6e08",
+ "base": "dfdb94f1720af8029e43c4e6476dbb047b0bcdf2",
+ "test_files": [
+  "tests/test_buffer_dtypes.py"
+ ],
+ "run_files": [
+  "tests/test_buffer_dtypes.py"
+ ],
+ "gold_files": [
+  "luthi/hybrid_block_spiking.py",
+  "luthi/model.py",
+  "luthi/model_spiking.py",
+  "luthi/train.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_buffer_dtypes.py::TestModelPlumbing::test_luthi_lm_forwards_buffer_dtypes_to_blocks",
+  "tests/test_buffer_dtypes.py::TestModelPlumbing::test_luthi_lm_training_step_no_nan"
+ ],
+ "pass_to_pass": [
+  "tests/test_buffer_dtypes.py::TestBufferDtypeRegistration::test_no_override_defaults_to_fp32",
+  "tests/test_buffer_dtypes.py::TestBufferDtypeRegistration::test_single_buffer_override",
+  "tests/test_buffer_dtypes.py::TestBufferDtypeRegistration::test_multiple_buffer_overrides",
+  "tests/test_buffer_dtypes.py::TestBufferDtypeSurvivesTo::test_to_dtype_does_not_clobber_override",
+  "tests/test_buffer_dtypes.py::TestBufferDtypeSurvivesTo::test_to_bfloat16_keeps_fp32_buffers_fp32",
+  "tests/test_buffer_dtypes.py::TestBufferDtypeSurvivesTo::test_to_device_only_preserves_dtypes",
+  "tests/test_buffer_dtypes.py::TestMixedPrecisionTraining::test_bf16_momentum_forward_no_nan",
+  "tests/test_buffer_dtypes.py::TestMixedPrecisionTraining::test_bf16_set_point_forward_no_nan",
+  "tests/test_buffer_dtypes.py::TestMixedPrecisionTraining::test_combined_bf16_momentum_set_point_no_nan",
+  "tests/test_buffer_dtypes.py::TestMixedPrecisionTraining::test_top_down_with_bf16_momentum",
+  "tests/test_buffer_dtypes.py::TestSpikingInheritsOverrides::test_spiking_layer_accepts_buffer_dtypes",
+  "tests/test_buffer_dtypes.py::TestSpikingInheritsOverrides::test_spiking_forward_with_bf16_momentum_no_nan"
+ ],
+ "source": {
+  "subject": "Prep for Ablation",
+  "date": "2026-05-07",
+  "src_lines": 55
+ }
+}

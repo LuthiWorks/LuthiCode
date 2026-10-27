@@ -1,0 +1,49 @@
+{
+ "id": "sanctuary-8d8d4c4a",
+ "repo": "sanctuary",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "8d8d4c4ad51e125cc8f75d3c2e70a8e69d39aa49",
+ "base": "a428875745495a79b4a6525f9522bfb4638dc422",
+ "test_files": [
+  "sanctuary/tests/test_persistence_part2.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/test_persistence_part2.py"
+ ],
+ "gold_files": [
+  "sanctuary/core/async_learner.py",
+  "sanctuary/core/authority.py",
+  "sanctuary/core/authority_tuner.py",
+  "sanctuary/experiential/manager.py",
+  "sanctuary/experiential/trainer.py",
+  "sanctuary/growth/cfc_retrainer.py",
+  "sanctuary/infrastructure/cloud_backup.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/test_persistence_part2.py::TestAuthorityPersistence::test_roundtrip_preserves_levels_and_history",
+  "sanctuary/tests/test_persistence_part2.py::TestAuthorityPersistence::test_experiential_manager_saves_and_loads_authority",
+  "sanctuary/tests/test_persistence_part2.py::TestWindowedNanGate::test_old_nan_leaves_the_window",
+  "sanctuary/tests/test_persistence_part2.py::TestDeadLetterPreservesLivedExperience::test_queued_transitions_survive_learner_death",
+  "sanctuary/tests/test_persistence_part2.py::TestRetrainNeverEatsDataOrFakesSuccess::test_requeue_restores_drained_records",
+  "sanctuary/tests/test_persistence_part2.py::TestRetrainNeverEatsDataOrFakesSuccess::test_checkpoint_failure_aborts_and_requeues",
+  "sanctuary/tests/test_persistence_part2.py::TestRetrainNeverEatsDataOrFakesSuccess::test_degenerate_split_refuses_to_train",
+  "sanctuary/tests/test_persistence_part2.py::TestBackupChainCap::test_chain_cap_forces_periodic_full"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "fix: Phase 2 part 2 — authority persistence, windowed NaN gate, dead-letter queue, honest retrain results (audit items 7-10, 15 partial)",
+  "date": "2026-07-03",
+  "src_lines": 184
+ }
+}

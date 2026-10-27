@@ -1,0 +1,56 @@
+{
+ "id": "sanctuary-9473134c",
+ "repo": "sanctuary",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "9473134c53edad05064ec2b9430841a5e2327d96",
+ "base": "255a20a6502f680e44054a0293f45eff5028de15",
+ "test_files": [
+  "sanctuary/tests/test_liveness_phase3.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/test_liveness_phase3.py"
+ ],
+ "gold_files": [
+  "sanctuary/core/async_learner.py",
+  "sanctuary/core/cognitive_cycle.py",
+  "sanctuary/core/luthi_model.py",
+  "sanctuary/core/supervision.py",
+  "sanctuary/experiential/evolution.py",
+  "sanctuary/tools/builtin.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/test_liveness_phase3.py::TestDeadLetterDurability::test_corrupt_dead_letter_file_is_quarantined"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_consolidate_runs_off_the_loop_thread",
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_consolidate_not_called_when_awake",
+  "sanctuary/tests/test_liveness_phase3.py::TestConsolidateOffload::test_loop_is_not_blocked_during_consolidation",
+  "sanctuary/tests/test_liveness_phase3.py::TestBlockingToolOffload::test_shell_subprocess_runs_off_loop_thread",
+  "sanctuary/tests/test_liveness_phase3.py::TestBlockingToolOffload::test_watchdog_times_out_a_hung_tool",
+  "sanctuary/tests/test_liveness_phase3.py::TestBlockingToolOffload::test_loop_runs_while_a_slow_tool_is_in_flight",
+  "sanctuary/tests/test_liveness_phase3.py::TestBackgroundTaskSupervision::test_death_invokes_on_death_and_logs",
+  "sanctuary/tests/test_liveness_phase3.py::TestBackgroundTaskSupervision::test_fatal_logs_at_critical",
+  "sanctuary/tests/test_liveness_phase3.py::TestBackgroundTaskSupervision::test_cancellation_is_not_treated_as_death",
+  "sanctuary/tests/test_liveness_phase3.py::TestBackgroundTaskSupervision::test_clean_exit_does_not_fire_handler",
+  "sanctuary/tests/test_liveness_phase3.py::TestDeadLetterDurability::test_dead_letter_persisted_on_death",
+  "sanctuary/tests/test_liveness_phase3.py::TestDeadLetterDurability::test_recovered_and_requeued_by_next_learner",
+  "sanctuary/tests/test_liveness_phase3.py::TestDeadLetterDurability::test_no_path_keeps_dead_letter_in_memory_only",
+  "sanctuary/tests/test_liveness_phase3.py::TestDeadLetterDurability::test_poison_pill_is_dropped_and_tail_is_preserved"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "fix: Phase 3 review — address Fable 5's four findings (all confirmed)",
+  "date": "2026-07-04",
+  "src_lines": 215
+ }
+}

@@ -1,0 +1,71 @@
+{
+ "id": "sanctuary-994ccf1b",
+ "repo": "sanctuary",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "994ccf1b5ec9c7e3d7e403a2df52ad22b78a39dc",
+ "base": "a60eef795ac86991829603f2223e507732878828",
+ "test_files": [
+  "sanctuary/tests/test_llm_streaming.py",
+  "sanctuary/tests/test_percept_similarity.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/test_llm_streaming.py",
+  "sanctuary/tests/test_percept_similarity.py"
+ ],
+ "gold_files": [
+  ".gitignore",
+  "sanctuary/mind/cognitive_core/core/cycle_executor.py",
+  "sanctuary/mind/cognitive_core/core/lifecycle.py",
+  "sanctuary/mind/cognitive_core/core/subsystem_coordinator.py",
+  "sanctuary/mind/cognitive_core/language_output.py",
+  "sanctuary/mind/cognitive_core/llm_client.py",
+  "sanctuary/mind/cognitive_core/percept_similarity.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/test_llm_streaming.py::TestLLMClientStreamingInterface::test_base_class_default_streams_full_response",
+  "sanctuary/tests/test_llm_streaming.py::TestLLMClientStreamingInterface::test_mock_client_streams_word_by_word",
+  "sanctuary/tests/test_llm_streaming.py::TestLLMClientStreamingInterface::test_mock_stream_updates_metrics",
+  "sanctuary/tests/test_llm_streaming.py::TestLanguageOutputGeneratorStreaming::test_stream_returns_complete_response",
+  "sanctuary/tests/test_llm_streaming.py::TestLanguageOutputGeneratorStreaming::test_stream_calls_on_token_callback",
+  "sanctuary/tests/test_llm_streaming.py::TestLanguageOutputGeneratorStreaming::test_stream_without_callback",
+  "sanctuary/tests/test_llm_streaming.py::TestLanguageOutputGeneratorStreaming::test_stream_falls_back_on_no_llm",
+  "sanctuary/tests/test_llm_streaming.py::TestStreamingCompatibility::test_generate_and_stream_produce_output",
+  "sanctuary/tests/test_percept_similarity.py::TestPerceptSimilarityDetectorInitialization::test_default_config",
+  "sanctuary/tests/test_percept_similarity.py::TestPerceptSimilarityDetectorInitialization::test_custom_config",
+  "sanctuary/tests/test_percept_similarity.py::TestPerceptSimilarityDetectorInitialization::test_initial_stats",
+  "sanctuary/tests/test_percept_similarity.py::TestFilterDuplicates::test_empty_input_returns_empty",
+  "sanctuary/tests/test_percept_similarity.py::TestFilterDuplicates::test_single_percept_passes_through",
+  "sanctuary/tests/test_percept_similarity.py::TestFilterDuplicates::test_identical_embeddings_are_deduplicated",
+  "sanctuary/tests/test_percept_similarity.py::TestFilterDuplicates::test_different_embeddings_both_kept",
+  "sanctuary/tests/test_percept_similarity.py::TestFilterDuplicates::test_temporal_dedup_across_calls",
+  "sanctuary/tests/test_percept_similarity.py::TestFilterDuplicates::test_workspace_dedup",
+  "sanctuary/tests/test_percept_similarity.py::TestFilterDuplicates::test_cross_modal_uses_higher_threshold",
+  "sanctuary/tests/test_percept_similarity.py::TestFilterDuplicates::test_zero_embedding_is_not_compared",
+  "sanctuary/tests/test_percept_similarity.py::TestFilterDuplicates::test_no_embedding_percept_passes_through",
+  "sanctuary/tests/test_percept_similarity.py::TestPerceptSimilarityStats::test_stats_track_filtering",
+  "sanctuary/tests/test_percept_similarity.py::TestPerceptSimilarityStats::test_clear_history",
+  "sanctuary/tests/test_percept_similarity.py::TestPerceptSimilarityStats::test_history_eviction_at_max",
+  "sanctuary/tests/test_percept_similarity.py::TestCosineSimilarity::test_identical_vectors",
+  "sanctuary/tests/test_percept_similarity.py::TestCosineSimilarity::test_orthogonal_vectors",
+  "sanctuary/tests/test_percept_similarity.py::TestCosineSimilarity::test_opposite_vectors",
+  "sanctuary/tests/test_percept_similarity.py::TestCosineSimilarity::test_zero_vector_returns_zero",
+  "sanctuary/tests/test_percept_similarity.py::TestCosineSimilarity::test_mismatched_shapes_return_zero"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "Claude/general chat e8a xr (#128)",
+  "date": "2026-02-17",
+  "src_lines": 492
+ }
+}

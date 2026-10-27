@@ -1,0 +1,78 @@
+{
+ "id": "sanctuary-1dcac4c8",
+ "repo": "sanctuary",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "1dcac4c8b683fbe4e09a5262e72d41d9db80be64",
+ "base": "f087bb118d80a76d591bd1c8b494a257dae7f43c",
+ "test_files": [
+  "sanctuary/tests/world/__init__.py",
+  "sanctuary/tests/world/test_episode_ordering.py",
+  "sanctuary/tests/world/test_render_seam.py",
+  "sanctuary/tests/world/test_world_runtime.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/world/test_episode_ordering.py",
+  "sanctuary/tests/world/test_render_seam.py",
+  "sanctuary/tests/world/test_world_runtime.py"
+ ],
+ "gold_files": [
+  "sanctuary/world/__init__.py",
+  "sanctuary/world/render.py",
+  "sanctuary/world/runtime.py",
+  "sanctuary/world/scene.py",
+  "scripts/run_world.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_wire_format_is_json_serializable_and_versioned",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_positions_are_lists_of_plain_floats",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_orientation_is_absent_rather_than_faked"
+ ],
+ "pass_to_pass": [
+  "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_policy_sees_the_world_before_its_own_action_lands",
+  "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_the_action_actually_changed_the_world",
+  "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_s_next_is_read_after_the_world_steps",
+  "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_transition_records_a_real_change",
+  "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_time_advances_once_per_step",
+  "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_policy_is_consulted_once_per_cycle",
+  "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_sink_without_state_encoder_is_refused",
+  "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_unbounded_run_is_refused",
+  "sanctuary/tests/world/test_episode_ordering.py::test_episode_ordering::test_reset_does_not_silently_clear_the_world",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_one_frame_is_published_per_step",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_headless_still_counts_frames",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_extra_on_step_runs_after_the_frame_is_published",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_render_frame_shows_the_world_not_the_perception",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_hidden_bodies_are_not_drawn",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_recording_sink_reports_what_it_dropped",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_recording_sink_rejects_a_nonsense_bound",
+  "sanctuary/tests/world/test_render_seam.py::test_render_seam::test_sinks_satisfy_the_protocol",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_unknown_backend_is_refused",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_backend_is_recorded_on_the_runtime",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_missing_mujoco_does_not_degrade_to_reference",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_scene_places_self_and_props",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_no_ground_body_is_added",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_props_start_at_rest_height_not_inside_the_floor",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_self_starts_above_the_ground_and_settles",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_building_the_scene_twice_does_not_duplicate_it",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_scene_rejects_a_nonsense_dt",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_scene_rejects_negative_rest_height",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_default_policy_rests_rather_than_acting",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_props_do_not_move_under_a_resting_body",
+  "sanctuary/tests/world/test_world_runtime.py::test_world_runtime::test_manifest_dt_matches_the_runner"
+ ],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "The bedrock world: wire the embodiment loop, and the seam Godot attaches to",
+  "date": "2026-08-17",
+  "src_lines": 487
+ }
+}

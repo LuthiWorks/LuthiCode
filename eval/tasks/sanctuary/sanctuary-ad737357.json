@@ -1,0 +1,56 @@
+{
+ "id": "sanctuary-ad737357",
+ "repo": "sanctuary",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "ad7373577114b282e5f610897c2d85bf596a296d",
+ "base": "fc6e9c662a46e849d4e7b2d4c27adc5b69ff1fec",
+ "test_files": [
+  "sanctuary/tests/physics/test_physics_percepts.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/physics/test_physics_percepts.py"
+ ],
+ "gold_files": [
+  "sanctuary/sensorium/physics_percepts.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_proprioceptive_percept_leads_and_describes_own_body",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_other_bodies_are_reported_relative_to_self",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_closing_versus_separating_sign",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_allocentric_mode_has_no_self_percept_and_uses_world_coordinates",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_empty_allocentric_world_yields_nothing",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_missing_self_body_raises_rather_than_falling_back_to_world_frame",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_missing_self_body_error_names_what_was_visible",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_bodies_are_ordered_nearest_first",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_equidistant_bodies_break_ties_on_id_for_determinism",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_max_range_excludes_distant_bodies",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_max_bodies_keeps_the_nearest",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_limits_default_to_unlimited",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_percepts_leave_tensor_data_unset",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_vector_width_is_constant_regardless_of_body_count",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_vector_self_block_carries_position_velocity_speed",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_vector_body_block_is_egocentric",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_vector_pads_absent_bodies_with_zeros",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_vector_rejects_negative_max_bodies",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_falling_body_produces_changing_perception",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_invisible_bodies_never_reach_perception",
+  "sanctuary/tests/physics/test_physics_percepts.py::test_physics_percepts::test_adapter_signature_cannot_accept_ground_truth"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "Connect the physics substrate to perception: PhysicsObservation -> Percept",
+  "date": "2026-08-04",
+  "src_lines": 311
+ }
+}

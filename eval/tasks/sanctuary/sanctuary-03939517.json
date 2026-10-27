@@ -1,0 +1,67 @@
+{
+ "id": "sanctuary-03939517",
+ "repo": "sanctuary",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "03939517218186afe8eb8660016add71e827388a",
+ "base": "93f824cebb9f1278b24007a6231145ba79bea743",
+ "test_files": [
+  "sanctuary/tests/physics/test_physics_actuation.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/physics/test_physics_actuation.py"
+ ],
+ "gold_files": [
+  "sanctuary/motor/physics_actuation.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_force_reaches_the_body",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_actuator_does_not_advance_time",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_forces_accumulate_until_the_world_is_stepped",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_low_intensity_is_rest_and_applies_no_force",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_rest_is_distinguishable_from_a_clamped_zero",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_intensity_exactly_at_threshold_is_rest",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_excess_force_is_clamped_and_recorded",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_clamping_preserves_direction",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_force_within_limit_is_not_marked_clamped",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_non_finite_force_raises[nan]",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_non_finite_force_raises[inf]",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_non_finite_force_raises[-inf]",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_unknown_body_raises_rather_than_doing_nothing",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_actuator_rejects_invalid_configuration",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_untrained_decoder_refuses_to_construct_without_acknowledgement",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_untrained_decoder_error_points_at_the_real_implementation",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_untrained_decoder_projects_the_first_three_components",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_untrained_decoder_rejects_short_action_vectors",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_untrained_decoder_intensity_saturates_at_one",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_untrained_decoder_rejects_nonpositive_reference",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_accepts_a_bare_vector_as_well_as_a_selection",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_accepts_a_torch_tensor_action",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_unwraps_a_batch_of_one",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_refuses_a_batch_larger_than_one",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_rejects_an_unreadable_action",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_applied_action_produces_a_proprioceptive_percept",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_rest_is_reported_as_an_action_taken_not_as_absence",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_clamping_is_visible_in_the_feedback_percept",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_action_changes_what_is_subsequently_perceived",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_resting_leaves_the_horizontal_world_unchanged",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_decoder_is_consulted_once_per_action",
+  "sanctuary/tests/physics/test_physics_actuation.py::test_physics_actuation::test_apply_command_bypasses_the_decoder"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "Close the action loop: ActionSelection -> apply_force",
+  "date": "2026-08-04",
+  "src_lines": 398
+ }
+}

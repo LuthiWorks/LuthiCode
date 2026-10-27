@@ -1,0 +1,55 @@
+{
+ "id": "luthimodel-c0f0a7f7",
+ "repo": "luthimodel",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "c0f0a7f730d6d529f768ab147f94e50d2012002b",
+ "base": "1088678e42e7f1644b9130cc0f27d1d3ba9578d9",
+ "test_files": [
+  "tests/test_pc_block.py",
+  "tests/test_pc_layer.py"
+ ],
+ "run_files": [
+  "tests/test_pc_block.py",
+  "tests/test_pc_layer.py"
+ ],
+ "gold_files": [
+  "luthi/v2/hybrid_block_pc.py",
+  "luthi/v2/living_layer_pc.py",
+  "luthi/v2/model_pc.py",
+  "luthi/v2/pc_ops.py"
+ ],
+ "fail_to_pass": [
+  "tests/test_pc_block.py::test_pc_block::test_mu_pc_init_scaling_matches_spec",
+  "tests/test_pc_block.py::test_pc_block::test_mu_pc_residual_scale_is_inv_sqrt_L",
+  "tests/test_pc_block.py::test_pc_block::test_mu_pc_off_preserves_default_behavior",
+  "tests/test_pc_layer.py::test_pc_layer::test_ipc_default_T1_matches_classical",
+  "tests/test_pc_layer.py::test_pc_layer::test_ipc_T_gt_1_converges_faster",
+  "tests/test_pc_layer.py::test_pc_layer::test_ipc_grad_checkpoint_fails_loud",
+  "tests/test_pc_layer.py::test_pc_layer::test_sparse_gate_disabled_matches_unsparse_default",
+  "tests/test_pc_layer.py::test_pc_layer::test_sparse_gate_freezes_low_error_rows_after_warmup"
+ ],
+ "pass_to_pass": [
+  "tests/test_pc_block.py::test_pc_block::test_forward_backward_decreasing_error",
+  "tests/test_pc_block.py::test_pc_block::test_prediction_only_sweep",
+  "tests/test_pc_block.py::test_pc_block::test_modulation_only_sweep",
+  "tests/test_pc_block.py::test_pc_block::test_block_with_ffn_expansion_forward_shape",
+  "tests/test_pc_block.py::test_pc_block::test_block_with_ffn_expansion_has_more_capacity",
+  "tests/test_pc_block.py::test_pc_block::test_block_top_down_with_expansion_runs",
+  "tests/test_pc_block.py::test_pc_block::test_joint_non_interference",
+  "tests/test_pc_layer.py::test_pc_layer::test_non_feedforward_signal",
+  "tests/test_pc_layer.py::test_pc_layer::test_no_nan_after_500_passes",
+  "tests/test_pc_layer.py::test_pc_layer::test_prediction_error_convergence_on_fixed_mapping",
+  "tests/test_pc_layer.py::test_pc_layer::test_homeostatic_recovery_from_perturbation",
+  "tests/test_pc_layer.py::test_pc_layer::test_episodic_recall",
+  "tests/test_pc_layer.py::test_pc_layer::test_precision_self_organization",
+  "tests/test_pc_layer.py::test_pc_layer::test_update_ema_ratio_check_meaningfulness",
+  "tests/test_pc_layer.py::test_pc_layer::test_prediction_matrix_bounded_growth"
+ ],
+ "source": {
+  "subject": "m5 re-run post train updates",
+  "date": "2026-05-14",
+  "src_lines": 198
+ }
+}

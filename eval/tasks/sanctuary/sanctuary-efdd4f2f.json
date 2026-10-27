@@ -1,0 +1,57 @@
+{
+ "id": "sanctuary-efdd4f2f",
+ "repo": "sanctuary",
+ "tier": "large",
+ "seat": "implementation",
+ "instruction": "",
+ "commit": "efdd4f2f41be3b01f304c3d20e1f754d73a1475e",
+ "base": "200738cd0c8a8052c38c7bd1388be10fa0d2db9e",
+ "test_files": [
+  "sanctuary/tests/physics/test_weather.py"
+ ],
+ "run_files": [
+  "sanctuary/tests/physics/test_weather.py"
+ ],
+ "gold_files": [
+  "sanctuary/physics/weather/__init__.py",
+  "sanctuary/physics/weather/model.py",
+  "sanctuary/physics/weather/source.py",
+  "sanctuary/physics/weather/state.py"
+ ],
+ "fail_to_pass": [
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_ideal_is_comfortable_and_pleasant",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_eightyfive_is_too_warm_and_mildly_unpleasant",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_thirtytwo_is_too_cold_and_clearly_unpleasant",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_cold_reads_worse_than_the_warm_threshold",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_valence_is_monotonic_away_from_ideal",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_levels_track_the_bands",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_light_warm_rain_is_refreshing",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_torrential_rain_is_unpleasant",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_cold_and_wet_is_worse_than_cold_and_dry",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_shelter_from_exposure_means_no_wetness",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_mobility_decreases_with_rain",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_mobility_is_monotonic_and_bounded",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_shelter_blocks_rain_and_moderates_temperature",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_outside_shelter_radius_is_unchanged",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_shelter_improves_comfort_in_cold_rain",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_synthetic_source_is_deterministic",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_synthetic_source_has_a_diurnal_cycle",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_synthetic_source_rains_in_its_window_only",
+  "sanctuary/tests/physics/test_weather.py::test_weather::test_synthetic_source_rejects_nonpositive_day_length"
+ ],
+ "pass_to_pass": [],
+ "pytest_args": [
+  "--timeout=120",
+  "-m",
+  "not benchmark and not integration and not property"
+ ],
+ "setup_dirs": [
+  "data/Protocols",
+  "data/identity"
+ ],
+ "source": {
+  "subject": "feat(physics): weather-field layer — comfort, mobility, shelter, source",
+  "date": "2026-07-19",
+  "src_lines": 376
+ }
+}

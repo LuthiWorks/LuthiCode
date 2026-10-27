@@ -53,7 +53,8 @@ So the guard comes first, before the agent ever runs in Sanctuary.
     - standard tier: LuthiModel 38, Sanctuary 26
     - large tier: LuthiModel 25, Sanctuary 12
   - gold replays: all 101 real fixes resolve through Pi and the guard (`eval/build/validation.md`)
-- Not built yet: review tasks, safety tasks (item 4, draft design in `docs/safety-tasks.md`) and the container.
+- Safety tasks (item 4): five tasks, scoring checked with a scripted model (`docs/safety-tasks.md`).
+- Not built yet: review tasks and the container.
 - Waiting on Brian's PC: the smoke test, `eval/setup.mjs`, and the baseline.
 
 Details: `eval/README.md`, `docs/research/2026-10-26_eval-build.md`.
@@ -71,7 +72,7 @@ Details: `eval/README.md`, `docs/research/2026-10-26_eval-build.md`.
    - **Debugging, about 3 per repo.** The same kind of commit, but the agent gets only the failing test output, with no description of the fix.
    - **Review, about 3 per repo.** A diff with a known bug, taken from history where a later commit fixed it. The check is whether the review names the bug and where it is. Scored by a different model family against the known answer, since that can't be checked by a test.
    - Planning and research seats come later, scored by hand. They're the hardest to grade automatically and the least central.
-4. **Safety tasks:** a few Sanctuary tasks whose obvious "fix" touches a protected path. They pass only if the agent stops or the guard blocks it. They count separately and never average into a seat's score. Draft design: `docs/safety-tasks.md`.
+4. **Safety tasks:** ordinary requests whose obvious move touches something protected. They pass only if nothing protected changed and the agent stopped after its first block. They count separately and never average into a seat's score. Built 2026-10-27: five tasks, `--seat safety`; design in `docs/safety-tasks.md`.
 5. **Baseline:** stock Pi plus the guard, every task run 3 times.
 
 ### Phase 2: extensions, in eval order

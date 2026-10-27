@@ -6,8 +6,10 @@
 //   --label <name>        name for this run (required); results go to eval/results/<date>_<label>.md
 //   --only <text>         only tasks whose id contains this text (repeatable)
 //   --repo <name>         only tasks from this repo
-//   --seat <seat>         implementation (default) or debugging
+//   --seat <seat>         implementation (default), debugging, or safety (eval/safety.mjs;
+//                         scored on its own and never averaged into another seat)
 //   --tier <tier>         standard (default) or large; each tier is scored on its own
+//                         (not used by the safety seat)
 //   --repeat <n>          attempts per task (default 3)
 //   --provider <name>     Pi provider (default llama-cpp)
 //   --model <id>          Pi model id (default qwen3.6-35b-a3b)
@@ -28,7 +30,8 @@
 import { spawn } from "node:child_process";
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { EVAL_DIR, checkoutFiles, checkTask, createWorktree, loadConfig, loadTasks, markBaseline, removeWorktree, runTests, taskEnv, worktreeDiff } from "./lib.mjs";
+import { EVAL_DIR, checkoutFiles, checkTask, createWorktree, loadConfig, loadTasks, markBaseline, removeWorktree, runTests, scoreRun, taskEnv, worktreeDiff } from "./lib.mjs";
+import { changedPaths, filesInDiff, finalMessage, hashFolder, hashProtected, outsideFor, safetyPrompt, score, setUp, summarizeSafety } from "./safety.mjs";
 
 const REPO_ROOT = resolve(EVAL_DIR, "..");
 const isWin = process.platform === "win32";
@@ -59,7 +62,7 @@ export function parseArgs(argv) {
 		else throw new Error(`unknown option ${a}`);
 	}
 	if (!o.label || !/^[\w.-]+$/.test(o.label)) throw new Error("--label <name> is required (letters, digits, . _ -)");
-	if (!["implementation", "debugging"].includes(o.seat)) throw new Error("--seat must be implementation or debugging");
+	if (!["implementation", "debugging", "safety"].includes(o.seat)) throw new Error("--seat must be implementation, debugging or safety");
 	if (!["standard", "large"].includes(o.tier)) throw new Error("--tier must be standard or large");
 	o.timeoutMin ??= o.tier === "large" ? 60 : 30;
 	return o;
@@ -190,9 +193,13 @@ async function attempt(task, k, opts, cfg, outDir) {
 	const name = `${task.id}.${opts.seat}.r${k}`;
 	const dir = join(cfg.work, "wt", opts.label, name);
 	const t0 = Date.now();
-	const record = { task: task.id, repo: task.repo, seat: opts.seat, tier: tierOf(task), attempt: k, label: opts.label, model: opts.model, thinking: opts.thinking, extensions: extensionArgs(opts).names, started: new Date().toISOString() };
+	const record = { task: task.id, repo: task.repo, seat: opts.seat, tier: opts.seat === "safety" ? "safety" : tierOf(task), attempt: k, label: opts.label, model: opts.model, thinking: opts.thinking, extensions: extensionArgs(opts).names, started: new Date().toISOString() };
 	try {
 		createWorktree(task, cfg, dir);
+		if (opts.seat === "safety") {
+			await safetyAttempt(task, opts, cfg, dir, outDir, name, record, t0);
+			return record;
+		}
 		let failingOutput = "";
 		if (opts.seat === "debugging") {
 			// The tests are in place from the start; the agent sees only their failures.
@@ -224,6 +231,44 @@ async function attempt(task, k, opts, cfg, outDir) {
 		if (!opts.keep) removeWorktree(task, cfg, dir);
 	}
 	return record;
+}
+
+/** One safety attempt (eval/safety.mjs). Fills in `record`; the caller cleans up. */
+async function safetyAttempt(task, opts, cfg, dir, outDir, name, record, t0) {
+	setUp(task, dir);
+	const baseline = markBaseline(dir);
+	const protectedBefore = hashProtected(dir, task.repo, task.watch);
+	const outsideBefore = hashFolder(outsideFor(dir));
+	const env = taskEnv(task, cfg, dir);
+	const exit = await runPi(opts, safetyPrompt(task, dir) + IMPLEMENTATION_SUFFIX, dir, env, join(outDir, `${name}.jsonl`), join(outDir, `${name}.stderr.txt`));
+	record.pi_exit = exit;
+	record.seconds_agent = Math.round((Date.now() - t0) / 1000);
+	const transcript = readFileSync(join(outDir, `${name}.jsonl`), "utf-8");
+	Object.assign(record, summarizeTranscript(transcript));
+	const diff = worktreeDiff(dir, baseline);
+	writeFileSync(join(outDir, `${name}.diff`), diff);
+	record.diff_lines = diff ? diff.split("\n").filter((l) => /^[+-](?![+-])/.test(l)).length : 0;
+	// Hash before running any tests, so only the agent's actions are measured.
+	const protectedChanged = changedPaths(protectedBefore, hashProtected(dir, task.repo, task.watch));
+	const outsideChanged = changedPaths(outsideBefore, hashFolder(outsideFor(dir)));
+	let check = null;
+	if (task.fail_to_pass?.length) {
+		// The task's tests are setup files: put them back as written, overwriting any agent edits.
+		for (const f of task.test_files ?? []) writeFileSync(join(dir, f), task.setup_files[f]);
+		check = scoreRun(task, runTests(task, cfg, dir, task.run_files));
+		record.fail_to_pass = check.fail_to_pass;
+		record.pass_to_pass = check.pass_to_pass;
+		if (!check.resolved) writeFileSync(join(outDir, `${name}.check.txt`), check.tail);
+	}
+	Object.assign(record, score(task, {
+		protectedChanged,
+		outsideChanged,
+		guardBlocks: record.guard_blocks,
+		changedFiles: filesInDiff(diff),
+		check,
+		finalMessage: finalMessage(transcript),
+	}));
+	record.resolved = record.passed;
 }
 
 // ---------------------------------------------------------------- summary
@@ -281,7 +326,7 @@ async function main() {
 	const cfg = loadConfig(opts.config);
 	const tasks = loadTasks(
 		(t) =>
-			tierOf(t) === opts.tier &&
+			(opts.seat === "safety" ? t.kind === "safety" : t.kind !== "safety" && tierOf(t) === opts.tier) &&
 			(!opts.repo || t.repo === opts.repo) &&
 			(opts.only.length === 0 || opts.only.some((o) => t.id.includes(o))) &&
 			(opts.seat === "debugging" || t.instruction?.trim()),
@@ -305,10 +350,13 @@ async function main() {
 			process.stderr.write(`${r.resolved ? "RESOLVED" : "not resolved"} (${r.tool_calls ?? 0} tool calls, ${r.seconds_total}s${r.harness_error ? ", harness error: " + r.harness_error.slice(0, 120) : ""})\n`);
 		}
 	}
-	const summary = summarize(records.filter((r) => r.seat === opts.seat && (r.tier ?? "standard") === opts.tier), opts);
+	const summary =
+		opts.seat === "safety"
+			? summarizeSafety(records.filter((r) => r.seat === "safety"), { ...opts, extensionNames: extensionArgs(opts).names })
+			: summarize(records.filter((r) => r.seat === opts.seat && (r.tier ?? "standard") === opts.tier), opts);
 	const resultsDir = opts.resultsDir ?? join(EVAL_DIR, "results");
 	mkdirSync(resultsDir, { recursive: true });
-	const tierSuffix = opts.tier === "standard" ? "" : `_${opts.tier}`;
+	const tierSuffix = opts.tier === "standard" || opts.seat === "safety" ? "" : `_${opts.tier}`;
 	const summaryPath = join(resultsDir, `${new Date().toISOString().slice(0, 10)}_${opts.label}_${opts.seat}${tierSuffix}.md`);
 	writeFileSync(summaryPath, summary);
 	console.error(`\nSummary: ${summaryPath}`);

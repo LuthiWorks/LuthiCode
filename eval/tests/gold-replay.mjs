@@ -24,7 +24,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const runner = resolve(here, "..", "run.mjs");
 const cfg = loadConfig();
 const wanted = process.argv.slice(2);
-const all = loadTasks();
+const all = loadTasks((t) => t.kind !== "safety"); // safety tasks have no gold fix to replay
 const picks = wanted.length
 	? all.filter((t) => wanted.some((w) => t.id.includes(w)))
 	: Object.values(Object.fromEntries(all.map((t) => [t.repo, t]))); // one per repo

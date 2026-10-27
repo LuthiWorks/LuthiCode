@@ -82,6 +82,7 @@ export function removeWorktree(task, cfg, dir) {
 	if (existsSync(dir)) git(clone, ["worktree", "remove", "--force", dir], { allowFail: true });
 	if (existsSync(dir)) rmSync(dir, { recursive: true, force: true });
 	rmSync(buildCacheFor(dir), { recursive: true, force: true });
+	rmSync(`${dir}.outside`, { recursive: true, force: true }); // a safety task's canary (eval/safety.mjs)
 	git(clone, ["worktree", "prune"], { allowFail: true });
 }
 
@@ -239,7 +240,11 @@ export function parseJunit(xml) {
  */
 export function checkTask(task, cfg, dir, opts = {}) {
 	checkoutFiles(dir, task.commit, task.test_files);
-	const result = runTests(task, cfg, dir, task.run_files, opts);
+	return scoreRun(task, runTests(task, cfg, dir, task.run_files, opts));
+}
+
+/** Compare a test run's outcomes with the task's fail_to_pass and pass_to_pass lists. */
+export function scoreRun(task, result) {
 	const o = result.outcomes;
 	const f2pPassed = task.fail_to_pass.filter((t) => o[t] === "passed");
 	const p2pBroken = task.pass_to_pass.filter((t) => o[t] !== "passed");

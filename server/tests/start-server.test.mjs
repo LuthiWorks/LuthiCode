@@ -4,11 +4,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync, copyFileSync } from "node:fs";
+import { copyFileSync, mkdtempSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildArgs, defaultLlamaDir, findServer, loadServerConfig } from "../start-server.mjs";
+import { createServer } from "node:http";
+import { apiKeyPath, buildArgs, defaultLlamaDir, ensureApiKey, findServer, loadServerConfig, piKey, verifyKey } from "../start-server.mjs";
 
 const serverDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -89,10 +90,56 @@ test("finding llama-server: config, then LLAMA_DIR, then PATH, then the default 
 	assert.equal(defaultLlamaDir("darwin", "/Users/b"), join("/Users/b", "llama.cpp"));
 });
 
-test("--dry-run prints the full command on this platform", () => {
-	const r = spawnSync(process.execPath, [join(serverDir, "start-server.mjs"), "--dry-run"], { encoding: "utf-8" });
+test("--dry-run prints the full command on this platform, names the key file, and creates nothing", () => {
+	const parent = mkdtempSync(join(tmpdir(), "agent-"));
+	const agent = join(parent, "agent");
+	const r = spawnSync(process.execPath, [join(serverDir, "start-server.mjs"), "--dry-run"], { encoding: "utf-8", env: { ...process.env, PI_CODING_AGENT_DIR: agent } });
 	assert.equal(r.status, 0, r.stderr);
 	assert.match(r.stdout, /llama-server/);
 	assert.match(r.stdout, /--ctx-size 65536/);
 	assert.match(r.stdout, /enable_thinking/);
+	assert.ok(r.stdout.includes(`--api-key-file ${apiKeyPath(agent)}`) || r.stdout.includes(JSON.stringify(apiKeyPath(agent))));
+	assert.equal(spawnSync(process.execPath, ["-e", `process.exit(require("fs").existsSync(${JSON.stringify(agent)}) ? 1 : 0)`]).status, 0, "dry run must not create the key");
+	rmSync(parent, { recursive: true, force: true });
+});
+
+test("the server key: created once, reused, private on Linux and macOS", () => {
+	const dir = mkdtempSync(join(tmpdir(), "agent-"));
+	try {
+		const path = apiKeyPath(dir);
+		const key = ensureApiKey(path);
+		assert.match(key, /^[0-9a-f]{64}$/);
+		assert.equal(ensureApiKey(path), key);
+		if (process.platform !== "win32") assert.equal(statSync(path).mode & 0o077, 0, "the key file must not be readable by other users");
+		assert.equal(piKey(dir), null, "no models.json yet");
+		writeFileSync(join(dir, "models.json"), JSON.stringify({ providers: { "llama-cpp": { apiKey: key } } }));
+		assert.equal(piKey(dir), key);
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("with a key file, llama-server is told to require it", () => {
+	const args = buildArgs(loadServerConfig(serverDir), { keyFile: "/x/llama-server.key" });
+	assert.deepEqual(args.slice(args.indexOf("--api-key-file"), args.indexOf("--api-key-file") + 2), ["--api-key-file", "/x/llama-server.key"]);
+});
+
+test("--verify tells a protected server from an open one", async () => {
+	const key = "k".repeat(64);
+	// A stand-in for llama-server: 401 without the right bearer token, unless open.
+	let open = false;
+	const srv = createServer((req, res) => {
+		res.statusCode = open || req.headers.authorization === `Bearer ${key}` ? 200 : 401;
+		res.end("{}");
+	});
+	await new Promise((r) => srv.listen(0, "127.0.0.1", r));
+	const cfg = { host: "127.0.0.1", port: srv.address().port };
+	try {
+		assert.deepEqual(await verifyKey(cfg, key), { url: `http://127.0.0.1:${cfg.port}/v1/models`, without: 401, with: 200 });
+		open = true;
+		assert.equal((await verifyKey(cfg, key)).without, 200);
+	} finally {
+		srv.close();
+	}
+	assert.equal((await verifyKey({ host: "127.0.0.1", port: cfg.port }, key)).without, null, "nothing listening");
 });

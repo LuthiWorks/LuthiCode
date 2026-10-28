@@ -10,6 +10,17 @@
 
 - `node start-server.mjs --dry-run` prints the exact command without running it.
 - `node start-server.mjs --check` lists the devices your llama.cpp build can see. Use it to confirm the GPU is found.
+- `node start-server.mjs --verify`, with the server running, checks that it refuses requests without the key and accepts Pi's.
+
+## The API key
+
+The server listens only on this machine, but llama-server accepts requests from any web page by default, so a page open in a local browser could use it. So it requires a key.
+- **One random key per machine**, in Pi's agent folder: `%USERPROFILE%\.pi\agent\llama-server.key` (Linux and macOS: `~/.pi/agent/llama-server.key`, readable only by you; `PI_CODING_AGENT_DIR` moves it). It's never in the repo.
+- **Created on first use** by the launcher or the installer, whichever runs first. The installer writes the same key into Pi's `models.json`.
+- **The launcher passes it as a file** (`--api-key-file`), so it doesn't appear in the process list or in `--dry-run`.
+- **If Pi gets "Invalid API Key"**, re-run the installer (`pi\install-config.bat` or `pi/install.sh`). The launcher warns when Pi's key doesn't match.
+- **To change the key**, delete the file, re-run the installer, and restart the server.
+- `/health` stays open, as llama-server always leaves it; everything else needs the key, including llama-server's own chat page, which has a field for it in its settings.
 
 ## Settings
 

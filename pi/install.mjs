@@ -9,7 +9,8 @@
 //
 //   models.json      Pi's model list, pointed at the local server. The context
 //                    window and address come from server/server.json, so they
-//                    are set in one place.
+//                    are set in one place. The API key is this machine's server
+//                    key (llama-server.key in the same folder, created if missing).
 //   settings.json    Pi's defaults.
 //   AGENTS.md        the brief the local model reads in every repo, from
 //                    AGENTS.global.md with this machine's OS and shell filled in.
@@ -22,7 +23,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadServerConfig } from "../server/start-server.mjs";
+import { apiKeyPath, ensureApiKey, loadServerConfig } from "../server/start-server.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = resolve(here, "..");
@@ -46,12 +47,13 @@ export function renderBrief(template, platform) {
 	return out;
 }
 
-/** Pi's models.json with the context window and address taken from the server config. */
-export function renderModels(models, server) {
+/** Pi's models.json with the context window, address and key taken from the server's. */
+export function renderModels(models, server, apiKey) {
 	const host = server.host === "0.0.0.0" ? "127.0.0.1" : server.host;
 	const out = structuredClone(models);
 	for (const p of Object.values(out.providers)) {
 		p.baseUrl = `http://${host}:${server.port}/v1`;
+		if (apiKey) p.apiKey = apiKey;
 		for (const m of p.models) m.contextWindow = server.ctx;
 	}
 	return out;
@@ -67,9 +69,10 @@ export function install({ dest, platform = process.platform, log = console.log }
 	mkdirSync(join(target, "extensions"), { recursive: true });
 	const server = loadServerConfig(join(repo, "server"));
 
-	const models = renderModels(JSON.parse(readFileSync(join(here, "models.json"), "utf-8")), server);
+	const key = ensureApiKey(apiKeyPath(target));
+	const models = renderModels(JSON.parse(readFileSync(join(here, "models.json"), "utf-8")), server, key);
 	backupAndWrite(join(target, "models.json"), JSON.stringify(models, null, 2) + "\n");
-	log(`Installed models.json (context window ${server.ctx}, server ${models.providers["llama-cpp"].baseUrl})`);
+	log(`Installed models.json (context window ${server.ctx}, server ${models.providers["llama-cpp"].baseUrl}, with this machine's server key)`);
 
 	backupAndWrite(join(target, "settings.json"), readFileSync(join(here, "settings.json"), "utf-8"));
 	log("Installed settings.json");

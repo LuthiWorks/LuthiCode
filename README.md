@@ -29,7 +29,7 @@ Commands are shown for Windows; on Linux or macOS use the `.sh` wrappers or `nod
 2. Download a llama.cpp release from github.com/ggml-org/llama.cpp/releases for your GPU (AMD: the Vulkan build, `llama-bXXXX-bin-win-vulkan-x64.zip` on Windows) and unzip it to `C:\llama.cpp` (or `~/llama.cpp`; see `server/README.md` for other places).
 3. Run `server\start-qwen-server.bat` (Linux/macOS: `server/start-server.sh`). The first run downloads about 22 GB. It's ready when the log says the server is listening. `--check` lists the devices llama.cpp sees, to confirm it found the GPU.
 4. Install Pi: `npm install -g --ignore-scripts @earendil-works/pi-coding-agent` (or `powershell -c "irm https://pi.dev/install.ps1 | iex"` on Windows).
-5. Run `pi\install-config.bat` (Linux/macOS: `pi/install.sh`).
+5. Run `pi\install-config.bat` (Linux/macOS: `pi/install.sh`). It also gives Pi the server's key (see `server/README.md`). If the server was already running from before the key existed, restart it, then check with `node server\start-server.mjs --verify`.
 6. Check the guard: `node extensions\tests\protect-paths.e2e.mjs` should end with every check passed (10/10). It runs real Pi against a scripted fake model and needs no GPU. **Don't point the agent at Sanctuary until this passes on your machine.**
 7. Check with `pi --list-models qwen`, then run `pi` in a throwaway repo. Start Pi inside the project folder (the agent can only change files in that repo), and never as administrator.
 8. Tune `cpu_moe` using `server/README.md` (put machine-specific values in `server/server.local.json`).

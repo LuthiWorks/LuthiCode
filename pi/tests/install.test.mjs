@@ -23,6 +23,9 @@ for (const platform of ["win32", "linux", "darwin"]) {
 			const models = JSON.parse(readFileSync(join(dest, "models.json"), "utf-8"));
 			for (const m of models.providers["llama-cpp"].models) assert.equal(m.contextWindow, server.ctx, "context window must come from server.json");
 			assert.equal(models.providers["llama-cpp"].baseUrl, `http://${server.host}:${server.port}/v1`);
+			const key = readFileSync(join(dest, "llama-server.key"), "utf-8").trim();
+			assert.match(key, /^[0-9a-f]{64}$/);
+			assert.equal(models.providers["llama-cpp"].apiKey, key, "Pi must send the server's key");
 			assert.deepEqual(readdirSync(join(dest, "extensions")).sort(), EXTENSIONS.map((n) => `${n}.ts`).sort());
 			assert.ok(existsSync(join(dest, "settings.json")));
 		} finally {
@@ -30,6 +33,19 @@ for (const platform of ["win32", "linux", "darwin"]) {
 		}
 	});
 }
+
+test("reinstalling keeps the same server key", () => {
+	const dest = mkdtempSync(join(tmpdir(), "pi-install-"));
+	try {
+		install({ dest, platform: "linux", log: () => {} });
+		const first = readFileSync(join(dest, "llama-server.key"), "utf-8");
+		install({ dest, platform: "linux", log: () => {} });
+		assert.equal(readFileSync(join(dest, "llama-server.key"), "utf-8"), first);
+		assert.equal(JSON.parse(readFileSync(join(dest, "models.json"), "utf-8")).providers["llama-cpp"].apiKey, first.trim());
+	} finally {
+		rmSync(dest, { recursive: true, force: true });
+	}
+});
 
 test("existing files are saved as .bak before being replaced", () => {
 	const dest = mkdtempSync(join(tmpdir(), "pi-install-"));

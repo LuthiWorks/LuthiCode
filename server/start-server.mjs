@@ -3,6 +3,8 @@
 //   node server/start-server.mjs            start it (leave it running while you use Pi)
 //   node server/start-server.mjs --dry-run  print the command instead of running it
 //   node server/start-server.mjs --check    list the devices this llama.cpp build sees
+//   node server/start-server.mjs --verify   check that the running server refuses
+//                                           requests without the key and accepts Pi's
 //
 // Settings: server/server.json (the reference setup: Brian's RX 7800 XT, 16 GB
 // VRAM, 32 GB RAM, Vulkan), overridden by server/server.local.json if it
@@ -12,9 +14,17 @@
 // The arguments go to llama-server as a list, with no shell in between, so the
 // JSON in --chat-template-kwargs needs no quoting on any platform. (That quoting
 // is why the old launcher was a .bat file and not PowerShell.)
+//
+// API key: the server only listens on this machine, but without a key any web
+// page open in a local browser could send it requests (llama-server allows every
+// origin). So it requires a key, a random one per machine, kept in Pi's agent
+// folder (llama-server.key), never in the repo. The launcher passes it as a file,
+// so it doesn't show in the process list or in --dry-run; the installer writes the
+// same key into Pi's models.json. Whichever runs first creates it.
 
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { randomBytes } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir, cpus } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -34,6 +44,38 @@ export function loadServerConfig(dir = here) {
 	if (!BACKENDS.includes(cfg.backend)) throw new Error(`server config: backend must be one of ${BACKENDS.join(", ")} (got ${cfg.backend})`);
 	for (const k of ["ctx", "cpu_moe", "port"]) if (!Number.isInteger(cfg[k]) || cfg[k] < 0) throw new Error(`server config: ${k} must be a whole number (got ${cfg[k]})`);
 	return cfg;
+}
+
+/** Pi's agent folder: PI_CODING_AGENT_DIR, or ~/.pi/agent. */
+export function piAgentDir(env = process.env, home = homedir()) {
+	return env.PI_CODING_AGENT_DIR || join(home, ".pi", "agent");
+}
+
+/** Where this machine's server key lives. */
+export function apiKeyPath(agentDir = piAgentDir()) {
+	return join(agentDir, "llama-server.key");
+}
+
+/** This machine's server key, created on first use (64 hex characters, readable only by this user on Linux and macOS). */
+export function ensureApiKey(path = apiKeyPath()) {
+	if (existsSync(path)) {
+		const key = readFileSync(path, "utf-8").split(/\r?\n/)[0].trim();
+		if (key) return key;
+	}
+	mkdirSync(dirname(path), { recursive: true });
+	const key = randomBytes(32).toString("hex");
+	writeFileSync(path, key + "\n", { mode: 0o600 });
+	return key;
+}
+
+/** The key Pi will send, from its installed models.json, or null if it can't be read. */
+export function piKey(agentDir = piAgentDir()) {
+	try {
+		const models = JSON.parse(readFileSync(join(agentDir, "models.json"), "utf-8"));
+		return models.providers?.["llama-cpp"]?.apiKey ?? null;
+	} catch {
+		return null;
+	}
 }
 
 /** Where to look for llama.cpp when nothing says otherwise. */
@@ -65,8 +107,8 @@ export function autoThreads() {
 	return Math.max(1, Math.floor(cpus().length / 2));
 }
 
-/** llama-server's arguments for a config. */
-export function buildArgs(cfg) {
+/** llama-server's arguments for a config. With keyFile, requests must carry that file's key. */
+export function buildArgs(cfg, { keyFile } = {}) {
 	const s = cfg.sampling;
 	const threads = cfg.threads === "auto" ? autoThreads() : cfg.threads;
 	return [
@@ -92,8 +134,23 @@ export function buildArgs(cfg) {
 		"--cache-reuse", "256",
 		// Qwen's precise-coding preset; penalizing repeats hurts code.
 		"--temp", String(s.temp), "--top-p", String(s.top_p), "--top-k", String(s.top_k), "--min-p", String(s.min_p), "--presence-penalty", String(s.presence_penalty),
+		...(keyFile ? ["--api-key-file", keyFile] : []),
 		...(cfg.extra_args ?? []),
 	];
+}
+
+/** Ask the running server for its model list without the key, then with it. */
+export async function verifyKey(cfg, key) {
+	const host = cfg.host === "0.0.0.0" ? "127.0.0.1" : cfg.host;
+	const url = `http://${host}:${cfg.port}/v1/models`;
+	const status = async (headers) => {
+		try {
+			return (await fetch(url, { headers, signal: AbortSignal.timeout(5000) })).status;
+		} catch {
+			return null;
+		}
+	};
+	return { url, without: await status({}), with: await status({ Authorization: `Bearer ${key}` }) };
 }
 
 const RELEASE_HINT = {
@@ -104,13 +161,34 @@ const RELEASE_HINT = {
 	cpu: "the llama.cpp CPU release",
 };
 
-function main() {
+async function main() {
 	const argv = process.argv.slice(2);
 	const cfg = loadServerConfig();
 	const server = findServer(cfg);
-	const args = buildArgs(cfg);
+	const keyFile = apiKeyPath();
+	const args = buildArgs(cfg, { keyFile });
 	if (argv.includes("--dry-run")) {
+		// Prints the key file's path, never the key, and creates nothing.
 		console.log([server ?? "llama-server", ...args].map((a) => (/[\s"{]/.test(a) ? JSON.stringify(a) : a)).join(" "));
+		return;
+	}
+	const key = ensureApiKey(keyFile);
+	if (argv.includes("--verify")) {
+		const r = await verifyKey(cfg, key);
+		if (r.without === null) {
+			console.error(`No server answering at ${r.url}. Start it first.`);
+			process.exitCode = 1;
+		} else if (r.without === 503) {
+			// llama-server answers 503 to everything but /health until the model is loaded.
+			console.error(`The server at ${r.url} is still loading the model. Try again once its log says it's listening.`);
+			process.exitCode = 1;
+		} else if (r.without === 401 && r.with === 200) {
+			console.log(`OK: the server refuses requests without the key (401) and accepts the key (200).`);
+		} else {
+			console.error(`Not protected as expected: without the key ${r.without}, with it ${r.with} (want 401 and 200). Restart the server with this launcher.`);
+			process.exitCode = 1;
+		}
+		if (piKey() !== key) console.error(`Pi's models.json has a different key. Run the installer again (pi\\install-config.bat or pi/install.sh).`);
 		return;
 	}
 	if (!server) {
@@ -124,7 +202,8 @@ function main() {
 		process.exitCode = r.status ?? 1;
 		return;
 	}
-	console.error(`Starting ${server}\nModel ${cfg.model_file ?? cfg.model}, context ${cfg.ctx}, ${cfg.backend}. Leave this running while you use Pi.\n`);
+	if (piKey() !== key) console.error(`Note: Pi's models.json doesn't have this server's key yet, so Pi's requests will be refused. Run the installer again (pi\\install-config.bat or pi/install.sh).\n`);
+	console.error(`Starting ${server}\nModel ${cfg.model_file ?? cfg.model}, context ${cfg.ctx}, ${cfg.backend}. Requests need the key in ${keyFile}. Leave this running while you use Pi.\n`);
 	const child = spawn(server, args, { stdio: "inherit" });
 	const stop = () => child.kill();
 	process.on("SIGINT", stop);
@@ -134,4 +213,9 @@ function main() {
 	});
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+	main().catch((e) => {
+		console.error(String(e.message ?? e));
+		process.exitCode = 1;
+	});
+}

@@ -57,7 +57,17 @@ The three that don't resolve on Windows:
   - There is no exclusion mechanism yet; leaving tasks out is manual (`--only`). A per-platform exclusion list, read by `run.mjs` and reported in the summary, would keep it honest.
   - A non-strict xfail test is allowed to go either way, so it arguably doesn't belong in a task's pass-to-pass set at all. Dropping such tests from pass-to-pass at mining time would put `luthimodel-3940aa39` back on Windows. This changes scoring, so it wants a review rather than a quiet edit.
   - Turning on Windows Developer Mode would let the symlink test run. It would also let the agent create symlinks, which are a known gap in the guard. I'd keep it off.
-- **Not yet measured:** the model itself. Decode speed, cache reuse, tool arguments and `cpu_moe` tuning wait for the download to finish and the smoke test.
+- **Not yet measured:** decode speed, cache reuse, tool arguments and `cpu_moe` tuning. The smoke test hasn't run; Brian is still weighing whether and how he'll use LuthiCode, so nothing is scheduled.
+
+### Step 7: first model load
+
+- The first load attempt was stopped by Claude Code's low-memory protection (it reaps background tasks it launched). Firefox, Discord and the Claude app were open. With those closed (23.6 GB free before start), the model loaded in about 16 seconds once downloaded, and `/health` returned ok.
+- Loaded footprint: about 11 GB working set for llama-server (the CPU-side experts); 12.8 GB of 31.9 GB stayed free. `--load-mode none` is fine on 32 GB without heavy apps open; no launcher change.
+- Starting the server from a Claude Code background shell is fragile for this reason. Brian starting `start-qwen-server.bat` himself isn't subject to it.
+- Two log warnings, recorded, not acted on:
+  - `cache_reuse is not supported by this context, it will be disabled`. Likely the model's architecture rules out llama.cpp's shifted-chunk reuse (`--cache-reuse`); plain prefix reuse between turns may still work. The smoke test should measure it, since the prompt-cache decisions assume reuse.
+  - `security: no API key is set and CORS allows all origins`. The server listens on 127.0.0.1 only, but a page open in a local browser could still send it requests. Worth a deliberate fix (an API key in `server.json` and Pi's `models.json`, or restricting CORS).
+- Asked its cutoff, the model said "2026". Qwen's card gives none (release: April 2026). Self-reports of cutoff aren't reliable either way.
 
 ## Artifacts
 

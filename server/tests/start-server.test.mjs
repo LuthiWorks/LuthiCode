@@ -14,6 +14,7 @@ const serverDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("the reference config produces the same arguments the old .bat used", () => {
 	// Copied from server/start-qwen-server.bat as of 2026-10-27, with its variables filled in.
+	// One change since: --no-mmap became --load-mode none, its replacement in llama.cpp b11936.
 	const fromBat = [
 		"-hf", "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M",
 		"--no-mmproj",
@@ -24,7 +25,7 @@ test("the reference config produces the same arguments the old .bat used", () =>
 		"--cache-type-k", "q8_0", "--cache-type-v", "q8_0",
 		"--batch-size", "2048", "--ubatch-size", "512",
 		"--threads", "16",
-		"--no-mmap",
+		"--load-mode", "none",
 		"--jinja",
 		"--reasoning-format", "deepseek",
 		"--chat-template-kwargs", '{"enable_thinking":false,"preserve_thinking":true}',

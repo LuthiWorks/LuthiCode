@@ -82,7 +82,8 @@ export function buildArgs(cfg) {
 		"--cache-type-k", "q8_0", "--cache-type-v", "q8_0",
 		"--batch-size", "2048", "--ubatch-size", "512",
 		"--threads", String(threads),
-		"--no-mmap",
+		// Load the weights into RAM, no memory-mapping. Older builds spelled this --no-mmap.
+		"--load-mode", "none",
 		"--jinja",
 		"--reasoning-format", "deepseek",
 		// No thinking by default (Pi's "-think" model turns it on); preserve_thinking keeps

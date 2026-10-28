@@ -41,6 +41,7 @@ Watch Task Manager > Performance > GPU while a task is running:
 ## Less obvious flags (in `start-server.mjs`)
 
 - `--parallel 1`: one request slot. The default of 4 wastes VRAM.
+- `--load-mode none`: loads the weights into RAM instead of memory-mapping them. llama.cpp replaced `--no-mmap` with this; build b11936 (2026-10-27, the one checked on Brian's PC) rejects `--no-mmap`. A much older build may not know `--load-mode`; there, swap it back to `--no-mmap` in `start-server.mjs`.
 - `--no-mmproj`: skips the vision add-on. It saves VRAM and keeps cache reuse working.
 - `enable_thinking: false`: no thinking by default, for speed. Pi's `-think` model turns it on.
 - `preserve_thinking: true`: keeps the prompt append-only, so the cache survives between turns.

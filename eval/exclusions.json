@@ -1,0 +1,10 @@
+{
+ "about": "Tasks left out of runs on one platform (Node's process.platform: win32, linux, darwin), because their own real fix doesn't resolve there in that platform's full gold replay. The tasks themselves are unchanged. run.mjs skips these and lists them in its summary; gold-replay.mjs still replays them and reports whether they still fail. Remove an entry when its replay passes.",
+ "win32": {
+  "sanctuary-61417141": "test_symlink_inside_root_pointing_outside_denied skips: creating symlinks on Windows needs Developer Mode or admin, which stays off (symlinks are a known gap in the guard). Replay of 2026-10-27.",
+  "sanctuary-db71caab": "The same symlink test as sanctuary-61417141. Replay of 2026-10-27.",
+  "luthimodel-3940aa39": "Its pass-to-pass test test_attractor_consolidation_reduces_weight_drift_vs_baseline is xfail(strict=False): it xfails on Windows (CPU numerics differ) and xpassed on Linux, and the scorer counts the xfail as broken. Replay of 2026-10-27; see docs/research/2026-10-27_first-windows-setup.md."
+ },
+ "linux": {},
+ "darwin": {}
+}

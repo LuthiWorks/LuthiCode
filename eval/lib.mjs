@@ -260,6 +260,15 @@ export function scoreRun(task, result) {
 	};
 }
 
+/**
+ * Tasks left out on a platform, with the reason: { id: reason }. They come from
+ * that platform's full gold replay (eval/exclusions.json).
+ */
+export function loadExclusions(platform = process.platform, path = join(EVAL_DIR, "exclusions.json")) {
+	if (!existsSync(path)) return {};
+	return JSON.parse(readFileSync(path, "utf-8"))[platform] ?? {};
+}
+
 /** Every task file under eval/tasks/. */
 export function loadTasks(filter, root = join(EVAL_DIR, "tasks")) {
 	const out = [];

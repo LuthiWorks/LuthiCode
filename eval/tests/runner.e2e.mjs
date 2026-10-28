@@ -4,11 +4,14 @@
 //   node eval/tests/runner.e2e.mjs
 //
 // It builds a tiny git repo whose last commit adds a function and its test,
-// turns that commit into a task, and runs eval/run.mjs four ways:
+// turns that commit into a task, and runs eval/run.mjs several ways:
 //   gold      the fake model writes the real fix           -> resolved
 //   nothing   the fake model just says it's done           -> not resolved
 //   blocked   it first tries to write outside the worktree -> guard block counted, then resolved
 //   debug     debugging seat: the prompt must carry the failing test output
+//   committed the agent commits its work, so HEAD moves during the attempt
+//   excluded  a second task is left out on this platform: not run, listed in the summary
+// and once with every task left out, which must refuse to start.
 // Exit code 0 means every check passed.
 
 import { spawn, spawnSync } from "node:child_process";
@@ -90,6 +93,16 @@ writeFileSync(cfgPath, JSON.stringify({ repos: { toy: { clone: repo, env } }, wo
 }
 writeFileSync(join(tasksDir, "toy", "toy-mul.json"), JSON.stringify(task, null, 1));
 
+// A second task set for the exclusion arm: the same task twice, one copy left out on this platform.
+const exclTasksDir = join(root, "tasks-excl");
+mkdirSync(join(exclTasksDir, "toy"), { recursive: true });
+writeFileSync(join(exclTasksDir, "toy", "toy-mul.json"), JSON.stringify(task, null, 1));
+writeFileSync(join(exclTasksDir, "toy", "toy-mul-left-out.json"), JSON.stringify({ ...task, id: "toy-mul-left-out" }, null, 1));
+const exclPath = join(root, "exclusions.json");
+writeFileSync(exclPath, JSON.stringify({ [process.platform]: { "toy-mul-left-out": "a test reason", "toy-mul-everything": "unused" } }));
+const exclAllPath = join(root, "exclusions-all.json");
+writeFileSync(exclAllPath, JSON.stringify({ [process.platform]: { "toy-mul": "every task left out" } }));
+
 // ---- the arms ----
 
 const arms = {
@@ -107,6 +120,11 @@ const arms = {
 		{ tool: "bash", args: { command: "git add toypkg/calc.py && git -c user.name=t -c user.email=t@example.com commit -q -m 'Add mul' && git log -1 --format=%s" } },
 		{ text: "Added and committed mul." },
 	],
+	excluded: [{ tool: "write", args: { path: "toypkg/calc.py", content: fixed } }, { text: "Added mul." }],
+};
+const extraArgs = {
+	debug: ["--seat", "debugging"],
+	excluded: ["--tasks-dir", exclTasksDir, "--exclusions", exclPath],
 };
 
 const results = {};
@@ -119,7 +137,7 @@ for (const [name, steps] of Object.entries(arms)) {
 	const r = await new Promise((done) => {
 		const child = spawn(
 			process.execPath,
-			[runner, "--label", name, "--repeat", "1", "--provider", "fake", "--model", "fake", "--config", cfgPath, "--tasks-dir", tasksDir, "--results-dir", join(root, "results"), "--timeout-min", "3", ...(name === "debug" ? ["--seat", "debugging"] : [])],
+			[runner, "--label", name, "--repeat", "1", "--provider", "fake", "--model", "fake", "--config", cfgPath, "--tasks-dir", tasksDir, "--results-dir", join(root, "results"), "--timeout-min", "3", ...(extraArgs[name] ?? [])],
 			{ env: { ...process.env, PI_CODING_AGENT_DIR: agentDir }, stdio: ["ignore", "pipe", "pipe"] },
 		);
 		let stdout = "";
@@ -131,8 +149,13 @@ for (const [name, steps] of Object.entries(arms)) {
 	await fake.close();
 	const runDir = join(root, "work", "runs", name);
 	const lines = readFileSync(join(runDir, "results.jsonl"), "utf-8").trim().split("\n");
-	results[name] = { record: JSON.parse(lines.at(-1)), requests: fake.requests, out: r.stdout + r.stderr, code: r.status };
+	results[name] = { record: JSON.parse(lines.at(-1)), records: lines.map((l) => JSON.parse(l)), requests: fake.requests, out: r.stdout + r.stderr, code: r.status };
 }
+
+// Every task left out: the runner must refuse rather than report an empty run.
+const allOut = spawnSync(process.execPath, [runner, "--label", "all-out", "--repeat", "1", "--provider", "fake", "--model", "fake", "--config", cfgPath, "--tasks-dir", tasksDir, "--results-dir", join(root, "results"), "--exclusions", exclAllPath], { encoding: "utf-8" });
+const exclSummary = readdirSync(join(root, "results")).find((f) => f.includes("_excluded_implementation"));
+const exclSummaryText = exclSummary ? readFileSync(join(root, "results", exclSummary), "utf-8") : "";
 
 // ---- checks ----
 
@@ -165,6 +188,11 @@ const checks = [
 	["committed: the committed work is still recorded as the agent's diff", results.committed.record.diff_lines > 0 && results.committed.record.diff_lines === g.diff_lines],
 	["worktrees were cleaned up", readdirSync(join(root, "work", "wt")).every((l) => readdirSync(join(root, "work", "wt", l)).length === 0)],
 	["a summary was written", readdirSync(join(root, "results")).some((f) => f.includes("_gold_implementation"))],
+	["excluded: only the kept task ran", results.excluded.records.length === 1 && results.excluded.record.task === "toy-mul" && results.excluded.record.resolved === true],
+	["excluded: the summary lists the left-out task and its reason", exclSummaryText.includes(`## Left out on ${process.platform}`) && exclSummaryText.includes("toy-mul-left-out: a test reason")],
+	["excluded: an exclusion that matches no task isn't listed", !exclSummaryText.includes("toy-mul-everything")],
+	["the gold summary has no left-out section", !readFileSync(join(root, "results", readdirSync(join(root, "results")).find((f) => f.includes("_gold_implementation"))), "utf-8").includes("Left out")],
+	["every task left out: the runner refuses to start", allOut.status !== 0 && /every match is left out/.test(allOut.stderr)],
 ];
 
 let failed = 0;

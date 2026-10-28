@@ -27,7 +27,10 @@ Task files are in `tasks/<repo>/<id>.json`. Every task was validated before it w
      - Tests that skip there, such as symlink tests or paths that need `/proc`, count as not passed.
      - LuthiModel's C++ ops need a compiler. Without one, the C++ parity tests skip.
      - One Sanctuary task's tests start a local server on all interfaces (`sanctuary-0df08c51`), so Windows Firewall may ask once about Python. Localhost works either way; "Cancel" is fine.
-   - A task whose real fix doesn't resolve on your machine can never be resolved by the agent either. List those failures and leave them out of runs on that machine; don't change the tasks.
+   - A task whose real fix doesn't resolve on a platform can never be resolved by the agent there either. Add it to that platform's list in `eval/exclusions.json`, with the reason; don't change the task.
+     - `run.mjs` then leaves it out on that platform and lists it, with the reason, at the end of the summary.
+     - The replay still replays it: its failure shows as `EXPECTED FAIL` and doesn't fail the replay. If it starts resolving, the replay says so, and the entry can be removed.
+     - Windows has three entries so far, from the replay of 2026-10-27.
 
 The model server must be running (`server\start-qwen-server.bat`) for real runs.
 
@@ -48,6 +51,7 @@ node eval\run.mjs --label baseline
 | `--extension <name>` | | Extra extension from `extensions/`, repeatable |
 | `--timeout-min` | 30 (60 for large) | Per attempt |
 | `--keep` | | Keep worktrees for inspection |
+| `--include-excluded` | | Also run tasks `exclusions.json` leaves out on this platform |
 
 An interrupted run resumes where it stopped if you re-run the same command.
 
@@ -66,7 +70,7 @@ An interrupted run resumes where it stopped if you re-run the same command.
 ## Comparing runs
 
 Follow the rigor rules in `CLAUDE.md`:
-- Compare runs from the same platform only. Each record and summary says which one it ran on, and a task that can't resolve on a platform is left out there (setup step 4).
+- Compare runs from the same platform only. Each record and summary says which one it ran on, and a task that can't resolve on a platform is left out there (`exclusions.json`, setup step 4). A Windows score and a Linux score are over different task sets.
 - One change per comparison.
 - The same tasks and repeat count.
 - Report the spread across repeats.

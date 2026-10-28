@@ -18,6 +18,7 @@
 //                         protect-paths is always loaded)
 //   --timeout-min <n>     minutes per attempt before it is stopped (default 30; 60 for the large tier)
 //   --keep                keep worktrees afterwards, for inspection
+//   --include-excluded    also run tasks eval/exclusions.json leaves out on this platform
 //
 // Each attempt runs in a throwaway git worktree of the task's repo at the
 // task's starting commit. Pi runs unattended with only the named extensions
@@ -30,7 +31,7 @@
 import { spawn } from "node:child_process";
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { EVAL_DIR, checkoutFiles, checkTask, createWorktree, loadConfig, loadTasks, markBaseline, removeWorktree, runTests, scoreRun, taskEnv, worktreeDiff } from "./lib.mjs";
+import { EVAL_DIR, checkoutFiles, checkTask, createWorktree, loadConfig, loadExclusions, loadTasks, markBaseline, removeWorktree, runTests, scoreRun, taskEnv, worktreeDiff } from "./lib.mjs";
 import { changedPaths, filesInDiff, finalMessage, hashFolder, hashProtected, outsideFor, safetyPrompt, score, setUp, summarizeSafety } from "./safety.mjs";
 
 const REPO_ROOT = resolve(EVAL_DIR, "..");
@@ -55,10 +56,12 @@ export function parseArgs(argv) {
 		else if (a === "--extension") o.extension.push(next());
 		else if (a === "--timeout-min") o.timeoutMin = Number(next());
 		else if (a === "--keep") o.keep = true;
+		else if (a === "--include-excluded") o.includeExcluded = true;
 		else if (a === "--config") o.config = next();
 		else if (a === "--pi") o.pi = next();
 		else if (a === "--tasks-dir") o.tasksDir = next();
 		else if (a === "--results-dir") o.resultsDir = next();
+		else if (a === "--exclusions") o.exclusions = next(); // for tests; default eval/exclusions.json
 		else throw new Error(`unknown option ${a}`);
 	}
 	if (!o.label || !/^[\w.-]+$/.test(o.label)) throw new Error("--label <name> is required (letters, digits, . _ -)");
@@ -319,13 +322,19 @@ export function summarize(records, opts) {
 
 // ---------------------------------------------------------------- main
 
+/** The summary's note on tasks left out on this platform, so a reader knows the denominator. */
+export function excludedSection(leftOut) {
+	if (!leftOut.length) return "";
+	return `\n## Left out on ${process.platform}\n\nThese tasks' own fixes don't resolve on this platform (eval/exclusions.json), so they weren't run:\n\n${leftOut.map((x) => `- ${x.id}: ${x.reason}`).join("\n")}\n`;
+}
+
 /** Tasks without a tier field are standard. */
 export const tierOf = (task) => task.tier ?? "standard";
 
 async function main() {
 	const opts = parseArgs(process.argv.slice(2));
 	const cfg = loadConfig(opts.config);
-	const tasks = loadTasks(
+	const matched = loadTasks(
 		(t) =>
 			(opts.seat === "safety" ? t.kind === "safety" : t.kind !== "safety" && tierOf(t) === opts.tier) &&
 			(!opts.repo || t.repo === opts.repo) &&
@@ -333,7 +342,12 @@ async function main() {
 			(opts.seat === "debugging" || t.instruction?.trim()),
 		opts.tasksDir,
 	);
-	if (!tasks.length) throw new Error("no tasks match");
+	// Tasks whose own fix doesn't resolve on this platform are left out, and the summary says so.
+	const exclusions = opts.includeExcluded ? {} : loadExclusions(process.platform, opts.exclusions);
+	const leftOut = matched.filter((t) => exclusions[t.id]).map((t) => ({ id: t.id, reason: exclusions[t.id] }));
+	const tasks = matched.filter((t) => !exclusions[t.id]);
+	if (leftOut.length) console.error(`Left out on ${process.platform} (eval/exclusions.json): ${leftOut.map((x) => x.id).join(", ")}`);
+	if (!tasks.length) throw new Error(leftOut.length ? `no tasks to run: every match is left out on ${process.platform} (--include-excluded runs them anyway)` : "no tasks match");
 	const outDir = join(cfg.work, "runs", opts.label);
 	mkdirSync(outDir, { recursive: true });
 	const resultsPath = join(outDir, "results.jsonl");
@@ -351,17 +365,20 @@ async function main() {
 			process.stderr.write(`${r.resolved ? "RESOLVED" : "not resolved"} (${r.tool_calls ?? 0} tool calls, ${r.seconds_total}s${r.harness_error ? ", harness error: " + r.harness_error.slice(0, 120) : ""})\n`);
 		}
 	}
+	// Records left from an earlier --include-excluded run under the same label stay out of the score too.
+	const counted = records.filter((r) => !exclusions[r.task]);
 	const summary =
 		opts.seat === "safety"
-			? summarizeSafety(records.filter((r) => r.seat === "safety"), { ...opts, extensionNames: extensionArgs(opts).names })
-			: summarize(records.filter((r) => r.seat === opts.seat && (r.tier ?? "standard") === opts.tier), opts);
+			? summarizeSafety(counted.filter((r) => r.seat === "safety"), { ...opts, extensionNames: extensionArgs(opts).names })
+			: summarize(counted.filter((r) => r.seat === opts.seat && (r.tier ?? "standard") === opts.tier), opts);
+	const summaryText = summary + excludedSection(leftOut);
 	const resultsDir = opts.resultsDir ?? join(EVAL_DIR, "results");
 	mkdirSync(resultsDir, { recursive: true });
 	const tierSuffix = opts.tier === "standard" || opts.seat === "safety" ? "" : `_${opts.tier}`;
 	const summaryPath = join(resultsDir, `${new Date().toISOString().slice(0, 10)}_${opts.label}_${opts.seat}${tierSuffix}.md`);
-	writeFileSync(summaryPath, summary);
+	writeFileSync(summaryPath, summaryText);
 	console.error(`\nSummary: ${summaryPath}`);
-	process.stdout.write(summary);
+	process.stdout.write(summaryText);
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === resolve(EVAL_DIR, "run.mjs")) {

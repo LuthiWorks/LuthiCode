@@ -74,3 +74,9 @@ The three that don't resolve on Windows:
 - `d1d2bc9`: `--load-mode none` fix
 - `eval/config.local.json` (untracked): `work` = `C:\LuthiCodeEval`
 - Replay output: `C:\LuthiCodeEval\runs\gold-replay-*`
+
+## Follow-up, 2026-10-28
+
+Both suggestions above were taken up the next day (see `docs/decisions.md`, 2026-10-28):
+- The three Windows tasks are now listed in `eval/exclusions.json`. `run.mjs` leaves them out and names them in the summary; the replay still runs them and reports their failures as expected.
+- The server now requires a key: one per machine, kept in Pi's agent folder rather than in `server.json`, since that file is tracked in a public repo. To pick it up on this PC, re-run `pi\install-config.bat`, restart the server, and run `node server\start-server.mjs --verify`.

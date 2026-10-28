@@ -183,6 +183,26 @@ The process is in `docs/research/2026-10-26_eval-build.md`.
 - **Evals run natively on each platform**, labeled by platform. A Linux container on Windows was proposed and dropped: it would have measured the wrong machine, and missed Windows-only breakage such as fork-dependent multiprocessing and open-file locks.
 - **Isolation for unattended runs:** a dedicated user account on each OS, so the operating system itself refuses writes outside the eval's folder. Not built yet.
 
+## 2026-10-28 - The model server requires a key
+
+- **The gap:** llama-server listens only on 127.0.0.1, but by default it answers every web origin, credentials included. Any page open in a local browser could have sent it requests.
+- **The fix:** a random key per machine, in Pi's agent folder (`llama-server.key`), never in the repo.
+  - The launcher passes it with `--api-key-file`, so it isn't in the process list.
+  - The installer writes the same key into Pi's models.json. Whichever runs first creates it.
+  - `start-server.mjs --verify` checks a running server: refused without the key (401), accepted with it (200).
+- **Checked against llama.cpp's source** at b11936, the build on Brian's PC, and at master on 2026-10-28: only `/health`, `/v1/health` and the web page's own files skip the key.
+- **Not done:** `--cors-origins localhost` would narrow the browser exposure further. With the key in place it adds little, and it's one more flag older builds may not know.
+- **For later:** a dedicated user account for unattended runs has its own agent folder, so it needs this key copied in, or the installer run as that account.
+
+## 2026-10-28 - Tasks left out per platform, in one file
+
+- **Why:** a task whose own fix doesn't resolve on a platform can't be resolved by the agent there. Counting it would lower that platform's score for reasons that have nothing to do with the agent.
+- **How:** `eval/exclusions.json` lists those tasks per platform (Node's `process.platform`), each with its reason.
+  - `run.mjs` leaves them out and lists them at the end of the summary, so the denominator is visible. `--include-excluded` runs them anyway.
+  - `gold-replay.mjs` still replays them. Their failures show as expected and don't fail the replay; one that starts resolving is reported, so its entry can be removed.
+- **The tasks themselves don't change.** Scores from different platforms are over different task sets, which is one more reason to compare within a platform only.
+- **First entries (Windows, replay of 2026-10-27):** two Sanctuary tasks whose symlink test skips without Developer Mode, and one LuthiModel task whose non-strict xfail test xfails on Windows and counts as broken. Whether non-strict xfail tests belong in pass-to-pass at all is a scoring question, left for a review by a different mind.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/

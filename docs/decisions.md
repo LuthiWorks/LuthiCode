@@ -203,6 +203,21 @@ The process is in `docs/research/2026-10-26_eval-build.md`.
 - **The tasks themselves don't change.** Scores from different platforms are over different task sets, which is one more reason to compare within a platform only.
 - **First entries (Windows, replay of 2026-10-27):** two Sanctuary tasks whose symlink test skips without Developer Mode, and one LuthiModel task whose non-strict xfail test xfails on Windows and counts as broken. Whether non-strict xfail tests belong in pass-to-pass at all is a scoring question, left for a review by a different mind.
 
+## 2026-10-29 - Model re-checked: Qwen3.6-35B-A3B stays
+
+Brian asked whether Qwen is still the right choice. A survey of what's out as of today found nothing that changes it; one new model earns an eval arm. Scores are vendor-reported and come from different harnesses, so they only rank models loosely.
+
+- **Recursive Flint** (released 2026-10-21, Apache 2.0): 40B total, about 2.5B active, 262K context. SWE-bench Verified 74.2% (mini-swe-agent), against Qwen3.6-35B-A3B's 73.4%. The 4-bit GGUF is about 25 GB, so it fits 16 GB VRAM plus 32 GB RAM with experts offloaded, like the current model. **Added to Phase 3, not swapped in:**
+  - Its reasoning is always on. At local speeds that means far more tokens per turn; the smaller active size probably doesn't make up for it (estimate). A fair comparison is against the `-think` arm.
+  - It's new: no independent evaluations yet, and its makers say it needs more explicit, decomposed instructions than larger assistants.
+  - llama.cpp support was merged on 2026-10-21, but Unsloth's guide still builds from a fork, and nothing found confirms Vulkan. Wait for a mainline release, then check tool calls on Brian's PC.
+- **Not taken up:**
+  - Poolside Laguna XS 2.1 (33B/3B, July 2026): its own model card shows Qwen3.6-35B-A3B ahead on every benchmark it lists.
+  - Devstral Small 2 (24B dense, 65.8%): fits, but leaves little room for context.
+  - Gemma 4 (26B MoE, 31B dense; 52% for the 31B).
+  - JetBrains Mellum 2.1 (12B/2.5B, 47%): fast, but too weak for implementation work.
+- **Qwen 4** is still in training, with no open weights as of mid-October. The revisit condition stands. Qwen3.8-Flash-Next (August) is labeled a preview of Qwen 4's architecture; there's no small MoE among Qwen3.8's open models.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/
@@ -222,3 +237,6 @@ The process is in `docs/research/2026-10-26_eval-build.md`.
 - Pi extension API (tool_call blocking, setActiveTools): https://cdn.jsdelivr.net/npm/@earendil-works/pi-coding-agent@0.80.2/docs/extensions.md
 - Claude Code CLAUDE.md and AGENTS.md handling: https://code.claude.com/docs/en/memory
 - lsp-pi package: https://cdn.jsdelivr.net/npm/lsp-pi@1.0.5/README.md
+- Flint (Recursive): https://miraflow.ai/blog/recursive-flint-explained-laptop-coding-model-moe-2026 ; GGUF guide: https://unsloth.ai/docs/models/flint ; llama.cpp merge: https://magica.com/news/llama-cpp-merges-flint-model-support
+- Laguna XS 2.1 model card (with its comparison table): https://huggingface.co/poolside/Laguna-XS-2.1
+- Qwen 4 status as of 2026-10-13: https://www.orcarouter.ai/blog/qwen-4

@@ -107,6 +107,7 @@ Same task set, one change at a time:
 - **Qwen3.8-27B** (August 2026, Apache 2.0). Vendor-reported scores are well above Qwen3.6-27B: SWE-bench Pro 61.7 vs 53.5, and Terminal-Bench 2.1 73.0 vs 63.4. It is a 27B dense model, though, so on 16 GB it needs an IQ3/IQ4-class quant and a shorter context. Whether a stronger model at lower precision beats the current one is exactly what the eval is for.
 - **Thinking on vs off** (the `-think` model entry).
 - **`presence_penalty` 0 vs 1.5.**
+- **Recursive Flint** (October 2026, Apache 2.0; 40B total, 2.5B active). Vendor-reported SWE-bench Verified 74.2%, level with the current model, measured in a different harness. Its reasoning can't be turned off, so its matched baseline is the `-think` arm, not thinking off. Waits for a mainline llama.cpp release that runs it on Vulkan with working tool calls (see `docs/decisions.md`, 2026-10-29).
 - **Qwen 4** when it ships.
 
 ## Eval rules

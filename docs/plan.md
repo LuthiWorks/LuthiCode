@@ -108,6 +108,8 @@ Same task set, one change at a time:
 - **Thinking on vs off** (the `-think` model entry).
 - **`presence_penalty` 0 vs 1.5.**
 - **Recursive Flint** (October 2026, Apache 2.0; 40B total, 2.5B active). Vendor-reported SWE-bench Verified 74.2%, level with the current model, measured in a different harness. Its reasoning can't be turned off, so its matched baseline is the `-think` arm, not thinking off. Waits for a mainline llama.cpp release that runs it on Vulkan with working tool calls (see `docs/decisions.md`, 2026-10-29).
+- **Groot-19B-A3B** (2026-10-23, Apache 2.0): Qwen3.6-35B-A3B with its experts cut to 19B total (3B active), light post-training, image input. The 4-bit GGUF is 11.7 GB, so it fits on the GPU entirely: no experts in system RAM, much faster prompt processing. Judged on the time per attempt as well as the resolve rate (see `docs/decisions.md`, 2026-11-01).
+- **Apex-35B-V1.0** (2026-10-29, Apache 2.0): a fine-tune of Qwen3.6-35B-A3B, same architecture and size, so a one-change comparison against the baseline.
 - **Qwen 4** when it ships.
 
 ## Eval rules

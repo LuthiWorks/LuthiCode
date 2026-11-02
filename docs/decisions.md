@@ -218,6 +218,26 @@ Brian asked whether Qwen is still the right choice. A survey of what's out as of
   - JetBrains Mellum 2.1 (12B/2.5B, 47%): fast, but too weak for implementation work.
 - **Qwen 4** is still in training, with no open weights as of mid-October. The revisit condition stands. Qwen3.8-Flash-Next (August) is labeled a preview of Qwen 4's architecture; there's no small MoE among Qwen3.8's open models.
 
+## 2026-11-01 - Two Qwen3.6-35B-A3B derivatives join the model comparisons
+
+Both came from a video Brian shared. Neither replaces the current model; each gets an eval arm against the Qwen baseline. Scores are the makers' own.
+
+- **Groot-19B-A3B** (GrootTeam, 2026-10-23 by its name, Apache 2.0):
+  - **What it is:** Qwen3.6-35B-A3B with its routed experts cut down to 19B total parameters, 3B active, post-trained on under 0.1B tokens, image input.
+  - **Why it's interesting:** the 4-bit GGUF is 11.7 GB, so the whole model fits in the RX 7800 XT's 16 GB. With no experts in system RAM, prompt processing (the bottleneck noted under "Prompt-cache discipline") should be much faster, and about 11 GB of system RAM is freed.
+  - **Claims:** beats Qwen3.6-35B-A3B on 12 of 16 benchmarks (Terminal-Bench 2.1: 52.1 vs 43.8).
+  - **Risks:**
+    - Cutting experts removes knowledge, and under 0.1B tokens of post-training is a light repair.
+    - It's a week old, from an unknown team.
+    - Its recommended presence_penalty (1.5) is the setting we turned off for code.
+  - **Fit (an estimate):** weights plus the KV cache at our 64K context should fit, but tightly.
+  - **Judged on** the time per attempt as well as the resolve rate, since speed is its main promise.
+- **Apex-35B-V1.0** (Apex Intelligence, 2026-10-29, Apache 2.0):
+  - **What it is:** a fine-tune of Qwen3.6-35B-A3B with the same architecture and size (Q4_K_M 21.7 GB), so it drops into the current setup unchanged, a clean one-change comparison.
+  - **Claims:** SWE-bench Verified 73.4 and Terminal-Bench 2.1 65.2. Its own runs of Qwen3.6 score 63.8 and 46.1, below Qwen's published 73.4 on SWE-bench Verified, so its harness differs from Qwen's.
+  - **Its makers** say an automated research system helped build it, with few details.
+- **Provenance:** both are fine-tunes from little-known teams, running with a shell on Brian's machine. The guard bounds what any model can change, but read the model cards and chat templates before installing either.
+
 ## Sources
 
 - Qwen3.6 27B vs 35B-A3B fit and speed: https://insiderllm.com/guides/qwen-3-6-local-ai-guide/
@@ -240,3 +260,5 @@ Brian asked whether Qwen is still the right choice. A survey of what's out as of
 - Flint (Recursive): https://miraflow.ai/blog/recursive-flint-explained-laptop-coding-model-moe-2026 ; GGUF guide: https://unsloth.ai/docs/models/flint ; llama.cpp merge: https://magica.com/news/llama-cpp-merges-flint-model-support
 - Laguna XS 2.1 model card (with its comparison table): https://huggingface.co/poolside/Laguna-XS-2.1
 - Qwen 4 status as of 2026-10-13: https://www.orcarouter.ai/blog/qwen-4
+- Groot-19B-A3B model card: https://huggingface.co/GrootTeam/Groot-19B-A3B-261023
+- Apex-35B-V1.0 model card: https://huggingface.co/Apexintelligence-AI/Apex-35B-V1.0

@@ -59,3 +59,9 @@ Commands are shown for Windows; on Linux or macOS use the `.sh` wrappers or `nod
 - [ ] Phase 3: model and settings comparisons
 - [x] Runs on Windows, Linux and macOS: model-free tests pass on all three in CI (2026-10-27)
 - [ ] Isolation for unattended runs: a dedicated user account per OS
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
+
+We chose a permissive license so other researchers can build on and improve this work. This isn't a condition of the license and we can't enforce it, but we ask that you not use this work for military or surveillance activities, to make money, for forced labor, or in ways that contribute to ecocide.
